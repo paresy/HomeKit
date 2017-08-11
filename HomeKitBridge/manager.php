@@ -85,7 +85,7 @@ class HomeKitManager
         }
 
         //Sort array and determine highest value
-        arsort($ids);
+        rsort($ids);
 
         //We have at least AccessoryID 1 used for the Bridge accessory
         $highestID = 1;
