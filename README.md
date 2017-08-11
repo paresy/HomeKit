@@ -1,6 +1,6 @@
 # HomeKit für IP-Symcon 5.0
 
-_Diese Bibliothek kann nur mit dem noch nicht veröffentlichten IP-Symcon 5.0, welches PHP 7.2 enthält, genutzt werden. IP-Symcon 5.0 kommt frühstens Q2/2018,  PHP 5.6 fehlen leider wichtige kryptographische Funktionen, sodass eine Unterstützung für IP-Symcon 4.x ausgeschlossen ist._ 
+_Diese Bibliothek kann nur mit dem noch nicht veröffentlichten IP-Symcon 5.0, welches PHP 7.2 enthält, genutzt werden. IP-Symcon 5.0 kommt wohl gegen Ende Q2/2018 - hoffentlich früh genug zur Apple HomePod Veröffentlichung in Deutschland. PHP 5.6 fehlen leider wichtige kryptographische Funktionen, sodass eine Unterstützung für IP-Symcon 4.x ausgeschlossen ist._ 
 
 _Dieses Repository enthält keine von Apple zertifizierte Bridge. Dieses Repository wird von mir privat gepflegt und wird nicht von der Symcon GmbH angeboten._
 
