@@ -45,7 +45,7 @@ class HomeKitCodes
         $code = "000-00-000";
 
         while(!$this->isValidSetupCode($code)) {
-            $number = strval(random_int (0, 99999999));
+            $number = sprintf("%08d", random_int (0, 99999999));
             $code = substr($number, 0, 3) . "-" . substr($number, 3, 2) . "-" . substr($number, 5, 3);
         }
 
