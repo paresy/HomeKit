@@ -1,0 +1,37 @@
+[
+    {
+        "name": "daverandom/libdns",
+        "version": "v1.1.0",
+        "version_normalized": "1.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/DaveRandom/LibDNS.git",
+            "reference": "67de5497e84d179dffc089c5eb6a1945eb4e9460"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/DaveRandom/LibDNS/zipball/67de5497e84d179dffc089c5eb6a1945eb4e9460",
+            "reference": "67de5497e84d179dffc089c5eb6a1945eb4e9460",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "time": "2016-04-29T20:47:45+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "LibDNS\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "description": "DNS protocol implementation written in pure PHP",
+        "keywords": [
+            "dns"
+        ]
+    }
+]
