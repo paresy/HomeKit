@@ -1,0 +1,34 @@
+{
+	"elements": [
+		{
+			"type": "Label",
+			"label": "This instance takes care of HomeKit discovery. Do not delete it. It's magic."
+		},
+		{
+			"type": "Label",
+			"label": "These options are for experts only! Do not touch!"
+		},
+		{
+			"type": "ValidationTextBox",
+			"name": "BridgeName",
+			"caption": "Name"
+		},
+		{
+			"type": "ValidationTextBox",
+			"name": "BridgeID",
+			"caption": "ID"
+		},
+		{
+			"type": "NumberSpinner",
+			"name": "BridgePort",
+			"caption": "Port"
+		}
+	],
+	"actions": [
+		{
+			"type": "Button",
+			"label": "Announce Bridge (Debug)",
+			"onClick": "echo HK_AnnounceBridge($id);"
+		}
+	]
+}

@@ -1,0 +1,14 @@
+{
+  "translations": {
+    "de": {
+      "This instance takes care of HomeKit discovery. Do not delete it. It's magic.": "Diese Instanz kümmert sich um das Auffinden von HomeKit. Bitte nicht löschen.",
+      "These options are for experts only! Do not touch!": "Diese Einstellungen sind nur für Experten. Nicht anfassen!",
+      "Name": "Name",
+      "ID": "ID",
+      "Port": "Port",
+      "Name is required to consist only of letters and numbers!": "Name darf nur aus Buchstaben und Zahlen bestehen!",
+      "ID is not a valid MAC style address!": "ID muss wie eine MAC Adresse aussehen!",
+      "Cannot find associated HomeKit bridge!": "Kann verknüpfte HomeKit Bridge nicht finden!"
+    }
+  }
+}
