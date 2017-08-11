@@ -123,7 +123,12 @@ class HomeKitSession {
 
             $message = substr($this->encryptedData, 2, $expectedLength + 16);
             $ad = substr($this->encryptedData, 0, 2);
-            $nonce = "\0\0\0\0" . pack("P" ,$this->messageRecvCounter);
+
+            if (PHP_INT_SIZE == 4) {
+                $nonce = "\0\0\0\0" . pack("V", $this->messageRecvCounter) . "\0\0\0\0";
+            } else {
+                $nonce = "\0\0\0\0" . pack("P", $this->messageRecvCounter);
+            }
 
             $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($message, $ad, $nonce, $this->messageRecvKey);
             if($decryptedData == null) {
@@ -705,8 +710,14 @@ class HomeKitSession {
 
             $length = pack("v", strlen($part));
 
+            if (PHP_INT_SIZE == 4) {
+                $nonce = "\0\0\0\0" . pack("V", $this->messageSendCounter) . "\0\0\0\0";
+            } else {
+                $nonce = "\0\0\0\0" . pack("P", $this->messageSendCounter);
+            }
+
             //Encrypt and seal the response body
-            $encryptedBody = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($part, $length, "\0\0\0\0" . pack("P", $this->messageSendCounter), $this->messageSendKey);
+            $encryptedBody = sodium_crypto_aead_chacha20poly1305_ietf_encrypt($part, $length, $nonce, $this->messageSendKey);
 
             //Add decrypted body length in front
             $body .= $length . $encryptedBody;
