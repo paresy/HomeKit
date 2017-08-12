@@ -78,9 +78,12 @@ class HomeKitManager
         foreach(self::$supportedAccessories as $accessory) {
             $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
             foreach($datas as $data) {
-                if(in_array($data["ID"], $ids))
-                    throw new Exception("InstanceID has to be unique for all characteristics");
-                $ids[] = $data["ID"];
+                //Skip over uninitialized zero values
+                if($data["ID"] != 0) {
+                    if(in_array($data["ID"], $ids))
+                        throw new Exception("InstanceID has to be unique for all characteristics");
+                    $ids[] = $data["ID"];
+                }
             }
         }
 
