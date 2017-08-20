@@ -49,7 +49,7 @@ class HAPAccessoryTemperatureSensor extends HAPAccessory {
         return GetValue($this->data["VariableID"]);
 
     }
-
+  }
 class HAPAccessoryConfigurationTemperatureSensor {
 
     public static function getPosition() {
@@ -88,6 +88,5 @@ class HAPAccessoryConfigurationTemperatureSensor {
       return "OK";
     }
   }
-}
 
 HomeKitManager::registerAccessory("TemperatureSensor");
