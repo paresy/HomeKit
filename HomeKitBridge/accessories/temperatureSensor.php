@@ -47,14 +47,14 @@ class HAPAccessoryTemperatureSensor extends HAPAccessory {
     public function getCharacteristicCurrentTemperature() {
 
         return GetValue($this->data["VariableID"]);
-
     }
+
   }
 class HAPAccessoryConfigurationTemperatureSensor {
 
     public static function getPosition() {
 
-        return 2;
+        return 10;
 
     }
 
