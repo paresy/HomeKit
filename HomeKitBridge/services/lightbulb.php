@@ -14,6 +14,7 @@ class HAPServiceLightbulb extends HAPService {
                 //Optional Characteristics
                 new HAPCharacteristicBrightness(),
                 new HAPCharacteristicHue(),
+                new HAPCharacteristicName(),
                 new HAPCharacteristicSaturation(),
                 new HAPCharacteristicColorTemperature()
             )
