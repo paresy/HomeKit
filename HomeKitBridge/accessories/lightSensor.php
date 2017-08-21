@@ -49,7 +49,8 @@ class HAPAccessoryLightSensor extends HAPAccessory {
         return GetValue($this->data["VariableID"]);
     }
 
-  }
+}
+
 class HAPAccessoryConfigurationLightSensor {
 
     public static function getPosition() {
@@ -82,11 +83,13 @@ class HAPAccessoryConfigurationLightSensor {
     public static function getStatus($data) {
       $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-      if($targetVariable['VariableType'] != 2 /* Float */) {
-        return "Float required";
+      if($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
+        return "Int/Float required";
       }
+
       return "OK";
     }
-  }
+
+}
 
 HomeKitManager::registerAccessory("LightSensor");
