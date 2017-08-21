@@ -1,6 +1,6 @@
 <?
 
-class HAPServiceLightbulb extends HAPService {
+class HAPServiceSwitch extends HAPService {
 
     public function __construct() {
 
