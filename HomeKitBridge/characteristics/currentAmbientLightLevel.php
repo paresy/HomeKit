@@ -5,7 +5,7 @@ class HAPCharacteristicCurrentAmbientLightLevel extends HAPCharacteristic {
     public function __construct()
     {
         parent::__construct(
-            0x11,
+            0x6B,
             HAPCharacteristicFormat::Float,
             Array(
                 HAPCharacteristicPermission::PairedRead,
