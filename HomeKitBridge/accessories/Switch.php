@@ -96,7 +96,7 @@ class HAPAccessoryConfigurationSwitch {
 
     public static function getPosition() {
 
-        return 1;
+        return 40;
 
     }
 
