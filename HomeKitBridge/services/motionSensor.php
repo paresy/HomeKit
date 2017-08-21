@@ -1,6 +1,6 @@
 <?
 
-class HAPServiceMotionsSensor extends HAPService {
+class HAPServiceMotionSensor extends HAPService {
 
     public function __construct() {
 

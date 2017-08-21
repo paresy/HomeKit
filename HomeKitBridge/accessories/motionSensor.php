@@ -1,6 +1,6 @@
 <?
 
-class HAPAccessoryMotionsSensor extends HAPAccessory {
+class HAPAccessoryMotionSensor extends HAPAccessory {
 
     public function __construct($data) {
 
@@ -8,7 +8,7 @@ class HAPAccessoryMotionsSensor extends HAPAccessory {
             $data,
             Array(
                 new HAPServiceAccessoryInformation(),
-                new HAPServiceMotionsSensor()
+                new HAPServiceMotionSensor()
             )
         );
 
