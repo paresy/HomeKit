@@ -1,7 +1,7 @@
-<?
+<?php
 
-class HAPCharacteristicAccessoryFlags extends HAPCharacteristic {
-
+class HAPCharacteristicAccessoryFlags extends HAPCharacteristic
+{
     const RequiresAdditionalSetup = 1;
 
     public function __construct()
@@ -9,11 +9,10 @@ class HAPCharacteristicAccessoryFlags extends HAPCharacteristic {
         parent::__construct(
             0xA6,
             HAPCharacteristicFormat::UnsignedInt32,
-            Array(
+            [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
-            )
+            ]
         );
     }
-
 }

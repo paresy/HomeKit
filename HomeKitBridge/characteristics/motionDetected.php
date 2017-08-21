@@ -1,17 +1,16 @@
-<?
+<?php
 
-class HAPCharacteristicMotionDetected extends HAPCharacteristic {
-
+class HAPCharacteristicMotionDetected extends HAPCharacteristic
+{
     public function __construct()
     {
         parent::__construct(
             0x22,
             HAPCharacteristicFormat::Boolean,
-            Array(
+            [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
-            )
+            ]
         );
     }
-
 }

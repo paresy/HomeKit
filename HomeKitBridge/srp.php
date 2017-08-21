@@ -1,11 +1,11 @@
-<?
+<?php
 
-class SRP6aServer {
-
+class SRP6aServer
+{
     //All function parameters are required to be binary!
 
     //Defined in Apple HAP 4.6.2 or RFC 5054 (3072 Bit group)
-    private $N_hex = "FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
+    private $N_hex = 'FFFFFFFF FFFFFFFF C90FDAA2 2168C234 C4C6628B 80DC1CD1 29024E08
                       8A67CC74 020BBEA6 3B139B22 514A0879 8E3404DD EF9519B3 CD3A431B 
                       302B0A6D F25F1437 4FE1356D 6D51C245 E485B576 625E7EC6 F44C42E9
                       A637ED6B 0BFF5CB6 F406B7ED EE386BFB 5A899FA5 AE9F2411 7C4B1FE6
@@ -18,19 +18,19 @@ class SRP6aServer {
                       B3970F85 A6E1E4C7 ABF5AE8C DB0933D7 1E8C94E0 4A25619D CEE3D226
                       1AD2EE6B F12FFA06 D98A0864 D8760273 3EC86A64 521F2B18 177B200C
                       BBE11757 7A615D6C 770988C0 BAD946E2 08E24FA0 74E5AB31 43DB5BFC
-                      E0FD108E 4B82D120 A93AD2CA FFFFFFFF FFFFFFFF";
-    private $N_dec = "";
+                      E0FD108E 4B82D120 A93AD2CA FFFFFFFF FFFFFFFF';
+    private $N_dec = '';
 
-    private $g_hex = "05";
-    private $g_dec = "";
+    private $g_hex = '05';
+    private $g_dec = '';
 
-    private $s_bin = "";
-    private $I_bin = "";
-    private $p_bin = "";
-    private $b_bin = "";
+    private $s_bin = '';
+    private $I_bin = '';
+    private $p_bin = '';
+    private $b_bin = '';
 
-    private $x_dec = "";
-    private $v_dec = "";
+    private $x_dec = '';
+    private $v_dec = '';
 
     private $H;
 
@@ -39,11 +39,10 @@ class SRP6aServer {
     //p = Cleartext Password (Binary)
     public function __construct($s, $I, $p, $b)
     {
-
-        $this->N_hex = str_replace(Array(" ", "\r", "\n"), "", $this->N_hex);
+        $this->N_hex = str_replace([' ', "\r", "\n"], '', $this->N_hex);
         $this->N_dec = gmp_init($this->N_hex, 16);
         $this->N_bin = hex2bin($this->N_hex);
-        $this->g_hex = str_replace(Array(" ", "\r", "\n"), "", $this->g_hex);
+        $this->g_hex = str_replace([' ', "\r", "\n"], '', $this->g_hex);
         $this->g_dec = gmp_init($this->g_hex, 16);
         $this->g_bin = hex2bin($this->g_hex);
 
@@ -52,38 +51,37 @@ class SRP6aServer {
         $this->p_bin = $p;
         $this->b_bin = $b;
 
-        $this->H = function($v) {
-            return hash("sha512", $v, true);
+        $this->H = function ($v) {
+            return hash('sha512', $v, true);
         };
 
         //Private Key (x = H(s, H(I, ":", p)))
-        $this->x_dec = gmp_import(call_user_func($this->H, $this->s_bin . call_user_func($this->H, $this->I_bin . ":" . $this->p_bin)));
+        $this->x_dec = gmp_import(call_user_func($this->H, $this->s_bin . call_user_func($this->H, $this->I_bin . ':' . $this->p_bin)));
 
         //Verifier (c = g^x)
         $this->v_dec = gmp_powm($this->g_dec, $this->x_dec, $this->N_dec);
-
     }
 
     //We want to create public value B. We require the private value b
-    public function createPublicValue() {
+    public function createPublicValue()
+    {
 
         //Convert to decimal
         $b_dec = gmp_import($this->b_bin);
 
         //Multiplier parameter (k = H(N, g))
-        $k_dec = gmp_import(call_user_func($this->H, $this->N_bin . str_pad($this->g_bin, strlen($this->N_bin), Chr(0x00), STR_PAD_LEFT)));
+        $k_dec = gmp_import(call_user_func($this->H, $this->N_bin . str_pad($this->g_bin, strlen($this->N_bin), chr(0x00), STR_PAD_LEFT)));
 
         //Public Value (B = k*v + g^b)
         $B_dec = gmp_mod(gmp_add(gmp_mul($k_dec, $this->v_dec), gmp_powm($this->g_dec, $b_dec, $this->N_dec)), $this->N_dec);
 
         //Convert to binary
         return gmp_export($B_dec);
-
     }
 
     //Calculate Preshared Secret S
-    public function createPresharedSecret($A, $B) {
-
+    public function createPresharedSecret($A, $B)
+    {
         $u_dec = gmp_import(call_user_func($this->H, $A . $B));
         $b_dec = gmp_import($this->b_bin);
         $A_dec = gmp_import($A);
@@ -91,28 +89,24 @@ class SRP6aServer {
         $S_dec = gmp_powm(gmp_mul($A_dec, gmp_powm($this->v_dec, $u_dec, $this->N_dec)), $b_dec, $this->N_dec);
 
         return gmp_export($S_dec);
-
     }
 
     //Calculate Session Key K
-    public function createSessionKey($S) {
-
+    public function createSessionKey($S)
+    {
         return call_user_func($this->H, $S);
-
     }
 
     //We want to verify the proof
-    public function verifyProof($A, $B, $K, $M) {
+    public function verifyProof($A, $B, $K, $M)
+    {
 
         //Proof (M = H(H(N) xor H(g), H(I), s, A, B, K))
         return $M == call_user_func($this->H, (call_user_func($this->H, $this->N_bin) ^ call_user_func($this->H, $this->g_bin)) . call_user_func($this->H, $this->I_bin) . $this->s_bin . $A . $B . $K);
-
     }
 
-    public function createProof($A, $M, $K) {
-
+    public function createProof($A, $M, $K)
+    {
         return call_user_func($this->H, $A . $M . $K);
-
     }
-
 }

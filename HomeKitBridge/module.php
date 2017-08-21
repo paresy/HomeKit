@@ -1,94 +1,100 @@
-<?
+<?php
 
 include_once __DIR__ . '/../libs/vendor/autoload.php';
-include_once "pairings.php";
-include_once "codes.php";
-include_once "manager.php";
-include_once "session.php";
-include_once "hap.php";
-include_once "characteristics/autoload.php";
-include_once "services/autoload.php";
-include_once "accessories/autoload.php";
+include_once 'pairings.php';
+include_once 'codes.php';
+include_once 'manager.php';
+include_once 'session.php';
+include_once 'hap.php';
+include_once 'characteristics/autoload.php';
+include_once 'services/autoload.php';
+include_once 'accessories/autoload.php';
 
 class HomeKitBridge extends IPSModule
 {
+    private $pairings = null;
+    private $codes = null;
+    private $manager = null;
 
-	private $pairings = null;
-	private $codes = null;
-	private $manager = null;
+    public function __construct($InstanceID)
+    {
+        parent::__construct($InstanceID);
 
-	public function __construct($InstanceID)
-	{
-
-		parent::__construct($InstanceID);
-
-		//Prepare a few basics
-		$this->pairings = new HomeKitPairings(
+        //Prepare a few basics
+        $this->pairings = new HomeKitPairings(
             $this->InstanceID,
-			function($Message, $Data, $Type) { $this->SendDebug($Message, $Data, $Type); }
-		);
-		$this->codes = new HomeKitCodes(
+            function ($Message, $Data, $Type) {
+                $this->SendDebug($Message, $Data, $Type);
+            }
+        );
+        $this->codes = new HomeKitCodes(
             $this->InstanceID,
-			function($Message, $Data, $Type) { $this->SendDebug($Message, $Data, $Type); },
-			function($Name) { return $this->GetBuffer($Name); },
-			function($Name, $Value) { $this->SetBuffer($Name, $Value); }
-		);
-		$this->manager = new HomeKitManager(
+            function ($Message, $Data, $Type) {
+                $this->SendDebug($Message, $Data, $Type);
+            },
+            function ($Name) {
+                return $this->GetBuffer($Name);
+            },
+            function ($Name, $Value) {
+                $this->SetBuffer($Name, $Value);
+            }
+        );
+        $this->manager = new HomeKitManager(
             $this->InstanceID,
-            function($Name, $Value) { $this->RegisterPropertyString($Name, $Value); }
-		);
+            function ($Name, $Value) {
+                $this->RegisterPropertyString($Name, $Value);
+            }
+        );
+    }
 
-	}
+    public function Create()
+    {
 
-	public function Create() {
+        //Never delete this line!
+        parent::Create();
 
-		//Never delete this line!
-		parent::Create();
+        $this->RegisterPropertyInteger('DiscoveryInstanceID', 0);
+        $this->RegisterPropertyString('AccessoryKeyPair', bin2hex(sodium_crypto_sign_keypair()));
+        $this->RegisterPropertyString('Pairings', '[]');
 
-		$this->RegisterPropertyInteger("DiscoveryInstanceID", 0);
-		$this->RegisterPropertyString("AccessoryKeyPair", bin2hex(sodium_crypto_sign_keypair()));
-		$this->RegisterPropertyString("Pairings", "[]");
+        //Always create our own ServerSocket, when no parent is already available
+        $this->RequireParent('{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}');
 
-		//Always create our own ServerSocket, when no parent is already available
-		$this->RequireParent("{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}");
+        //Each accessory is allowed to register properties for persistent data
+        $this->manager->registerProperties();
+    }
 
-		//Each accessory is allowed to register properties for persistent data
-		$this->manager->registerProperties();
-
-	}
-
-	public function GetConfigurationForParent() {
-
-		if ($this->isDiscoveryInstanceValid()) {
-			return json_encode(Array(
-				"Port" => IPS_GetProperty($this->ReadPropertyInteger("DiscoveryInstanceID"), "BridgePort")
-			));
-		} else {
+    public function GetConfigurationForParent()
+    {
+        if ($this->isDiscoveryInstanceValid()) {
+            return json_encode([
+                'Port' => IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgePort')
+            ]);
+        } else {
             return json_encode(
-                Array(
-                    "Open" => false,
-                    "Port" => 0
-                )
+                [
+                    'Open' => false,
+                    'Port' => 0
+                ]
             );
-		}
+        }
+    }
 
-	}
+    public function GetConfigurationForm()
+    {
+        $discovery = [];
 
-	public function GetConfigurationForm() {
-
-		$discovery = Array();
-
-		//Check if we already have assigned a valid HomeKit discovery instance. Otherwise show a button to create it
-		if(!$this->isDiscoveryInstanceValid()) {
-            $discovery = Array(
-                Array(
-                    "type" => "Label",
-                    "label" => "Before adding the bridge to your iOS device, please create the HomeKit Discovery service."
-                ),
-                Array(
-                    "type" => "Button",
-                    "label" => "Create Discovery service",
-                    "onClick" => <<<'EOT'
+        //Check if we already have assigned a valid HomeKit discovery instance. Otherwise show a button to create it
+        if (!$this->isDiscoveryInstanceValid()) {
+            $discovery = [
+                [
+                    'type'  => 'Label',
+                    'label' => 'Before adding the bridge to your iOS device, please create the HomeKit Discovery service.'
+                ],
+                [
+                    'type'    => 'Button',
+                    'label'   => 'Create Discovery service',
+                    'onClick' => <<<'EOT'
 						if(sizeof(IPS_GetInstanceListByModuleID("{69D234C2-A453-4399-B766-71FB7D663700}")) > 0) { 
 							echo (new IPSModule($id))->Translate("You already have created a HomeKit discovery service!"); 
 						} else {
@@ -106,172 +112,169 @@ class HomeKitBridge extends IPSModule
 							echo (new IPSModule($id))->Translate("OK!");
 						}
 EOT
-                )
-            );
-		}
+                ]
+            ];
+        }
 
-		$pairing = Array(
-            Array(
-                "type" => "Label",
-                "label" => "Press the button to generate a setup code. It is valid for one pairing and at most 5 minutes."
-            ),
-            Array(
-                "type" => "Button",
-                "label" => "Request setup code!",
-				"onClick" => "echo HK_GenerateSetupCode(\$id);"
-            ),
-            Array(
-                "type" => "Label",
-                "label" => "You can add new items for each accessory type:"
-            )
-        );
+        $pairing = [
+            [
+                'type'  => 'Label',
+                'label' => 'Press the button to generate a setup code. It is valid for one pairing and at most 5 minutes.'
+            ],
+            [
+                'type'    => 'Button',
+                'label'   => 'Request setup code!',
+                'onClick' => 'echo HK_GenerateSetupCode($id);'
+            ],
+            [
+                'type'  => 'Label',
+                'label' => 'You can add new items for each accessory type:'
+            ]
+        ];
 
-        $discoveryLink = Array(
-            Array(
-                "type" => "Label",
-                "label" => "Experts only! Do not change!"
-            ),
-            Array(
-                "type" => "SelectInstance",
-                "caption" => "Discovery Instance",
-				"name" => "DiscoveryInstanceID"
-            )
-        );
+        $discoveryLink = [
+            [
+                'type'  => 'Label',
+                'label' => 'Experts only! Do not change!'
+            ],
+            [
+                'type'    => 'SelectInstance',
+                'caption' => 'Discovery Instance',
+                'name'    => 'DiscoveryInstanceID'
+            ]
+        ];
 
-		$accessories = $this->manager->getConfigurationForm();
+        $accessories = $this->manager->getConfigurationForm();
 
-		return json_encode(Array("elements" => array_merge($discovery, $pairing, $accessories, $discoveryLink)));
+        return json_encode(['elements' => array_merge($discovery, $pairing, $accessories, $discoveryLink)]);
+    }
 
-	}
+    public function ForwardData($JSONString)
+    {
+        return '';
+    }
 
-	public function ForwardData($JSONString)
-	{
-		return "";
-	}
+    public function ReceiveData($JSONString)
+    {
+        $data = json_decode($JSONString);
 
-	public function ReceiveData($JSONString)
-	{
-		$data = json_decode($JSONString);
+        //Check Discovery service
+        if (!$this->isDiscoveryInstanceValid()) {
+            $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Discovery Service is missing!', 0);
 
-		//Check Discovery service
-		if(!$this->isDiscoveryInstanceValid()) {
-            $this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, "Discovery Service is missing!", 0);
-			return;
-		}
+            return;
+        }
 
-		//Decode buffer
-		$buffer = utf8_decode($data->Buffer);
+        //Decode buffer
+        $buffer = utf8_decode($data->Buffer);
 
-		//Show some debug data
-		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, "Received: " . $buffer, 0);
+        //Show some debug data
+        $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Received: ' . $buffer, 0);
 
-		//Get Session for ClientIP/ClientPort
-		$session = $this->getSession($data->ClientIP, $data->ClientPort);
+        //Get Session for ClientIP/ClientPort
+        $session = $this->getSession($data->ClientIP, $data->ClientPort);
 
-		//Add new data and process it inside the session
-		$response = $session->processData($buffer);
+        //Add new data and process it inside the session
+        $response = $session->processData($buffer);
 
-		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, "Transmit: " . $response, 0);
+        $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Transmit: ' . $response, 0);
 
-		//Send response
-		if($response != null) {
-			$this->SendDataToParent(json_encode(Array("DataID" => "{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}", "Buffer" => utf8_encode($response), "ClientIP" => $data->ClientIP, "ClientPort" => $data->ClientPort)));
-		}
+        //Send response
+        if ($response != null) {
+            $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $data->ClientIP, 'ClientPort' => $data->ClientPort]));
+        }
 
-		//Save session for ClientIP/ClientPort
-		$this->setSession($data->ClientIP, $data->ClientPort, $session);
+        //Save session for ClientIP/ClientPort
+        $this->setSession($data->ClientIP, $data->ClientPort, $session);
+    }
 
-	}
-
-    public function ApplyChanges() {
+    public function ApplyChanges()
+    {
 
         // Diese Zeile nicht löschen
         parent::ApplyChanges();
 
         // Verify that our Discovery instanceID is valid
-		if($this->ReadPropertyInteger("DiscoveryInstanceID") > 0) {
-            if(!$this->isDiscoveryInstanceValid()) {
-				echo $this->Translate("Selected InstanceID is not a valid HomeKit Discovery instance!");
+        if ($this->ReadPropertyInteger('DiscoveryInstanceID') > 0) {
+            if (!$this->isDiscoveryInstanceValid()) {
+                echo $this->Translate('Selected InstanceID is not a valid HomeKit Discovery instance!');
             }
-		}
+        }
 
         // We need to check for IDs that have the value zero and assign a proper ID
         $this->manager->updateAccessories();
-
     }
 
-    public function GenerateSetupCode() {
+    public function GenerateSetupCode()
+    {
 
-		//Check if the HomeKit Discovery service is created
-        if(!$this->isDiscoveryInstanceValid()) {
-        	echo $this->Translate("You need the HomeKit Discovery service before generating a setup code!");
-        	return;
+        //Check if the HomeKit Discovery service is created
+        if (!$this->isDiscoveryInstanceValid()) {
+            echo $this->Translate('You need the HomeKit Discovery service before generating a setup code!');
+
+            return;
         }
 
         //Check if the HomeKit Discovery service is active
-        $pid = IPS_GetInstance($this->ReadPropertyInteger("DiscoveryInstanceID"))['ConnectionID'];
-        if(IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
-            echo $this->Translate("The HomeKit Discovery service is not active!");
-            return;
-		}
+        $pid = IPS_GetInstance($this->ReadPropertyInteger('DiscoveryInstanceID'))['ConnectionID'];
+        if (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
+            echo $this->Translate('The HomeKit Discovery service is not active!');
 
-        //Check if our parent instance (ServerSocket) is active
-        $pid = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        if(IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
-            echo $this->Translate("Our parent instance (ServerSocket) is not active!");
             return;
         }
 
-		echo $this->codes->generateSetupCode();
+        //Check if our parent instance (ServerSocket) is active
+        $pid = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
+            echo $this->Translate('Our parent instance (ServerSocket) is not active!');
 
-	}
+            return;
+        }
 
-	private function isDiscoveryInstanceValid() {
+        echo $this->codes->generateSetupCode();
+    }
 
-        $announceInstanceID = $this->ReadPropertyInteger("DiscoveryInstanceID");
-        if($announceInstanceID > 0) {
-            if(IPS_InstanceExists($announceInstanceID)) {
+    private function isDiscoveryInstanceValid()
+    {
+        $announceInstanceID = $this->ReadPropertyInteger('DiscoveryInstanceID');
+        if ($announceInstanceID > 0) {
+            if (IPS_InstanceExists($announceInstanceID)) {
                 $i = IPS_GetInstance($announceInstanceID);
-                if($i['ModuleInfo']['ModuleID'] == "{69D234C2-A453-4399-B766-71FB7D663700}") {
-					return true;
+                if ($i['ModuleInfo']['ModuleID'] == '{69D234C2-A453-4399-B766-71FB7D663700}') {
+                    return true;
                 }
             }
         }
 
         return false;
-
-	}
-
-	private function getSession($clientIP, $clientPort) {
-
-		return new HomeKitSession(
-			function($Message, $Data, $Type) { $this->SendDebug($Message, $Data, $Type); },
-			$this->pairings,
-			$this->codes,
-			$this->manager,
-            IPS_GetProperty($this->ReadPropertyInteger("DiscoveryInstanceID"), "BridgeID"),
-			hex2bin($this->ReadPropertyString("AccessoryKeyPair")),
-			$this->GetBuffer($clientIP . ":" . $clientPort)
-		);
-
-	}
-
-	private function setSession($clientIP, $clientPort, $session) {
-
-		if(!($session instanceof HomeKitSession))
-			throw new Exception("HomeKitSession expected as parameter type!");
-
-		$this->SetBuffer($clientIP . ":" . $clientPort, $session->__toString());
-
-	}
-
-	//TODO: Remove at some point...
-	public function DebugAccessories() {
-
-        echo json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
-
     }
 
-}
+    private function getSession($clientIP, $clientPort)
+    {
+        return new HomeKitSession(
+            function ($Message, $Data, $Type) {
+                $this->SendDebug($Message, $Data, $Type);
+            },
+            $this->pairings,
+            $this->codes,
+            $this->manager,
+            IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgeID'),
+            hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
+            $this->GetBuffer($clientIP . ':' . $clientPort)
+        );
+    }
 
-?>
+    private function setSession($clientIP, $clientPort, $session)
+    {
+        if (!($session instanceof HomeKitSession)) {
+            throw new Exception('HomeKitSession expected as parameter type!');
+        }
+        $this->SetBuffer($clientIP . ':' . $clientPort, $session->__toString());
+    }
+
+    //TODO: Remove at some point...
+    public function DebugAccessories()
+    {
+        echo json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
+    }
+}
