@@ -12,7 +12,11 @@ class HAPServiceTemperatureSensor extends HAPService {
             ),
             Array(
                 //Optional Characteristics
-                new HAPCharacteristicName()
+                new HAPCharacteristicName(),
+                new HAPCharacteristicStatusActive(),
+                new HAPCharacteristicStatusFault(),
+                new HAPCharacteristicStatusLowBattery(),
+                new HAPCharacteristicStatusTampered()
             )
         );
 
