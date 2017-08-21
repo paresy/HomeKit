@@ -45,6 +45,7 @@ class HAPAccessoryMotionsSensor extends HAPAccessory {
     }
 
     public function getCharacteristicMotionDetected() {
+
         $targetVariable = IPS_GetVariable($this->data["VariableID"]);
 
         if ($targetVariable['VariableCustomProfile'] != "") {
@@ -93,9 +94,11 @@ class HAPAccessoryConfigurationMotionSensor {
                 )
             )
         );
+
     }
 
     public static function getStatus($data) {
+
         $targetVariable = IPS_GetVariable($data["VariableID"]);
 
         if($targetVariable['VariableType'] != 0 /* Boolean */) {

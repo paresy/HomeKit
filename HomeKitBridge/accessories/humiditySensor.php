@@ -47,6 +47,7 @@ class HAPAccessoryHumiditySensor extends HAPAccessory {
     public function getCharacteristicCurrentRelativeHumidity() {
 
         return GetValue($this->data["VariableID"]);
+
     }
 
 }
@@ -78,9 +79,11 @@ class HAPAccessoryConfigurationHumiditySensor {
                 )
             )
         );
+
     }
 
     public static function getStatus($data) {
+
         $targetVariable = IPS_GetVariable($data["VariableID"]);
 
         if($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {

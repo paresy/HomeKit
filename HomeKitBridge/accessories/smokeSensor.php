@@ -98,9 +98,11 @@ class HAPAccessoryConfigurationSmokeSensor {
                 )
             )
         );
+
     }
 
     public static function getStatus($data) {
+
         $targetVariable = IPS_GetVariable($data["VariableID"]);
 
         if($targetVariable['VariableType'] != 0 /* Boolean */) {

@@ -47,6 +47,7 @@ class HAPAccessoryLightSensor extends HAPAccessory {
     public function getCharacteristicCurrentCurrentAmbientLightLevel() {
 
         return GetValue($this->data["VariableID"]);
+
     }
 
 }
@@ -78,16 +79,19 @@ class HAPAccessoryConfigurationLightSensor {
                 )
             )
         );
+
     }
 
     public static function getStatus($data) {
-      $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-      if($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
-        return "Int/Float required";
-      }
+        $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-      return "OK";
+        if($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
+            return "Int/Float required";
+        }
+
+        return "OK";
+
     }
 
 }
