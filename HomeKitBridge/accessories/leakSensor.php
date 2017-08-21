@@ -105,7 +105,7 @@ class HAPAccessoryConfigurationLeakSensor {
           return "Integer required";
         }
 
-          return "OK";
+        return "OK";
 
     }
 
