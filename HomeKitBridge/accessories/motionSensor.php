@@ -49,7 +49,8 @@ class HAPAccessoryMotionsSensor extends HAPAccessory {
         return GetValue($this->data["VariableID"]);
     }
 
-  }
+}
+
 class HAPAccessoryConfigurationMotionSensor {
 
     public static function getPosition() {
@@ -80,13 +81,16 @@ class HAPAccessoryConfigurationMotionSensor {
     }
 
     public static function getStatus($data) {
-      $targetVariable = IPS_GetVariable($data["VariableID"]);
+        $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-    if($targetVariable['VariableType'] != 0 /* Boolean */) {
-        return "Boolean required";
-      }
-      return "OK";
+        if($targetVariable['VariableType'] != 0 /* Boolean */) {
+            return "Boolean required";
+        }
+
+        return "OK";
+
     }
-  }
+
+}
 
 HomeKitManager::registerAccessory("MotionSensor");

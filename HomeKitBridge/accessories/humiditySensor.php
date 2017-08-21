@@ -49,7 +49,8 @@ class HAPAccessoryHumiditySensor extends HAPAccessory {
         return GetValue($this->data["VariableID"]);
     }
 
-  }
+}
+
 class HAPAccessoryConfigurationHumiditySensor {
 
     public static function getPosition() {
@@ -80,13 +81,16 @@ class HAPAccessoryConfigurationHumiditySensor {
     }
 
     public static function getStatus($data) {
-      $targetVariable = IPS_GetVariable($data["VariableID"]);
+        $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-      if($targetVariable['VariableType'] != 2 /* Float */) {
-        return "Float required";
-      }
-      return "OK";
+        if($targetVariable['VariableType'] != 2 /* Float */) {
+            return "Float required";
+        }
+
+        return "OK";
+
     }
+
   }
 
 HomeKitManager::registerAccessory("HumiditySensor");

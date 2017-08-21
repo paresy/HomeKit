@@ -50,6 +50,7 @@ class HAPAccessorySmokeSensor extends HAPAccessory {
     }
 
   }
+
 class HAPAccessoryConfigurationSmokeSensor {
 
     public static function getPosition() {
@@ -80,13 +81,16 @@ class HAPAccessoryConfigurationSmokeSensor {
     }
 
     public static function getStatus($data) {
-      $targetVariable = IPS_GetVariable($data["VariableID"]);
+        $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-    if($targetVariable['VariableType'] != 1 /* Integer */) {
-        return "Integer required";
-      }
-      return "OK";
+        if($targetVariable['VariableType'] != 1 /* Integer */) {
+            return "Integer required";
+        }
+
+        return "OK";
+
     }
-  }
+
+}
 
 HomeKitManager::registerAccessory("SmokeSensor");
