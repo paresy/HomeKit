@@ -46,7 +46,11 @@ class HAPAccessorySmokeSensor extends HAPAccessory {
 
     public function getCharacteristicSmokeDetected() {
 
-        return GetValue($this->data["VariableID"]);
+        if(GetValue($this->data["VariableID"]))
+            return HAPCharacteristicSmokeDetected::SmokeDetected;
+        else
+            return HAPCharacteristicSmokeDetected::SmokeNotDetected;
+
     }
 
   }
@@ -83,8 +87,8 @@ class HAPAccessoryConfigurationSmokeSensor {
     public static function getStatus($data) {
         $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-        if($targetVariable['VariableType'] != 1 /* Integer */) {
-            return "Integer required";
+        if($targetVariable['VariableType'] != 0 /* Boolean */) {
+            return "Boolean required";
         }
 
         return "OK";
