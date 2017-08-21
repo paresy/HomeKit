@@ -159,16 +159,19 @@ EOT
 			return;
 		}
 
+		//Decode buffer
+		$buffer = utf8_decode($data->Buffer);
+
 		//Show some debug data
-		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, print_r($data, true), 0);
+		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, "Received: " . $buffer, 0);
 
 		//Get Session for ClientIP/ClientPort
 		$session = $this->getSession($data->ClientIP, $data->ClientPort);
 
 		//Add new data and process it inside the session
-		$response = $session->processData(utf8_decode($data->Buffer));
+		$response = $session->processData($buffer);
 
-		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, $response, 0);
+		$this->SendDebug("HomeKit " . $data->ClientIP . ":" . $data->ClientPort, "Transmit: " . $response, 0);
 
 		//Send response
 		if($response != null) {

@@ -153,7 +153,11 @@ class HomeKitSession {
             $this->data .= $data;
         }
 
-        $this->SendDebug($this->data);
+        if($this->encrypted) {
+            $this->SendDebug("Decrypted data: " . $this->data);
+        } else {
+            $this->SendDebug("Plain data: " . $this->data);
+        }
 
         //Check if we can parse the complete packet.
         //Otherwise bail out and wait for more data
@@ -213,7 +217,7 @@ class HomeKitSession {
         //Check for complete header
         $headerEnd = strpos($data, "\r\n\r\n");
         if($headerEnd === false) {
-            $this->SendDebug("Header is incomplete (" . $data . ")");
+            $this->SendDebug("Header is incomplete");
             return null;
         }
 
