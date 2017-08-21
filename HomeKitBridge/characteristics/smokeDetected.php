@@ -8,7 +8,7 @@ class HAPCharacteristicSmokeDetected extends HAPCharacteristic {
     public function __construct()
     {
         parent::__construct(
-            0x7A,
+            0x76,
             HAPCharacteristicFormat::UnsignedInt8,
             Array(
                 HAPCharacteristicPermission::PairedRead,
