@@ -699,6 +699,9 @@ class HomeKitSession {
 
     private function buildEncryptedResponse($body) {
 
+        //Print debug
+        $this->sendDebug("Encrypted data: " . $body);
+
         //A fatal error occoured. Forward null
         if($body == null)
             return null;
