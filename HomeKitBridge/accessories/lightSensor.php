@@ -44,7 +44,7 @@ class HAPAccessoryLightSensor extends HAPAccessory {
 
     }
 
-    public function getCharacteristicCurrentCurrentAmbientLightLevel() {
+    public function getCharacteristicCurrentAmbientLightLevel() {
 
         return GetValue($this->data["VariableID"]);
 

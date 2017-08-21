@@ -1,11 +1,11 @@
 <?
 
-class HAPServiceLighteSensor extends HAPService {
+class HAPServiceLightSensor extends HAPService {
 
     public function __construct() {
 
         parent::__construct(
-            0x8A,
+            0x84,
             Array(
                 //Required Characteristics
                 new HAPCharacteristicCurrentAmbientLightLevel()
