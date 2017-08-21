@@ -213,7 +213,7 @@ class HomeKitSession {
         //Check for complete header
         $headerEnd = strpos($data, "\r\n\r\n");
         if($headerEnd === false) {
-            $this->SendDebug("Header is incomplete");
+            $this->SendDebug("Header is incomplete (" . $data . ")");
             return null;
         }
 
