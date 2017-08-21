@@ -101,11 +101,11 @@ class HAPAccessoryConfigurationLeakSensor {
 
         $targetVariable = IPS_GetVariable($data["VariableID"]);
 
-      if($targetVariable['VariableType'] != 1 /* Integer */) {
-            return "Integer required";
-        }
+        if($targetVariable['VariableType'] != 1 /* Integer */) {
+              return "Integer required";
+          }
 
-        return "OK";
+          return "OK";
 
     }
 
