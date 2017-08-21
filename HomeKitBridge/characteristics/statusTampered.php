@@ -2,6 +2,9 @@
 
 class HAPCharacteristicStatusTampered extends HAPCharacteristic {
 
+  const AccessoryNotTampered = 0;
+  const AccessoryTampered = 1;
+
     public function __construct()
     {
         parent::__construct(

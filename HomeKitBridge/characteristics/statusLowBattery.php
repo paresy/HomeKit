@@ -2,6 +2,9 @@
 
 class HAPCharacteristicStatusLowBattery extends HAPCharacteristic {
 
+  const BatteryLevelNormal = 0;
+  const BatteryLevelLow = 1;
+
     public function __construct()
     {
         parent::__construct(
