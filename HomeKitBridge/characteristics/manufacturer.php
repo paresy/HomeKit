@@ -1,16 +1,15 @@
-<?
+<?php
 
-class HAPCharacteristicManufacturer extends HAPCharacteristic {
-
+class HAPCharacteristicManufacturer extends HAPCharacteristic
+{
     public function __construct()
     {
         parent::__construct(
             0x20,
             HAPCharacteristicFormat::String,
-            Array(
+            [
                 HAPCharacteristicPermission::PairedRead
-            )
+            ]
         );
     }
-
 }

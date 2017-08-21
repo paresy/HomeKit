@@ -1,25 +1,23 @@
-<?
+<?php
 
-class HAPServiceLeakSensor extends HAPService {
-
-    public function __construct() {
-
+class HAPServiceLeakSensor extends HAPService
+{
+    public function __construct()
+    {
         parent::__construct(
             0x83,
-            Array(
+            [
                 //Required Characteristics
                 new HAPCharacteristicLeakDetected()
-            ),
-            Array(
+            ],
+            [
                 //Optional Characteristics
                 new HAPCharacteristicName(),
                 new HAPCharacteristicStatusActive(),
                 new HAPCharacteristicStatusFault(),
                 new HAPCharacteristicStatusTampered(),
                 new HAPCharacteristicStatusLowBattery()
-            )
+            ]
         );
-
     }
-
 }
