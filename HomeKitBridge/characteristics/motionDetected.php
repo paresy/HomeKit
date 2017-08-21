@@ -10,7 +10,7 @@ class HAPCharacteristicMotionDetected extends HAPCharacteristic {
             Array(
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
-            ),
+            )
         );
     }
 
