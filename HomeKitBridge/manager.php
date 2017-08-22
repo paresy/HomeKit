@@ -243,7 +243,6 @@ class HomeKitManager
             $bridge = new $class();
 
             if ($bridge instanceof HAPAccessory) {
-
                 return $bridge->getCharacteristic($iid);
             }
         }
@@ -256,7 +255,6 @@ class HomeKitManager
                     $object = new $class($data);
 
                     if ($object instanceof HAPAccessory) {
-
                         return $object->getCharacteristic($iid);
                     }
                 }
