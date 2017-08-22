@@ -251,6 +251,10 @@ EOT
 
     private function getSession($clientIP, $clientPort)
     {
+        $data = $this->GetBuffer($clientIP . ':' . $clientPort);
+
+        $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Read Session: ' . $data, 0);
+
         return new HomeKitSession(
             function ($Message, $Data, $Type) {
                 $this->SendDebug($Message, $Data, $Type);
@@ -260,16 +264,21 @@ EOT
             $this->manager,
             IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgeID'),
             hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
-            $this->GetBuffer($clientIP . ':' . $clientPort)
+            $data
         );
     }
 
     private function setSession($clientIP, $clientPort, $session)
     {
+        $data = $session->__toString();
+
+        $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Write Session: ' . $data, 0);
+
         if (!($session instanceof HomeKitSession)) {
             throw new Exception('HomeKitSession expected as parameter type!');
         }
-        $this->SetBuffer($clientIP . ':' . $clientPort, $session->__toString());
+
+        $this->SetBuffer($clientIP . ':' . $clientPort, $data);
     }
 
     //TODO: Remove at some point...
