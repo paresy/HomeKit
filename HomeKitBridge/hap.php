@@ -47,6 +47,7 @@ class HAPAccessory
         if ($index >= count($this->services)) {
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
+
         return $this->services[$index]->getCharacteristic($instanceID % 100, $this);
     }
 }
@@ -85,6 +86,7 @@ class HAPService
         if ($index >= count($characteristics)) {
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
+
         return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
     }
 
