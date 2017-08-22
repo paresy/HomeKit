@@ -157,7 +157,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         $variableTargetDoorState = IPS_GetVariable($data['TargetDoorState']);
         $variableObstructionDetected = IPS_GetVariable($data['ObstructionDetected']);
 
-        $error = NULL;
+        $error = null;
 
         if ($variableCurrentDoorState['VariableType'] != 1 /* Integer */) {
             $error .= 'CurrentDorstate: Integer required / ';
@@ -184,6 +184,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         if (!is_null($error)) {
             return $error;
         }
+        
         return 'OK';
     }
 }
