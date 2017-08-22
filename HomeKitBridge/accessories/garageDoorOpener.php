@@ -184,7 +184,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         if (!is_null($error)) {
             return $error;
         }
-        
+
         return 'OK';
     }
 }
