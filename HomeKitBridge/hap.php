@@ -47,6 +47,7 @@ class HAPAccessory
         if ($index >= count($this->services)) {
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
+
         return $this->services[$index]->getCharacteristic($instanceID % 100, $this);
     }
 }
@@ -85,6 +86,7 @@ class HAPService
         if ($index >= count($characteristics)) {
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
+
         return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
     }
 
@@ -218,18 +220,20 @@ class HAPCharacteristic
     private $permissions;
     private $minValue;
     private $maxValue;
-    private $step;
+    private $minStep;
     private $unit;
+    private $maxLen;
 
-    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $step = null, $unit = null)
+    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
     {
         $this->type = $type;
         $this->format = $format;
         $this->permissions = $permissions;
         $this->minValue = $minValue;
         $this->maxValue = $maxValue;
-        $this->step = $step;
+        $this->minStep = $minStep;
         $this->unit = $unit;
+        $this->maxLen = $maxLen;
     }
 
     public function doExport($instanceID, $value)
@@ -253,12 +257,16 @@ class HAPCharacteristic
             $export['maxValue'] = $this->getMaxValue();
         }
 
-        if ($this->getStep() !== null) {
-            $export['step'] = $this->getStep();
+        if ($this->getMinStep() !== null) {
+            $export['minStep'] = $this->getMinStep();
         }
 
         if ($this->getUnit() !== null) {
             $export['unit'] = $this->getUnit();
+        }
+
+        if ($this->getMaxLen() !== null) {
+            $export['maxLen'] = $this->getMaxLen();
         }
 
         return $export;
@@ -294,13 +302,18 @@ class HAPCharacteristic
         return $this->maxValue;
     }
 
-    public function getStep()
+    public function getMinStep()
     {
-        return $this->step;
+        return $this->minStep;
     }
 
     public function getUnit()
     {
         return $this->unit;
+    }
+
+    public function getMaxLen()
+    {
+        return $this->maxLen;
     }
 }
