@@ -160,15 +160,15 @@ class HAPAccessoryConfigurationGarageDoorOpener
         $error = NULL;
 
         if ($variableCurrentDoorState['VariableType'] != 1 /* Integer */) {
-              $error .= 'CurrentDorstate: Integer required / ';
-          }
+            $error .= 'CurrentDorstate: Integer required / ';
+        }
 
         if ($variableTargetDoorState['VariableType'] != 1 /* Integer */) {
-              $error .= 'TargetDoorState: Integer required / ';
-          }
+            $error .= 'TargetDoorState: Integer required / ';
+        }
 
         if ($variableObstructionDetected['VariableType'] != 0 /* Boolean */) {
-              $error .= 'ObstructionDetected: Bool required / ';
+            $error .= 'ObstructionDetected: Bool required / ';
         }
 
         if ($variableTargetDoorState['VariableCustomAction'] != '') {
@@ -182,7 +182,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         }
 
         if (!is_null($error)) {
-          return $error;
+            return $error;
         }
         return 'OK';
     }
