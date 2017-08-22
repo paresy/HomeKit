@@ -220,8 +220,9 @@ class HAPCharacteristic
     private $maxValue;
     private $minStep;
     private $unit;
+    private $maxLen;
 
-    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null)
+    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
     {
         $this->type = $type;
         $this->format = $format;
@@ -230,6 +231,7 @@ class HAPCharacteristic
         $this->maxValue = $maxValue;
         $this->minStep = $minStep;
         $this->unit = $unit;
+        $this->maxLen = $maxLen;
     }
 
     public function doExport($instanceID, $value)
@@ -259,6 +261,10 @@ class HAPCharacteristic
 
         if ($this->getUnit() !== null) {
             $export['unit'] = $this->getUnit();
+        }
+
+        if ($this->getMaxLen() !== null) {
+            $export['maxLen'] = $this->getMaxLen();
         }
 
         return $export;
@@ -302,5 +308,10 @@ class HAPCharacteristic
     public function getUnit()
     {
         return $this->unit;
+    }
+
+    public function getMaxLen()
+    {
+        return $this->maxLen;
     }
 }
