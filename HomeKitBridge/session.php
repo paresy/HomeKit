@@ -12,6 +12,9 @@ class HomeKitSession
     private $bridgeID = '';
     private $accessoryKP = '';
 
+    //Flag for new sessions
+    private $new = false;
+
     //Data handling
     private $data = '';
 
@@ -51,6 +54,7 @@ class HomeKitSession
 
         //Fresh session use the predefined values
         if ($sessionData == '') {
+            $this->new = true;
             return;
         }
 
@@ -102,6 +106,17 @@ class HomeKitSession
 
     public function processData($data)
     {
+
+        //Make check for disappeared sessions
+        if ($this->new) {
+
+            //If we receive (first) encrypted data on a new session, then there is something wrong.
+            if($this->data == "" && substr($data, 0, 4) !== "POST") {
+                $this->sendDebug('Session data lost. We cannot resume this connection!');
+
+                return;
+            }
+        }
 
         //If the session is in an encrypted state we need to decrypt first
         if ($this->encrypted) {
