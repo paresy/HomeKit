@@ -7,7 +7,7 @@ class HAPCharacteristicAirQuality extends HAPCharacteristic
   const Good = 2;
   const Fair = 3;
   const Inferior = 4;
-  const Poor = 5
+  const Poor = 5;
 
     public function __construct()
     {
