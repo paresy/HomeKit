@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 class HomeKitPairings
 {
@@ -59,7 +61,7 @@ class HomeKitPairings
         $this->SendDebug('Loading pairing public key for identifier: ' . $identifier);
 
         if (!isset($pairings[$identifier])) {
-            return "";
+            return '';
         }
 
         return hex2bin($pairings[$identifier]['publicKey']);
@@ -72,7 +74,7 @@ class HomeKitPairings
         $this->SendDebug('Loading pairing permissions for identifier: ' . $identifier);
 
         if (!isset($pairings[$identifier])) {
-            return "";
+            return '';
         }
 
         return hex2bin($pairings[$identifier]['permissions']);

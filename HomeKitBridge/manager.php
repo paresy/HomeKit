@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 class HomeKitManager
 {
@@ -141,7 +143,7 @@ class HomeKitManager
         $form = [];
 
         $sortedAccessories = self::$supportedAccessories;
-        uasort($sortedAccessories, function($a, $b) {
+        uasort($sortedAccessories, function ($a, $b) {
             $posA = call_user_func(self::configurationClassPrefix . $a . '::getPosition');
             $posB = call_user_func(self::configurationClassPrefix . $b . '::getPosition');
 

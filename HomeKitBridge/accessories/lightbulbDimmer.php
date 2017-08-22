@@ -34,7 +34,7 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
     {
         $profile = $this->getProfile();
 
-        $valueToPercent = function($value) use ($profile) {
+        $valueToPercent = function ($value) use ($profile) {
             return (($value - $profile['MinValue']) / ($profile['MaxValue'] - $profile['MinValue'])) * 100;
         };
 
@@ -45,7 +45,7 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
     {
         $profile = $this->getProfile();
 
-        $percentToValue = function($value) use ($profile) {
+        $percentToValue = function ($value) use ($profile) {
             return ($value / 100) * ($profile['MaxValue'] - $profile['MinValue']) + $profile['MinValue'];
         };
 

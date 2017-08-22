@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 class SRP6aServer
 {
@@ -51,7 +53,7 @@ class SRP6aServer
         $this->p_bin = $p;
         $this->b_bin = $b;
 
-        $this->H = function($v) {
+        $this->H = function ($v) {
             return hash('sha512', $v, true);
         };
 
