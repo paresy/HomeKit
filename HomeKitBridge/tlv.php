@@ -274,6 +274,7 @@ class TLVParser
                 return $tlv;
             }
         }
+
         return null;
     }
 }

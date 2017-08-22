@@ -23,25 +23,25 @@ class HomeKitBridge extends IPSModule
         //Prepare a few basics
         $this->pairings = new HomeKitPairings(
             $this->InstanceID,
-            function ($Message, $Data, $Type) {
+            function($Message, $Data, $Type) {
                 $this->SendDebug($Message, $Data, $Type);
             }
         );
         $this->codes = new HomeKitCodes(
             $this->InstanceID,
-            function ($Message, $Data, $Type) {
+            function($Message, $Data, $Type) {
                 $this->SendDebug($Message, $Data, $Type);
             },
-            function ($Name) {
+            function($Name) {
                 return $this->GetBuffer($Name);
             },
-            function ($Name, $Value) {
+            function($Name, $Value) {
                 $this->SetBuffer($Name, $Value);
             }
         );
         $this->manager = new HomeKitManager(
             $this->InstanceID,
-            function ($Name, $Value) {
+            function($Name, $Value) {
                 $this->RegisterPropertyString($Name, $Value);
             }
         );
@@ -257,7 +257,7 @@ EOT
         $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Read Session: ' . $data, 0);
 
         return new HomeKitSession(
-            function ($Message, $Data, $Type) {
+            function($Message, $Data, $Type) {
                 $this->SendDebug($Message, $Data, $Type);
             },
             $this->pairings,

@@ -51,7 +51,7 @@ class SRP6aServer
         $this->p_bin = $p;
         $this->b_bin = $b;
 
-        $this->H = function ($v) {
+        $this->H = function($v) {
             return hash('sha512', $v, true);
         };
 

@@ -141,7 +141,7 @@ class HomeKitManager
         $form = [];
 
         $sortedAccessories = self::$supportedAccessories;
-        uasort($sortedAccessories, function ($a, $b) {
+        uasort($sortedAccessories, function($a, $b) {
             $posA = call_user_func(self::configurationClassPrefix . $a . '::getPosition');
             $posB = call_user_func(self::configurationClassPrefix . $b . '::getPosition');
 
@@ -196,8 +196,8 @@ class HomeKitManager
                     'column'    => 'name',
                     'direction' => 'ascending'
                 ],
-                'columns' => $columns,
-                'values'  => $values
+                'columns'  => $columns,
+                'values'   => $values
             ];
         }
 
@@ -209,7 +209,7 @@ class HomeKitManager
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
             $bridge = new $class();
-            if($bridge instanceof HAPAccessory) {
+            if ($bridge instanceof HAPAccessory) {
                 $bridge->setCharacteristic($iid, $value);
             }
 
@@ -222,7 +222,7 @@ class HomeKitManager
                 if ($aid == $data['ID']) {
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
-                    if($object instanceof HAPAccessory) {
+                    if ($object instanceof HAPAccessory) {
                         $object->setCharacteristic($iid, $value);
                     }
 
@@ -240,7 +240,7 @@ class HomeKitManager
             $class = self::classPrefix . 'Bridge';
             $bridge = new $class();
 
-            if($bridge instanceof HAPAccessory) {
+            if ($bridge instanceof HAPAccessory) {
 
                 return $bridge->getCharacteristic($iid);
             }
@@ -253,7 +253,7 @@ class HomeKitManager
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
 
-                    if($object instanceof HAPAccessory) {
+                    if ($object instanceof HAPAccessory) {
 
                         return $object->getCharacteristic($iid);
                     }
