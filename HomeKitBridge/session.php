@@ -55,7 +55,7 @@ class HomeKitSession
         //Fresh session use the predefined values
         if ($sessionData == '') {
             $this->new = true;
-            
+
             return;
         }
 
