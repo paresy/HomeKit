@@ -218,17 +218,17 @@ class HAPCharacteristic
     private $permissions;
     private $minValue;
     private $maxValue;
-    private $step;
+    private $minStep;
     private $unit;
 
-    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $step = null, $unit = null)
+    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null)
     {
         $this->type = $type;
         $this->format = $format;
         $this->permissions = $permissions;
         $this->minValue = $minValue;
         $this->maxValue = $maxValue;
-        $this->step = $step;
+        $this->minStep = $minStep;
         $this->unit = $unit;
     }
 
@@ -253,8 +253,8 @@ class HAPCharacteristic
             $export['maxValue'] = $this->getMaxValue();
         }
 
-        if ($this->getStep() !== null) {
-            $export['step'] = $this->getStep();
+        if ($this->getMinStep() !== null) {
+            $export['minStep'] = $this->getMinStep();
         }
 
         if ($this->getUnit() !== null) {
@@ -294,9 +294,9 @@ class HAPCharacteristic
         return $this->maxValue;
     }
 
-    public function getStep()
+    public function getMinStep()
     {
-        return $this->step;
+        return $this->minStep;
     }
 
     public function getUnit()
