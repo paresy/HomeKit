@@ -1,14 +1,14 @@
 <?php
 
-class HAPCharacteristicCarbonDioxideDetected extends HAPCharacteristic
+class HAPCharacteristicFilterChangeIndication extends HAPCharacteristic
 {
-  const Normal = 0;
-  const Abnormal = 1;
+    const FilterDoesNotBeChanged = 0;
+    const FilterNeedsToBeChanged = 1;
 
     public function __construct()
     {
         parent::__construct(
-            0x92,
+            0xAC,
             HAPCharacteristicFormat::UnsignedInt8,
             [
                 HAPCharacteristicPermission::PairedRead,
@@ -16,7 +16,7 @@ class HAPCharacteristicCarbonDioxideDetected extends HAPCharacteristic
             ],
             0,
             1,
-            1,
+            1
         );
     }
 }

@@ -1,22 +1,22 @@
 <?php
 
-class HAPCharacteristicCarbonDioxideDetected extends HAPCharacteristic
+class HAPCharacteristicLockPhysicalControls extends HAPCharacteristic
 {
-  const Normal = 0;
-  const Abnormal = 1;
+    const ControlLockDisabled = 0;
 
     public function __construct()
     {
         parent::__construct(
-            0x92,
+            0xA7,
             HAPCharacteristicFormat::UnsignedInt8,
             [
+                HAPCharacteristicPermission::PairedWrite,
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
             ],
             0,
             1,
-            1,
+            1
         );
     }
 }

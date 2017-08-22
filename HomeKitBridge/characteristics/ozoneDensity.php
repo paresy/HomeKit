@@ -1,22 +1,19 @@
 <?php
 
-class HAPCharacteristicCarbonDioxideDetected extends HAPCharacteristic
+class HAPCharacteristicOzoneDensity extends HAPCharacteristic
 {
-  const Normal = 0;
-  const Abnormal = 1;
 
     public function __construct()
     {
         parent::__construct(
-            0x92,
-            HAPCharacteristicFormat::UnsignedInt8,
+            0xC3,
+            HAPCharacteristicFormat::Float,
             [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
             ],
             0,
-            1,
-            1,
+            1000
         );
     }
 }
