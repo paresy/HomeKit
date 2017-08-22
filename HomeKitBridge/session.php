@@ -111,7 +111,7 @@ class HomeKitSession
         if ($this->new) {
 
             //If we receive (first) encrypted data on a new session, then there is something wrong.
-            if($this->data == '' && substr($data, 0, 4) !== 'POST') {
+            if ($this->data == '' && substr($data, 0, 4) !== 'POST') {
                 $this->sendDebug('Session data lost. We cannot resume this connection!');
 
                 return;
