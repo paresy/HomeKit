@@ -16,7 +16,7 @@ class HAPCharacteristicTargetTemperature extends HAPCharacteristic
             10.0,
             38.0,
             0.1,
-            HAPCharacteristicUnit::Celsius;
+            HAPCharacteristicUnit::Celsius
         );
     }
 }

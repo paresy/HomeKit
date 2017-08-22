@@ -13,7 +13,7 @@ class HAPCharacteristicCurrentVerticalTiltAngle extends HAPCharacteristic
             ],
             -90,
             90,
-            1
+            1,
             HAPCharacteristicUnit::ArcDegrees
         );
     }

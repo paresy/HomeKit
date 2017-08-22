@@ -15,7 +15,7 @@ class HAPCharacteristicImageMirroring extends HAPCharacteristic
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
             ],
-            HAPCharacteristicUnit::ArcDegrees;
+            HAPCharacteristicUnit::ArcDegrees
         );
     }
 }

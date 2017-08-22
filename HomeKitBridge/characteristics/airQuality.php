@@ -20,7 +20,7 @@ class HAPCharacteristicAirQuality extends HAPCharacteristic
             ],
             0,
             5,
-            1,
+            1
         );
     }
 }

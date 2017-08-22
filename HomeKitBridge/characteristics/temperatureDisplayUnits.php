@@ -16,7 +16,7 @@ class HAPCharacteristicTargetRelativeHumidity extends HAPCharacteristic
             0,
             100,
             1,
-            HAPCharacteristicUnit::Percentage;
+            HAPCharacteristicUnit::Percentage
         );
     }
 }

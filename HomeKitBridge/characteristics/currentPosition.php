@@ -13,7 +13,7 @@ class HAPCharacteristicCurrentPosition extends HAPCharacteristic
             ],
             0,
             100,
-            1
+            1,
             HAPCharacteristicUnit::Percentage
         );
     }
