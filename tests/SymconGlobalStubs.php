@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-class IPSKernel {
+class IPSKernel
+{
     public static $objects = [];
     public static $categories = [];
     public static $instances = [];
@@ -10,16 +11,17 @@ class IPSKernel {
     public static $libraries = [];
     public static $modules = [];
 
-    public static function loadLibrary(string $file): void {
+    public static function loadLibrary(string $file): void
+    {
         $library = json_decode(file_get_contents($file), true);
         self::$libraries[$library['id']] = [
             'LibraryID' => $library['id'],
-            'Author' => $library['author'],
-            'URL' => $library['url'],
-            'Name' => $library['name'],
-            'Version' => $library['version'],
-            'Build' => $library['build'],
-            'Date' => $library['date'],
+            'Author'    => $library['author'],
+            'URL'       => $library['url'],
+            'Name'      => $library['name'],
+            'Version'   => $library['version'],
+            'Build'     => $library['build'],
+            'Date'      => $library['date'],
         ];
     }
 }
@@ -993,4 +995,3 @@ function IPS_VariableProfileExists(string $ProfileName)
 {
     return true;
 }
-
