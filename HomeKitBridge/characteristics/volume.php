@@ -2,7 +2,6 @@
 
 class HAPCharacteristicVolume extends HAPCharacteristic
 {
-
     public function __construct()
     {
         parent::__construct(

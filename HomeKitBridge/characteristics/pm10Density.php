@@ -2,7 +2,6 @@
 
 class HAPCharacteristicPM10Density extends HAPCharacteristic
 {
-
     public function __construct()
     {
         parent::__construct(

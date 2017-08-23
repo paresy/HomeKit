@@ -2,8 +2,8 @@
 
 class HAPCharacteristicMute extends HAPCharacteristic
 {
-  const MuteOff = 0;
-  const MuteOn = 1;
+    const MuteOff = 0;
+    const MuteOn = 1;
 
     public function __construct()
     {
