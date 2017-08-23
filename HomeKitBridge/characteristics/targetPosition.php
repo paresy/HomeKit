@@ -6,7 +6,7 @@ class HAPCharacteristicTargetPosition extends HAPCharacteristic
     public function __construct()
     {
         parent::__construct(
-            0x33,
+            0x7C,
             HAPCharacteristicFormat::UnsignedInt8,
             [
                 HAPCharacteristicPermission::PairedRead,

@@ -6,7 +6,7 @@ class HAPCharacteristicBatteryLevel extends HAPCharacteristic
     public function __construct()
     {
         parent::__construct(
-            0x65,
+            0x68,
             HAPCharacteristicFormat::UnsignedInt8,
             [
                 HAPCharacteristicPermission::PairedRead,

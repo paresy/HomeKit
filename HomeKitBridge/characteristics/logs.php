@@ -7,7 +7,7 @@ class HAPCharacteristicLockLogs extends HAPCharacteristic
     {
         parent::__construct(
             0x1F,
-            HAPCharacteristicFormat::UnsignedTLV8,
+            HAPCharacteristicFormat::TLV8,
             [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify

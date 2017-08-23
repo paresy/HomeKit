@@ -1,6 +1,6 @@
 <?php
 
-class HAPCharacteristicPM25Density extends HAPCharacteristic
+class HAPCharacteristicPM2_5Density extends HAPCharacteristic
 {
 
     public function __construct()

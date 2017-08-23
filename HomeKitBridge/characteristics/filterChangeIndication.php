@@ -2,8 +2,8 @@
 
 class HAPCharacteristicFilterChangeIndication extends HAPCharacteristic
 {
-    const FilterDoesNotBeChanged = 0;
-    const FilterNeedsToBeChanged = 1;
+    const FilterOK = 0;
+    const FilterChangeRequired = 1;
 
     public function __construct()
     {

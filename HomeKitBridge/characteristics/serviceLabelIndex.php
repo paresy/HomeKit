@@ -12,6 +12,7 @@ class HAPCharacteristicServiceLabelIndex extends HAPCharacteristic
                 HAPCharacteristicPermission::PairedRead
             ],
             1, /*Minimum Value */
+            null,
             1 /* Step Value */
         );
     }

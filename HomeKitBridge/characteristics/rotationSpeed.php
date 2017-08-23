@@ -2,8 +2,6 @@
 
 class HAPCharacteristicRotationSpeed extends HAPCharacteristic
 {
-    const Clockwise = 0;
-    const CounterClockwise = 1;
 
     public function __construct()
     {

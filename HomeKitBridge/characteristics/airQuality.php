@@ -2,7 +2,7 @@
 
 class HAPCharacteristicAirQuality extends HAPCharacteristic
 {
-  const Unkown = 0;
+  const Unknown = 0;
   const Excellent = 1;
   const Good = 2;
   const Fair = 3;

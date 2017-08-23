@@ -11,7 +11,11 @@ class HAPCharacteristicVersion extends HAPCharacteristic
             [
                 HAPCharacteristicPermission::PairedRead
             ],
-            64 /* Maximum Length - Richtig, so? */
+            null,
+            null,
+            null,
+            null,
+            64
         );
     }
 }

@@ -9,7 +9,7 @@ class HAPCharacteristicCurrentSlatState extends HAPCharacteristic
     public function __construct()
     {
         parent::__construct(
-            0xA9,
+            0xAA,
             HAPCharacteristicFormat::UnsignedInt8,
             [
                 HAPCharacteristicPermission::PairedRead,

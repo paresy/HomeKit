@@ -1,22 +1,21 @@
 <?php
 
-class HAPCharacteristicImageRotation extends HAPCharacteristic
+class HAPCharacteristicImageMirroring extends HAPCharacteristic
 {
-  const NoRotation = 0;
-  const Rotated90DegreesRight = 90;
-  const Rotated180DegreesRight = 180;
-  const Rotated270DegreesRight = 270;
+    const ImageNotMirrored = 0;
+    const ImageMirrored = 1;
 
     public function __construct()
     {
         parent::__construct(
-            0x11E,
-            HAPCharacteristicFormat::Float,
+            0x11F,
+            HAPCharacteristicFormat::Boolean,
             [
                 HAPCharacteristicPermission::PairedWrite,
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
-            ]
+            ],
+            HAPCharacteristicUnit::ArcDegrees
         );
     }
 }
