@@ -197,34 +197,34 @@
 
             /*
                         //FIXME: Fix errors in DNS parsing library
-            
+
                         $decoder = (new DecoderFactory)->create();
                         $query = $decoder->decode($packet);
-            
+
                         //Check if this is a query
                         if($query->getType() == MessageTypes::QUERY) {
-            
+
                             //Check if we have a question
                             $q = $query->getQuestionRecords();
                             if($q->count() == 1) {
-            
+
                                 $r = $q->current();
                                 $n = $r->getName();
-            
+
                                 $this->SendDebug("Received Query", $packet, 0);
-            
+
                                 //Check if question is an HAP message
                                 if($n->__toString() == "_hap._tcp.local") {
-            
+
                                     $this->SendDebug("Responding to HAP Query", $packet, 0);
-            
+
                                     //Build and send the response
                                     $this->AnnounceBridge();
-            
+
                                 }
-            
+
                             }
-            
+
                         }
             */
         }
