@@ -9,8 +9,8 @@ class HAPServiceAirPurifier extends HAPService
             [
                 //Required Characteristics
                 new HAPCharacteristicActive(),
-                new HAPCharacteristicCurrentAirPurifier(),
-                new HAPCharacteristicTargetAirPurifier()
+                new HAPCharacteristicCurrentAirPurifierState(),
+                new HAPCharacteristicTargetAirPurifierState()
             ],
             [
                 //Optional Characteristics
