@@ -20,7 +20,7 @@ class HomeKitHAPTest extends TestCase
         foreach (glob(__DIR__ . '/../HomeKitBridge/characteristics/*.php') as $filename) {
             if (basename($filename) != 'autoload.php') {
                 $className = 'HAPCharacteristic' . ucfirst(basename($filename, ".php"));
-                $this->assertTrue(class_exists($className));
+                $this->assertTrue(class_exists($className), $className . " is missing!");
                 new $className;
             }
         }
@@ -31,7 +31,7 @@ class HomeKitHAPTest extends TestCase
         foreach (glob(__DIR__ . '/../HomeKitBridge/services/*.php') as $filename) {
             if (basename($filename) != 'autoload.php') {
                 $className = 'HAPService' . ucfirst(basename($filename, ".php"));
-                $this->assertTrue(class_exists($className));
+                $this->assertTrue(class_exists($className), $className . " is missing!");
                 new $className;
             }
         }
@@ -42,7 +42,7 @@ class HomeKitHAPTest extends TestCase
         foreach (glob(__DIR__ . '/../HomeKitBridge/accessories/*.php') as $filename) {
             if (basename($filename) != 'autoload.php') {
                 $className = 'HAPAccessory' . ucfirst(basename($filename, ".php"));
-                $this->assertTrue(class_exists($className));
+                $this->assertTrue(class_exists($className), $className . " is missing!");
                 if($className == 'HAPAccessoryBridge') {
                     new $className;
                 } else {
