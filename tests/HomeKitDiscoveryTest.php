@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-include_once __DIR__ . 'SymconGlobalStubs.php';
-include_once __DIR__ . 'SymconModuleStubs.php';
-include_once __DIR__ . '../HomeKitDiscovery/module.php';
+include_once __DIR__ . '/SymconGlobalStubs.php';
+include_once __DIR__ . '/SymconModuleStubs.php';
+include_once __DIR__ . '/../HomeKitDiscovery/module.php';
 
 class HomeKitDiscoveryTest extends TestCase
 {
