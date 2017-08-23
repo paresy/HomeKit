@@ -18,7 +18,8 @@ class HomeKitDiscoveryTest extends TestCase
         parent::setUp();
     }
 
-    public function testCreate(): void {
+    public function testCreate(): void
+    {
         $instance = new HomeKitDiscovery(0);
         $instance->Create();
         $form = json_decode($instance->GetConfigurationForParent(), true);

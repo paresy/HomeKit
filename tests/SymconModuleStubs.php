@@ -12,8 +12,8 @@ class IPSModule
     private $propertiesString = [];
 
     private $buffer = [];
-    private $receiveDataFilter = "";
-    private $forwardDataFilter = "";
+    private $receiveDataFilter = '';
+    private $forwardDataFilter = '';
 
     public function __construct($InstanceID)
     {
@@ -70,15 +70,15 @@ class IPSModule
         //How and why do we want to test this?
     }
 
-    private function RegisterVariable($Ident, $Name, $Type, $Profile = "", $Position = 0) {
-
-        if($Profile != "") {
+    private function RegisterVariable($Ident, $Name, $Type, $Profile = '', $Position = 0)
+    {
+        if ($Profile != '') {
             //prefer system profiles
-            if(IPS_VariableProfileExists("~".$Profile)) {
-                $Profile = "~".$Profile;
+            if (IPS_VariableProfileExists('~' . $Profile)) {
+                $Profile = '~' . $Profile;
             }
-            if(!IPS_VariableProfileExists($Profile)) {
-                throw new Exception("Profile with name ".$Profile." does not exist");
+            if (!IPS_VariableProfileExists($Profile)) {
+                throw new Exception('Profile with name ' . $Profile . ' does not exist');
             }
         }
 
@@ -86,28 +86,27 @@ class IPSModule
         $vid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
 
         //properly update variableID
-        if($vid === false)
+        if ($vid === false) {
             $vid = 0;
+        }
 
         //we have a variable with the proper ident. check if it fits
-        if($vid > 0) {
+        if ($vid > 0) {
             //check if we really have a variable
-            if(!IPS_VariableExists($vid))
-                throw new Exception("Ident with name ".$Ident." is used for wrong object type"); //bail out
-
+            if (!IPS_VariableExists($vid)) {
+                throw new Exception('Ident with name ' . $Ident . ' is used for wrong object type');
+            } //bail out
             //check for type mismatch
-            if(IPS_GetVariable($vid)["VariableType"] != $Type) {
+            if (IPS_GetVariable($vid)['VariableType'] != $Type) {
                 //mismatch detected. delete this one. we will create a new below
                 IPS_DeleteVariable($vid);
                 //this will ensure, that a new one is created
                 $vid = 0;
             }
-
         }
 
         //we need to create one
-        if($vid == 0)
-        {
+        if ($vid == 0) {
             $vid = IPS_CreateVariable($Type);
 
             //configure it
@@ -116,7 +115,6 @@ class IPSModule
             IPS_SetName($vid, $Name);
             IPS_SetPosition($vid, $Position);
             //IPS_SetReadOnly($vid, true);
-
         }
 
         //update variable profile. profiles may be changed in module development.
@@ -124,7 +122,6 @@ class IPSModule
         IPS_SetVariableCustomProfile($vid, $Profile);
 
         return $vid;
-
     }
 
     protected function RegisterVariableBoolean($Ident, $Name, $Profile, $Position)
@@ -150,16 +147,18 @@ class IPSModule
     protected function UnregisterVariable($Ident)
     {
         $vid = @IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
-        if($vid === false)
+        if ($vid === false) {
             return;
-        if(!IPS_VariableExists($vid))
-            return; //bail out
+        }
+        if (!IPS_VariableExists($vid)) {
+            return;
+        } //bail out
         IPS_DeleteVariable($vid);
     }
 
     protected function MaintainVariable($Ident, $Name, $Type, $Profile, $Position, $Keep)
     {
-        if($Keep) {
+        if ($Keep) {
             $this->RegisterVariable($Ident, $Name, $Type, $Profile, $Position);
         } else {
             $this->UnregisterVariable($Ident);
@@ -176,7 +175,7 @@ class IPSModule
 
     protected function MaintainAction($Ident, $Keep)
     {
-        if($Keep) {
+        if ($Keep) {
             $this->EnableAction($Ident);
         } else {
             $this->DisableAction($Ident);
@@ -238,7 +237,7 @@ class IPSModule
 
     protected function GetBuffer($Name)
     {
-        if(isset($this->buffer[$Name])) {
+        if (isset($this->buffer[$Name])) {
             return $this->buffer[$Name];
         } else {
             return '';
@@ -247,7 +246,7 @@ class IPSModule
 
     protected function SendDebug($Message, $Data, $Format)
     {
-        if($Format == 1 /* Binary */) {
+        if ($Format == 1 /* Binary */) {
             $Data = bin2hex($Data);
         }
 

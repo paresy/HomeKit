@@ -4,20 +4,25 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-class TestCaseSymconValidation extends TestCase {
-    private function isValidGUID($guid): bool {
+class TestCaseSymconValidation extends TestCase
+{
+    private function isValidGUID($guid): bool
+    {
         return preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/', $guid) == 1;
     }
 
-    private function isValidName($name): bool {
+    private function isValidName($name): bool
+    {
         return preg_match('/^[A-Za-z0-9 _]*$/', $name) == 1;
     }
 
-    private function isValidPrefix($name): bool {
+    private function isValidPrefix($name): bool
+    {
         return preg_match('/^[A-Z0-9]*$/', $name) == 1;
     }
 
-    private function ignoreFolders(): array {
+    private function ignoreFolders(): array
+    {
         return ['..', '.', 'libs', 'docs', 'imgs', 'tests'];
     }
 
@@ -87,21 +92,21 @@ class TestCaseSymconValidation extends TestCase {
 
         $this->assertArrayHasKey('parentRequirements', $module);
         $this->assertInternalType('array', $module['parentRequirements']);
-        foreach($module['parentRequirements'] as $parentRequirement) {
+        foreach ($module['parentRequirements'] as $parentRequirement) {
             $this->assertInternalType('string', $parentRequirement);
             $this->assertTrue($this->isValidGUID($parentRequirement));
         }
 
         $this->assertArrayHasKey('childRequirements', $module);
         $this->assertInternalType('array', $module['childRequirements']);
-        foreach($module['childRequirements'] as $childRequirement) {
+        foreach ($module['childRequirements'] as $childRequirement) {
             $this->assertInternalType('string', $childRequirement);
             $this->assertTrue($this->isValidGUID($childRequirement));
         }
 
         $this->assertArrayHasKey('implemented', $module);
         $this->assertInternalType('array', $module['implemented']);
-        foreach($module['implemented'] as $implemented) {
+        foreach ($module['implemented'] as $implemented) {
             $this->assertInternalType('string', $implemented);
             $this->assertTrue($this->isValidGUID($implemented));
         }
@@ -110,12 +115,12 @@ class TestCaseSymconValidation extends TestCase {
         $this->assertInternalType('string', $module['prefix']);
         $this->assertTrue($this->isValidPrefix($module['prefix']));
 
-        if (file_exists($folder . "/form.json")) {
-            $this->assertTrue(json_decode(file_get_contents($folder . "/form.json")) !== null);
+        if (file_exists($folder . '/form.json')) {
+            $this->assertTrue(json_decode(file_get_contents($folder . '/form.json')) !== null);
         }
 
-        if (file_exists($folder . "/locale.json")) {
-            $this->assertTrue(json_decode(file_get_contents($folder . "/locale.json")) !== null);
+        if (file_exists($folder . '/locale.json')) {
+            $this->assertTrue(json_decode(file_get_contents($folder . '/locale.json')) !== null);
         }
     }
 }
