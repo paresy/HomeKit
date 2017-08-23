@@ -1,0 +1,8 @@
+language: php
+php:
+  - nightly
+
+script:
+  - phpunit tests/SRP6aServerTest.php.php
+  - phpunit tests/HomeKitTest.php
+  - phpunit tests/HomeKitDiscoveryTest.php

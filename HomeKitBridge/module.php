@@ -1,14 +1,14 @@
 <?php
 
 include_once __DIR__ . '/../libs/vendor/autoload.php';
-include_once 'pairings.php';
-include_once 'codes.php';
-include_once 'manager.php';
-include_once 'session.php';
-include_once 'hap.php';
-include_once 'characteristics/autoload.php';
-include_once 'services/autoload.php';
-include_once 'accessories/autoload.php';
+include_once __DIR__ . '/pairings.php';
+include_once __DIR__ . '/codes.php';
+include_once __DIR__ . '/manager.php';
+include_once __DIR__ . '/session.php';
+include_once __DIR__ . '/hap.php';
+include_once __DIR__ . '/characteristics/autoload.php';
+include_once __DIR__ . '/services/autoload.php';
+include_once __DIR__ . '/accessories/autoload.php';
 
 class HomeKitBridge extends IPSModule
 {
