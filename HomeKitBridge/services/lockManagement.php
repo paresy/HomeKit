@@ -18,8 +18,8 @@ class HAPServiceLockManagement extends HAPService
                 new HAPCharacteristicLockManagementAutoSecurityTimeout(),
                 new HAPCharacteristicAdministratorOnlyAccess(),
                 new HAPCharacteristicLockLastKnownAction(),
-                new HAPCharacteristicCurrentDoorState,
-                new HAPCharacteristicMotionDetected
+                new HAPCharacteristicCurrentDoorState(),
+                new HAPCharacteristicMotionDetected()
             ]
         );
     }
