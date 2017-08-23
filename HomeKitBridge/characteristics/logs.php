@@ -1,6 +1,6 @@
 <?php
 
-class HAPCharacteristicLockLogs extends HAPCharacteristic
+class HAPCharacteristicLogs extends HAPCharacteristic
 {
     public function __construct()
     {

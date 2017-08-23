@@ -1,6 +1,6 @@
 <?php
 
-class HAPServiceLockMechanisim extends HAPService
+class HAPServiceLockMechanism extends HAPService
 {
     public function __construct()
     {
@@ -9,7 +9,7 @@ class HAPServiceLockMechanisim extends HAPService
             [
                 //Required Characteristics
                 new HAPCharacteristicLockCurrentState(),
-                new HAPCharacteristicTargetState()
+                new HAPCharacteristicLockTargetState()
             ],
             [
                 //Optional Characteristics

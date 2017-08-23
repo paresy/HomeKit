@@ -1,6 +1,6 @@
 <?php
 
-class HAPCharacteristicPostionState extends HAPCharacteristic
+class HAPCharacteristicPositionState extends HAPCharacteristic
 {
     const GoingToMinimum = 0;
     const GoingToMaximum = 1;

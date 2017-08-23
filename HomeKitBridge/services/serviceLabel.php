@@ -1,6 +1,6 @@
 <?php
 
-class HAPServiceLightServiceLabel extends HAPService
+class HAPServiceServiceLabel extends HAPService
 {
     public function __construct()
     {
@@ -9,6 +9,9 @@ class HAPServiceLightServiceLabel extends HAPService
             [
                 //Required Characteristics
                 new HAPCharacteristicServiceLabelNamespace()
+            ],
+            [
+                //Optional Characteristics
             ]
         );
     }

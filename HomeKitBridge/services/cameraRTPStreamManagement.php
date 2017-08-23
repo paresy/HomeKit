@@ -14,6 +14,9 @@ class HAPServiceCameraRTPStreamManagement extends HAPService
                 new HAPCharacteristicSupportedRTPConfiguration(),
                 new HAPCharacteristicSetupEndpoints(),
                 new HAPCharacteristicSelectedRTPStreamConfiguration()
+            ],
+            [
+                //Optional Characteristics
             ]
         );
     }
