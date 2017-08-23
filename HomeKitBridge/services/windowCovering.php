@@ -19,7 +19,7 @@ class HAPServiceWindowCovering extends HAPService
                 new HAPCharacteristicCurrentHorizontalTiltAngle(),
                 new HAPCharacteristicTargetHorizontalTiltAngle(),
                 new HAPCharacteristicCurrentVerticalTiltAngle(),
-                new HAPCharacteristicTargetVerticalTiltAngle()
+                new HAPCharacteristicTargetVerticalTiltAngle(),
                 new HAPCharacteristicObstructionDetected()
             ]
         );
