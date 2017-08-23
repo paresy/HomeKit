@@ -13,7 +13,7 @@ class HomeKitDiscoveryTest extends TestCase
     public function setUp()
     {
         //Register our library we need for testing
-        IPSKernel::loadLibrary('../library.json');
+        IPSKernel::loadLibrary(__DIR__ . '/../library.json');
 
         parent::setUp();
     }
