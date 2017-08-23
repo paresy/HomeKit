@@ -1,6 +1,6 @@
 <?php
 
-include_once 'lightbulbSwitch.php';
+include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 {

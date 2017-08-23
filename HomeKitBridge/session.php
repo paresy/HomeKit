@@ -1,7 +1,7 @@
 <?php
 
-include_once 'tlv.php';
-include_once 'srp.php';
+include_once __DIR__ . '/tlv.php';
+include_once __DIR__ . '/srp.php';
 
 class HomeKitSession
 {
