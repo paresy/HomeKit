@@ -1,12 +1,12 @@
 <?php
 
-class HAPCharacteristicLogs extends HAPCharacteristic
+class HAPCharacteristicObstructionDetected extends HAPCharacteristic
 {
     public function __construct()
     {
         parent::__construct(
-            0x1F,
-            HAPCharacteristicFormat::TLV8,
+            0x24,
+            HAPCharacteristicFormat::Boolean,
             [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
