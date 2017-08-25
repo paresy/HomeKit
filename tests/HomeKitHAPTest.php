@@ -1,14 +1,7 @@
 <?php
 
-class HomeKitManager
-{
-    public static function registerAccessory(string $Name)
-    {
-        //Dummy
-    }
-}
-
 include_once __DIR__ . '/../HomeKitBridge/hap.php';
+include_once __DIR__ . '/../HomeKitBridge/manager.php';
 include_once __DIR__ . '/../HomeKitBridge/characteristics/autoload.php';
 include_once __DIR__ . '/../HomeKitBridge/services/autoload.php';
 include_once __DIR__ . '/../HomeKitBridge/accessories/autoload.php';
