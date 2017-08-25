@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicImageRotation extends HAPCharacteristic
 {
     const NoRotation = 0;

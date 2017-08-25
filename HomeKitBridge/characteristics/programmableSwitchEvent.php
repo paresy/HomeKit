@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicProgrammableSwitchEvent extends HAPCharacteristic
 {
     const SinglePress = 0;

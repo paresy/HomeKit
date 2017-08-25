@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicNightVision extends HAPCharacteristic
 {
     const DisableMode = 0;

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicServiceLabelNamespace extends HAPCharacteristic
 {
     const Dots = 0;

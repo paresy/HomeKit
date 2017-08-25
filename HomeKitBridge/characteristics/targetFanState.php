@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicTargetFanState extends HAPCharacteristic
 {
     const Manual = 0;

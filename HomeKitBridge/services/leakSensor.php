@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPServiceLeakSensor extends HAPService
 {
     public function __construct()

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
-
 include_once __DIR__ . '/../HomeKitBridge/srp.php';
+
+use PHPUnit\Framework\TestCase;
 
 class SRP6aServerTest extends TestCase
 {

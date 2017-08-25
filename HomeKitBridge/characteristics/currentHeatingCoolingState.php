@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicCurrentHeatingCoolingState extends HAPCharacteristic
 {
     const Off = 0;

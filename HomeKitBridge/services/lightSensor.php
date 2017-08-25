@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPServiceLightSensor extends HAPService
 {
     public function __construct()

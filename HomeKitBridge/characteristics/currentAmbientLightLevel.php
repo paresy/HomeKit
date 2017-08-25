@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicCurrentAmbientLightLevel extends HAPCharacteristic
 {
     public function __construct()

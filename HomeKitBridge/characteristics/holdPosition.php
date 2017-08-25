@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicHoldPosition extends HAPCharacteristic
 {
     public function __construct()

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPServiceLockMechanism extends HAPService
 {
     public function __construct()

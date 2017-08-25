@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPCharacteristicStatusTampered extends HAPCharacteristic
 {
     const AccessoryNotTampered = 0;

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPAccessoryBridge extends HAPAccessory
 {
     public function __construct()

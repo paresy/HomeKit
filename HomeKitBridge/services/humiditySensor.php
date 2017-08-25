@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPServiceHumiditySensor extends HAPService
 {
     public function __construct()

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class HAPAccessoryLightSensor extends HAPAccessory
 {
     public function __construct($data)
