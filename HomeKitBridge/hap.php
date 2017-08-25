@@ -108,7 +108,7 @@ class HAPService
 
         if (is_bool($value)) {
             IPS_LogMessage('validateCharacteristicValue', 'Boolean');
-  		      /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
+            /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
             return $value;
         }
 
@@ -117,19 +117,19 @@ class HAPService
                 if ($value < $characteristics[$index]->getMinValue() or $value > $characteristics[$index]->getMaxValue()) {
                     $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
                 }
-              }
+            }
             IPS_LogMessage('validateCharacteristicValue', 'Float');
             return $value;
         }
 
         if (is_string($value)) {
             IPS_LogMessage('validateCharacteristicValue', 'String');
-  		      /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
+            /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
             return $value;
         }
         /*ToDo check value on type Data and TLV8 */
         IPS_LogMessage('Apple HomeKit', 'Value ist not valid!' . ' ' . $value . ' ' . get_class($characteristics[$index]));
-      }
+    }
 
     public function setCharacteristic($instanceID, $value, $accessory)
     {
@@ -153,12 +153,7 @@ class HAPService
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
 
-        //IPS_LogMessage("Format",$this->requiredCharacteristics[0]->getformat());
-        //IPS_LogMessage("Format",$characteristics[$index]->getformat());
-      	//IPS_LogMessage("Accessory",print_r($characteristics[$index], true));
-      	//IPS_LogMessage("Value", $accessory->{$this->makeGetFunctionName($characteristics[$index])}());
         $value = $this->validateCharacteristicValue($instanceID,$accessory->{$this->makeGetFunctionName($characteristics[$index])}());
-        //return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
         return $value;
     }
 
