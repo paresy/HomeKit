@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicStatusLowBattery extends HAPCharacteristic
 {
     const BatteryLevelNormal = 0;

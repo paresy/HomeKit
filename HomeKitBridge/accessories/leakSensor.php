@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPAccessoryLeakSensor extends HAPAccessory
 {
     public function __construct($data)

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 include_once __DIR__ . '/../libs/vendor/autoload.php';
 
 use LibDNS\Decoder\DecoderFactory;

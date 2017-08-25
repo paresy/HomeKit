@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicRotationDirection extends HAPCharacteristic
 {
     const Clockwise = 0;

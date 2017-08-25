@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicLockCurrentState extends HAPCharacteristic
 {
     const Unsecured = 0;

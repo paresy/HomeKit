@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPServiceFanV2 extends HAPService
 {
     public function __construct()

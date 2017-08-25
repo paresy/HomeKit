@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicSlatType extends HAPCharacteristic
 {
     const Horizontal = 0;

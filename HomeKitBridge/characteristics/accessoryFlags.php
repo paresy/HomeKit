@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicAccessoryFlags extends HAPCharacteristic
 {
     const RequiresAdditionalSetup = 1;

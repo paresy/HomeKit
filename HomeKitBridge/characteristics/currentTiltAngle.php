@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicCurrentTiltAngle extends HAPCharacteristic
 {
     public function __construct()

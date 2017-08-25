@@ -179,7 +179,7 @@ class HomeKitSession
         //Check if we can parse the complete packet.
         //Otherwise bail out and wait for more data
         $http = $this->parseHTTP($this->data);
-        if (sizeof($http) == 0) {
+        if (count($http) == 0) {
             $this->SendDebug('Incomplete HTTP packet');
 
             return '';

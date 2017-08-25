@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicLockLastKnownAction extends HAPCharacteristic
 {
     const SecuredPhysicalMovementInterior = 0;
