@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicActive extends HAPCharacteristic
 {
     const Inactive = 0;

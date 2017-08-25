@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicTargetAirPurifierState extends HAPCharacteristic
 {
     const Manual = 0;

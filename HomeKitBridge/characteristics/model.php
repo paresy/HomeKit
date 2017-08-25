@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicModel extends HAPCharacteristic
 {
     public function __construct()

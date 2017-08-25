@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicStatusJammed extends HAPCharacteristic
 {
     const NotJammed = 0;

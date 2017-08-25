@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicAirParticulateSize extends HAPCharacteristic
 {
     const Microsmeters2_5 = 0;

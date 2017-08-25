@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicTargetVerticalTiltAngle extends HAPCharacteristic
 {
     public function __construct()

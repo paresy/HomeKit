@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicCurrentSlatState extends HAPCharacteristic
 {
     const Fixed = 0;

@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPServiceContactSensor extends HAPService
 {
     public function __construct()

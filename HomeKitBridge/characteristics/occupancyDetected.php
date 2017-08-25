@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 class HAPCharacteristicOccupancyDetected extends HAPCharacteristic
 {
     const OccupancyNotDetected = 0;
