@@ -72,7 +72,7 @@ class HAPService
         $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
 
         if ($index >= count($characteristics)) {
-            throw new Exception("InstanceID is out of bounds for accessory!");
+            throw new Exception('InstanceID is out of bounds for accessory!');
         }
 
         if (is_int($value)) {
@@ -103,19 +103,19 @@ class HAPService
                     break;
                 }
                 }
-          }
+            }
         }
 
         if (is_bool($value)) {
             IPS_LogMessage('validateCharacteristicValue', 'Boolean');
-  		  /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
+  		      /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
             return $value;
         }
 
         if (is_float($value)) {
             if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
                 if ($value < $characteristics[$index]->getMinValue() or $value > $characteristics[$index]->getMaxValue()) {
-                  $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
+                    $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
                 }
               }
             IPS_LogMessage('validateCharacteristicValue', 'Float');
@@ -124,11 +124,11 @@ class HAPService
 
         if (is_string($value)) {
             IPS_LogMessage('validateCharacteristicValue', 'String');
-  		  /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
+  		      /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
             return $value;
         }
         /*ToDo check value on type Data and TLV8 */
-        IPS_LogMessage('Apple HomeKit', 'Value ist not valid!'.' '.$value.' '.get_class($characteristics[$index]));
+        IPS_LogMessage('Apple HomeKit', 'Value ist not valid!' . ' ' . $value . ' ' . get_class($characteristics[$index])
       }
 
     public function setCharacteristic($instanceID, $value, $accessory)
