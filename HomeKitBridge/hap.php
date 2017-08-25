@@ -128,7 +128,7 @@ class HAPService
             return $value;
         }
         /*ToDo check value on type Data and TLV8 */
-        IPS_LogMessage('Apple HomeKit', 'Value ist not valid!' . ' ' . $value . ' ' . get_class($characteristics[$index])
+        IPS_LogMessage('Apple HomeKit', 'Value ist not valid!' . ' ' . $value . ' ' . get_class($characteristics[$index]);
       }
 
     public function setCharacteristic($instanceID, $value, $accessory)
