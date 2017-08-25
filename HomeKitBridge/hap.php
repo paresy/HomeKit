@@ -153,7 +153,7 @@ class HAPService
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
 
-        $value = $this->validateCharacteristicValue($instanceID,$accessory->{$this->makeGetFunctionName($characteristics[$index])}());
+        $value = $this->validateCharacteristicValue($instanceID, $accessory->{$this->makeGetFunctionName($characteristics[$index])}());
         return $value;
     }
 
