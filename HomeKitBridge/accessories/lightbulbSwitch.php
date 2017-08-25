@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessoryLightbulbSwitch extends HAPAccessory
+class HAPAccessoryLightbulbSwitch extends HAPAccessoryBase
 {
     public function __construct($data)
     {
@@ -13,32 +13,6 @@ class HAPAccessoryLightbulbSwitch extends HAPAccessory
                 new HAPServiceLightbulb()
             ]
         );
-    }
-
-    public function setCharacteristicIdentify($value)
-    {
-
-        //TODO: We probably should send some event
-    }
-
-    public function getCharacteristicManufacturer()
-    {
-        return 'Symcon GmbH';
-    }
-
-    public function getCharacteristicModel()
-    {
-        return str_replace('HAPAccessory', '', get_class($this));
-    }
-
-    public function getCharacteristicName()
-    {
-        return $this->data['Name'];
-    }
-
-    public function getCharacteristicSerialNumber()
-    {
-        return 'Undefined';
     }
 
     public function getCharacteristicOn()
