@@ -72,21 +72,21 @@ class HAPService
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
         $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
 
-        if($index >= sizeof($characteristics)) {
+        if ($index >= sizeof($characteristics)) {
             throw new Exception("InstanceID is out of bounds for accessory!");
         }
 
         if (is_int($value)) {
             if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
                 if ($value < $characteristics[$index]->getMinValue() OR $value > $characteristics[$index]->getMaxValue()) {
-                  $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
+                    $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
                 } else {
-                switch ($characteristics[$index]->getformat()) {
+                    switch ($characteristics[$index]->getformat()) {
                   case HAPCharacteristicFormat::UnsignedInt8:
                     IPS_LogMessage("validateCharacteristicValue", "UnsignedInt8");
                     return $value;
                     break;
-                  case HAPCharacteristicFormat::UnsignedInt16:
+                    case HAPCharacteristicFormat::UnsignedInt16:
                     IPS_LogMessage("validateCharacteristicValue", "UnsignedInt16");
                     return $value;
                     break;
@@ -103,9 +103,9 @@ class HAPService
                     return $value;
                     break;
                 }
-              }
-            }
+                }
           }
+        }
 
         if (is_bool($value)) {
             IPS_LogMessage("validateCharacteristicValue", "Boolean");
