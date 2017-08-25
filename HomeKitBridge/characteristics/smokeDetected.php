@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicSmokeDetected extends HAPCharacteristic
 {
     const SmokeNotDetected = 0;

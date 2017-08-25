@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicTemperatureDisplayUnits extends HAPCharacteristic
 {
     const Celsius = 0;

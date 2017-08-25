@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPServiceBatteryService extends HAPService
 {
     public function __construct()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicChargingState extends HAPCharacteristic
 {
     const NotCharging = 0;

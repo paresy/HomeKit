@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPServiceSecuritySystem extends HAPService
 {
     public function __construct()

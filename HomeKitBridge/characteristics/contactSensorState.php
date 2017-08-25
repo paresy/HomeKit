@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicContactSensorState extends HAPCharacteristic
 {
     const ContactDetected = 0;

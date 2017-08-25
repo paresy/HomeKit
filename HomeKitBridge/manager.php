@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HomeKitManager
 {
     const classPrefix = 'HAPAccessory';
@@ -8,7 +10,7 @@ class HomeKitManager
 
     private static $supportedAccessories = [];
 
-    public static function registerAccessory($accessory)
+    public static function registerAccessory(string $accessory): void
     {
 
         //Check if the same service was already registered
@@ -22,28 +24,28 @@ class HomeKitManager
     private $registerProperty = null;
     private $instanceID = 0;
 
-    public function __construct($instanceID, $registerProperty)
+    public function __construct(int $instanceID, callable $registerProperty)
     {
         $this->registerProperty = $registerProperty;
         $this->instanceID = $instanceID;
     }
 
-    public function registerProperties()
+    public function registerProperties(): void
     {
 
         //This will be incremented after each change
-        call_user_func($this->registerProperty, 'ConfigurationNumber', 0);
+        ($this->registerProperty)('ConfigurationNumber', 0);
 
         //Save a hash over all accessory properties to only increment number on real changes
-        call_user_func($this->registerProperty, 'ConfigurationHash', 0);
+        ($this->registerProperty)('ConfigurationHash', 0);
 
         //Add all accessory specific properties
         foreach (self::$supportedAccessories as $accessory) {
-            call_user_func($this->registerProperty, self::propertyPrefix . $accessory, '[]');
+            ($this->registerProperty)(self::propertyPrefix . $accessory, '[]');
         }
     }
 
-    public function getAccessories()
+    public function getAccessories(): array
     {
         $aidList = [];
 
@@ -54,8 +56,13 @@ class HomeKitManager
                 if (in_array($data['ID'], $aidList)) {
                     throw new Exception('AccessoryID has to be unique for all accessories');
                 }
+
                 $class = self::classPrefix . $accessory;
-                $accessories[] = (new $class($data))->doExport($data['ID']);
+                $object = new $class($data);
+
+                if ($object instanceof HAPAccessory) {
+                    $accessories[] = $object->doExport($data['ID']);
+                }
 
                 //Add to id list
                 $aidList[] = $data['ID'];
@@ -65,7 +72,7 @@ class HomeKitManager
         return $accessories;
     }
 
-    public function updateAccessories()
+    public function updateAccessories(): void
     {
         $ids = [];
 
@@ -129,14 +136,14 @@ class HomeKitManager
         if ($wasChanged) {
 
             //Increment configuration number so the hap device will reload all accessories
-            IPS_SetProperty($this->instanceID, 'ConfigurationNumber', IPS_GetProperty($this->instanceID, 'ConfigurationNumber') + 1);
+            IPS_SetProperty($this->instanceID, 'ConfigurationNumber', intval(IPS_GetProperty($this->instanceID, 'ConfigurationNumber')) + 1);
 
             //Save. This will start a recursion. We need to be careful, that the recursion stops after this.
             IPS_ApplyChanges($this->instanceID);
         }
     }
 
-    public function getConfigurationForm()
+    public function getConfigurationForm(): array
     {
         $form = [];
 
@@ -196,20 +203,22 @@ class HomeKitManager
                     'column'    => 'name',
                     'direction' => 'ascending'
                 ],
-                'columns' => $columns,
-                'values'  => $values
+                'columns'  => $columns,
+                'values'   => $values
             ];
         }
 
         return $form;
     }
 
-    public function putCharacteristics($aid, $iid, $value)
+    public function putCharacteristics(int $aid, int $iid, $value): void
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
-            $object = new $class();
-            $object->setCharacteristic($iid, $value);
+            $bridge = new $class();
+            if ($bridge instanceof HAPAccessory) {
+                $bridge->setCharacteristic($iid, $value);
+            }
 
             return;
         }
@@ -220,7 +229,9 @@ class HomeKitManager
                 if ($aid == $data['ID']) {
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
-                    $object->setCharacteristic($iid, $value);
+                    if ($object instanceof HAPAccessory) {
+                        $object->setCharacteristic($iid, $value);
+                    }
 
                     return;
                 }
@@ -230,13 +241,15 @@ class HomeKitManager
         throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
     }
 
-    public function getCharacteristics($aid, $iid)
+    public function getCharacteristics(int $aid, int $iid)
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
             $bridge = new $class();
 
-            return $bridge->getCharacteristic($iid);
+            if ($bridge instanceof HAPAccessory) {
+                return $bridge->getCharacteristic($iid);
+            }
         }
 
         foreach (self::$supportedAccessories as $accessory) {
@@ -246,7 +259,9 @@ class HomeKitManager
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
 
-                    return $object->getCharacteristic($iid);
+                    if ($object instanceof HAPAccessory) {
+                        return $object->getCharacteristic($iid);
+                    }
                 }
             }
         }

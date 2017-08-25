@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicSaturation extends HAPCharacteristic
 {
     public function __construct()

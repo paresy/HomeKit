@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPServiceDoor extends HAPService
 {
     public function __construct()

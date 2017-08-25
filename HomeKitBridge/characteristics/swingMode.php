@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicSwingMode extends HAPCharacteristic
 {
     const SwingDisabled = 0;

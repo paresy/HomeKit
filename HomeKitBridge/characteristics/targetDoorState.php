@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicTargetDoorState extends HAPCharacteristic
 {
     const Open = 0;

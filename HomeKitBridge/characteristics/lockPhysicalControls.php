@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicLockPhysicalControls extends HAPCharacteristic
 {
     const ControlLockDisabled = 0;

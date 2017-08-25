@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicStatusFault extends HAPCharacteristic
 {
     const NoFault = 0;

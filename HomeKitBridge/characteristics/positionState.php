@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicPositionState extends HAPCharacteristic
 {
     const GoingToMinimum = 0;

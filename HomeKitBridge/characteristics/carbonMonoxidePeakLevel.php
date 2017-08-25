@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicCarbonMonoxidePeakLevel extends HAPCharacteristic
 {
     public function __construct()

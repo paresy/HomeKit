@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPAccessorySwitch extends HAPAccessory
 {
     public function __construct($data)

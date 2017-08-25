@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicMute extends HAPCharacteristic
 {
     const MuteOff = 0;

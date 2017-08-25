@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicLeakDetected extends HAPCharacteristic
 {
     const LeakNotDetected = 0;

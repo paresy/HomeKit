@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicFilterChangeIndication extends HAPCharacteristic
 {
     const FilterOK = 0;

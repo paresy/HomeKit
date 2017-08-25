@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicSecuritySystemTargetState extends HAPCharacteristic
 {
     const StayArm = 0;

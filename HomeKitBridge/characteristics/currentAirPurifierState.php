@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicCurrentAirPurifierState extends HAPCharacteristic
 {
     const Inactive = 0;

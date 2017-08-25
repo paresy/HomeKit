@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/../libs/vendor/autoload.php';
 include_once __DIR__ . '/pairings.php';
 include_once __DIR__ . '/codes.php';
@@ -235,7 +237,7 @@ EOT
         echo $this->codes->generateSetupCode();
     }
 
-    private function isDiscoveryInstanceValid()
+    private function isDiscoveryInstanceValid(): bool
     {
         $announceInstanceID = $this->ReadPropertyInteger('DiscoveryInstanceID');
         if ($announceInstanceID > 0) {
@@ -250,7 +252,7 @@ EOT
         return false;
     }
 
-    private function getSession($clientIP, $clientPort)
+    private function getSession(string $clientIP, int $clientPort)
     {
         $data = $this->GetBuffer($clientIP . ':' . $clientPort);
 
@@ -269,7 +271,7 @@ EOT
         );
     }
 
-    private function setSession($clientIP, $clientPort, $session)
+    private function setSession(string $clientIP, int $clientPort, HomeKitSession $session)
     {
         $data = $session->__toString();
 

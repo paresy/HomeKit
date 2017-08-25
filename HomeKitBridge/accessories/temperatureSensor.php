@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPAccessoryTemperatureSensor extends HAPAccessory
 {
     public function __construct($data)

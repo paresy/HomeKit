@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class TLVType
 {
     const Method = 0x00;
@@ -16,15 +18,15 @@ class TLVType
     const Permissions = 0x0B;
     const FragmentData = 0x0C;
     const FragmentLast = 0x0D;
-    const Seperator = 0xFF;
+    const Separator = 0xFF;
 }
 
 class TLV8
 {
     private $type;  //TLVType
-    private $value; //String
+    private $value; //string
 
-    public function __construct(&$data)
+    public function __construct(string &$data)
     {
         $this->type = ord($data[0]);
         $length = ord($data[1]);
@@ -41,12 +43,12 @@ class TLV8
         }
     }
 
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
-    protected function getValue()
+    protected function getValue(): string
     {
         return $this->value;
     }
@@ -64,7 +66,7 @@ class TLVMethod
 
 class TLV8_Method extends TLV8
 {
-    public function getMethod()
+    public function getMethod(): int
     {
         return unpack('C', $this->getValue())[1];
     }
@@ -72,7 +74,7 @@ class TLV8_Method extends TLV8
 
 class TLV8_Identifier extends TLV8
 {
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->getValue();
     }
@@ -80,7 +82,7 @@ class TLV8_Identifier extends TLV8
 
 class TLV8_Salt extends TLV8
 {
-    public function getSalt()
+    public function getSalt(): string
     {
         return $this->getValue();
     }
@@ -88,7 +90,7 @@ class TLV8_Salt extends TLV8
 
 class TLV8_PublicKey extends TLV8
 {
-    public function getPublicKey()
+    public function getPublicKey(): string
     {
         return $this->getValue();
     }
@@ -96,7 +98,7 @@ class TLV8_PublicKey extends TLV8
 
 class TLV8_Proof extends TLV8
 {
-    public function getProof()
+    public function getProof(): string
     {
         return $this->getValue();
     }
@@ -104,7 +106,7 @@ class TLV8_Proof extends TLV8
 
 class TLV8_EncryptedData extends TLV8
 {
-    public function getEncryptedData()
+    public function getEncryptedData(): string
     {
         return $this->getValue();
     }
@@ -122,7 +124,7 @@ class TLVState
 
 class TLV8_State extends TLV8
 {
-    public function getState()
+    public function getState(): int
     {
         return unpack('C', $this->getValue())[1];
     }
@@ -142,12 +144,12 @@ class TLVError
 
 class TLV8_Error extends TLV8
 {
-    public function getError()
+    public function getError(): int
     {
         return unpack('C', $this->getValue())[1];
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->getError()) {
             case TLVError::NA:
@@ -170,7 +172,7 @@ class TLV8_Error extends TLV8
 
 class TLV8_RetryDelay extends TLV8
 {
-    public function getRetryDelay()
+    public function getRetryDelay(): int
     {
         return unpack('N', $this->getValue())[1];
     }
@@ -178,7 +180,7 @@ class TLV8_RetryDelay extends TLV8
 
 class TLV8_Certificate extends TLV8
 {
-    public function getCertificate()
+    public function getCertificate(): string
     {
         return $this->getValue();
     }
@@ -186,7 +188,7 @@ class TLV8_Certificate extends TLV8
 
 class TLV8_Signature extends TLV8
 {
-    public function getSignature()
+    public function getSignature(): string
     {
         return $this->getValue();
     }
@@ -200,12 +202,12 @@ class TLVPermissions
 
 class TLV8_Permissions extends TLV8
 {
-    public function getPermissions()
+    public function getPermissions(): int
     {
         return unpack('C', $this->getValue())[1];
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->getPermissions()) {
             case TLVPermissions::RegularUser:
@@ -218,7 +220,7 @@ class TLV8_Permissions extends TLV8
     }
 }
 
-class TLV8_Seperator extends TLV8
+class TLV8_Separator extends TLV8
 {
 }
 
@@ -226,14 +228,14 @@ class TLVParser
 {
     private $tlvList = [];
 
-    public function __construct($data)
+    public function __construct(string $data)
     {
         while (strlen($data) > 0) {
             $this->tlvList[] = $this->parseTLV($data);
         }
     }
 
-    private function parseTLV(&$data)
+    private function parseTLV(string &$data): TLV8
     {
         switch (ord($data[0])) {
             case TLVType::Method:
@@ -260,46 +262,48 @@ class TLVParser
                 return new TLV8_Signature($data);
             case TLVType::Permissions:
                 return new TLV8_Permissions($data);
-            case TLVType::Seperator:
-                return new TLV8_Seperator($data);
+            case TLVType::Separator:
+                return new TLV8_Separator($data);
             default:
                 return new TLV8($data);
         }
     }
 
-    public function getByType($type)
+    public function getByType(int $type) /* TLV8 | null */
     {
         foreach ($this->tlvList as $tlv) {
             if ($tlv->getType() == $type) {
                 return $tlv;
             }
         }
+
+        return null;
     }
 }
 
 class TLVBuilder
 {
-    private static function Base($type, $value)
+    private static function Base(int $type, string $value): string
     {
         return chr($type) . chr(strlen($value)) . $value;
     }
 
-    public static function Method($method)
+    public static function Method(int $method): string
     {
         return self::Base(TLVType::Method, chr($method));
     }
 
-    public static function Identifier($identifier)
+    public static function Identifier(string $identifier): string
     {
         return self::Base(TLVType::Identifier, $identifier);
     }
 
-    public static function Salt($salt)
+    public static function Salt(string $salt): string
     {
         return self::Base(TLVType::Salt, $salt);
     }
 
-    public static function PublicKey($publicKey)
+    public static function PublicKey(string $publicKey): string
     {
         $response = '';
         $publicKeys = str_split($publicKey, 255);
@@ -310,48 +314,48 @@ class TLVBuilder
         return $response;
     }
 
-    public static function Proof($proof)
+    public static function Proof(string $proof): string
     {
         return self::Base(TLVType::Proof, $proof);
     }
 
-    public static function EncryptedData($encryptedData)
+    public static function EncryptedData(string $encryptedData): string
     {
         return self::Base(TLVType::EncryptedData, $encryptedData);
     }
 
-    public static function State($state)
+    public static function State(int $state): string
     {
         return self::Base(TLVType::State, chr($state));
     }
 
-    public static function Error($error)
+    public static function Error(int $error): string
     {
         return self::Base(TLVType::Error, chr($error));
     }
 
-    public static function RetryDelay($retryDelay)
+    public static function RetryDelay(string $retryDelay): string
     {
         return self::Base(TLVType::RetryDelay, pack('N', $retryDelay));
     }
 
-    public static function Certificate($certificate)
+    public static function Certificate(string $certificate): string
     {
         return self::Base(TLVType::Certificate, $certificate);
     }
 
-    public static function Signature($signature)
+    public static function Signature(string $signature): string
     {
         return self::Base(TLVType::Signature, $signature);
     }
 
-    public static function Permissions($permissions)
+    public static function Permissions(int $permissions): string
     {
         return self::Base(TLVType::Permissions, chr($permissions));
     }
 
-    public static function Seperator()
+    public static function Separator(): string
     {
-        return self::Base(TLVType::Seperator, '');
+        return self::Base(TLVType::Separator, '');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPCharacteristicCarbonDioxideDetected extends HAPCharacteristic
 {
     const Normal = 0;

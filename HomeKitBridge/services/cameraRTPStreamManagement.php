@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPServiceCameraRTPStreamManagement extends HAPService
 {
     public function __construct()

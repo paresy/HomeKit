@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HomeKitCodes
 {
     private $instanceID = 0;
@@ -7,12 +9,12 @@ class HomeKitCodes
     private $getBuffer = null;
     private $setBuffer = null;
 
-    private function SendDebug($message)
+    private function SendDebug(string $message): void
     {
-        call_user_func($this->sendDebug, 'HomeKitCodes', $message, 0);
+        ($this->sendDebug)('HomeKitCodes', $message, 0);
     }
 
-    public function __construct($instanceID, $sendDebug, $getBuffer, $setBuffer)
+    public function __construct(int $instanceID, callable $sendDebug, callable $getBuffer, callable $setBuffer)
     {
         $this->instanceID = $instanceID;
         $this->sendDebug = $sendDebug;
@@ -20,7 +22,7 @@ class HomeKitCodes
         $this->setBuffer = $setBuffer;
     }
 
-    private function isValidSetupCode($setupCode)
+    private function isValidSetupCode(string $setupCode): bool
     {
         return !in_array($setupCode, [
             '000-00-000',
@@ -38,7 +40,7 @@ class HomeKitCodes
         ]);
     }
 
-    public function generateSetupCode()
+    public function generateSetupCode(): string
     {
         $code = '000-00-000';
 
@@ -53,23 +55,23 @@ class HomeKitCodes
             'code'    => $code
         ];
 
-        call_user_func($this->setBuffer, 'SetupCode', json_encode($setupCode));
+        ($this->setBuffer)('SetupCode', json_encode($setupCode));
 
         return $code;
     }
 
-    public function getSetupCode()
+    public function getSetupCode(): string
     {
-        $setupCode = call_user_func($this->getBuffer, 'SetupCode');
+        $setupCode = ($this->getBuffer)('SetupCode');
 
         if ($setupCode == '') {
-            return;
+            return '';
         }
 
         $setupCode = json_decode($setupCode, true);
 
         if (time() > $setupCode['expires']) {
-            return;
+            return '';
         }
 
         $this->SendDebug('Getting current setup code: ' . $setupCode['code']);
@@ -77,7 +79,7 @@ class HomeKitCodes
         return $setupCode['code'];
     }
 
-    public function removeSetupCode()
+    public function removeSetupCode(): void
     {
         $code = $this->getSetupCode();
 
@@ -85,7 +87,7 @@ class HomeKitCodes
             return;
         }
 
-        call_user_func($this->setBuffer, 'SetupCode', '');
+        ($this->setBuffer)('SetupCode', '');
 
         $this->SendDebug('Removing current setup code: ' . $code);
     }

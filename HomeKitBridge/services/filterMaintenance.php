@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class HAPServiceFilterMaintenance extends HAPService
 {
     public function __construct()

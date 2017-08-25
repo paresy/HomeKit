@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class SRP6aServer
 {
     //All function parameters are required to be binary!
@@ -37,7 +39,7 @@ class SRP6aServer
     //s = Salt               (Binary)
     //I = Username           (Binary)
     //p = Cleartext Password (Binary)
-    public function __construct($s, $I, $p, $b)
+    public function __construct(string $s, string $I, string $p, string $b)
     {
         $this->N_hex = str_replace([' ', "\r", "\n"], '', $this->N_hex);
         $this->N_dec = gmp_init($this->N_hex, 16);
@@ -56,21 +58,21 @@ class SRP6aServer
         };
 
         //Private Key (x = H(s, H(I, ":", p)))
-        $this->x_dec = gmp_import(call_user_func($this->H, $this->s_bin . call_user_func($this->H, $this->I_bin . ':' . $this->p_bin)));
+        $this->x_dec = gmp_import(($this->H)($this->s_bin . ($this->H)($this->I_bin . ':' . $this->p_bin)));
 
         //Verifier (c = g^x)
         $this->v_dec = gmp_powm($this->g_dec, $this->x_dec, $this->N_dec);
     }
 
     //We want to create public value B. We require the private value b
-    public function createPublicValue()
+    public function createPublicValue(): string
     {
 
         //Convert to decimal
         $b_dec = gmp_import($this->b_bin);
 
         //Multiplier parameter (k = H(N, g))
-        $k_dec = gmp_import(call_user_func($this->H, $this->N_bin . str_pad($this->g_bin, strlen($this->N_bin), chr(0x00), STR_PAD_LEFT)));
+        $k_dec = gmp_import(($this->H)($this->N_bin . str_pad($this->g_bin, strlen($this->N_bin), chr(0x00), STR_PAD_LEFT)));
 
         //Public Value (B = k*v + g^b)
         $B_dec = gmp_mod(gmp_add(gmp_mul($k_dec, $this->v_dec), gmp_powm($this->g_dec, $b_dec, $this->N_dec)), $this->N_dec);
@@ -80,9 +82,9 @@ class SRP6aServer
     }
 
     //Calculate Preshared Secret S
-    public function createPresharedSecret($A, $B)
+    public function createPresharedSecret($A, $B): string
     {
-        $u_dec = gmp_import(call_user_func($this->H, $A . $B));
+        $u_dec = gmp_import(($this->H)($A . $B));
         $b_dec = gmp_import($this->b_bin);
         $A_dec = gmp_import($A);
 
@@ -92,21 +94,21 @@ class SRP6aServer
     }
 
     //Calculate Session Key K
-    public function createSessionKey($S)
+    public function createSessionKey($S): string
     {
-        return call_user_func($this->H, $S);
+        return ($this->H)($S);
     }
 
     //We want to verify the proof
-    public function verifyProof($A, $B, $K, $M)
+    public function verifyProof($A, $B, $K, $M): bool
     {
 
         //Proof (M = H(H(N) xor H(g), H(I), s, A, B, K))
-        return $M == call_user_func($this->H, (call_user_func($this->H, $this->N_bin) ^ call_user_func($this->H, $this->g_bin)) . call_user_func($this->H, $this->I_bin) . $this->s_bin . $A . $B . $K);
+        return $M == ($this->H)((($this->H)($this->N_bin) ^ ($this->H)($this->g_bin)) . ($this->H)($this->I_bin) . $this->s_bin . $A . $B . $K);
     }
 
     public function createProof($A, $M, $K)
     {
-        return call_user_func($this->H, $A . $M . $K);
+        return ($this->H)($A . $M . $K);
     }
 }
