@@ -66,40 +66,39 @@ class HAPService
         $this->optionalCharacteristics = $optionalCharacteristics;
     }
 
-
     private function validateCharacteristicValue($instanceID, $value)
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
         $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
 
-        if ($index >= sizeof($characteristics)) {
+        if ($index >= count($characteristics)) {
             throw new Exception("InstanceID is out of bounds for accessory!");
         }
 
         if (is_int($value)) {
             if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
-                if ($value < $characteristics[$index]->getMinValue() OR $value > $characteristics[$index]->getMaxValue()) {
+                if ($value < $characteristics[$index]->getMinValue() or $value > $characteristics[$index]->getMaxValue()) {
                     $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
                 } else {
                     switch ($characteristics[$index]->getformat()) {
                   case HAPCharacteristicFormat::UnsignedInt8:
-                    IPS_LogMessage("validateCharacteristicValue", "UnsignedInt8");
+                    IPS_LogMessage('validateCharacteristicValue', 'UnsignedInt8');
                     return $value;
                     break;
                     case HAPCharacteristicFormat::UnsignedInt16:
-                    IPS_LogMessage("validateCharacteristicValue", "UnsignedInt16");
+                    IPS_LogMessage('validateCharacteristicValue', 'UnsignedInt16');
                     return $value;
                     break;
                   case HAPCharacteristicFormat::UnsignedInt32:
-                    IPS_LogMessage("validateCharacteristicValue", "UnsignedInt32");
+                    IPS_LogMessage('validateCharacteristicValue', 'UnsignedInt32');
                     return $value;
                     break;
                   case HAPCharacteristicFormat::UnsignedInt64:
-                    IPS_LogMessage("validateCharacteristicValue", "UnsignedInt64");
+                    IPS_LogMessage('validateCharacteristicValue', 'UnsignedInt64');
                     return $value;
                     break;
                   case HAPCharacteristicFormat::Integer:
-                    IPS_LogMessage("validateCharacteristicValue", "Integer");
+                    IPS_LogMessage('validateCharacteristicValue', 'Integer');
                     return $value;
                     break;
                 }
@@ -108,28 +107,28 @@ class HAPService
         }
 
         if (is_bool($value)) {
-            IPS_LogMessage("validateCharacteristicValue", "Boolean");
+            IPS_LogMessage('validateCharacteristicValue', 'Boolean');
   		  /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
             return $value;
         }
 
         if (is_float($value)) {
             if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
-                if ($value < $characteristics[$index]->getMinValue() OR $value > $characteristics[$index]->getMaxValue()) {
+                if ($value < $characteristics[$index]->getMinValue() or $value > $characteristics[$index]->getMaxValue()) {
                   $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
                 }
               }
-            IPS_LogMessage("validateCharacteristicValue", "Float");
+            IPS_LogMessage('validateCharacteristicValue', 'Float');
             return $value;
         }
 
         if (is_string($value)) {
-            IPS_LogMessage("validateCharacteristicValue", "String");
+            IPS_LogMessage('validateCharacteristicValue', 'String');
   		  /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
             return $value;
         }
         /*ToDo check value on type Data and TLV8 */
-        IPS_LogMessage("Apple HomeKit", "Value ist not valid!"." ".$value." ".get_class($characteristics[$index]));
+        IPS_LogMessage('Apple HomeKit', 'Value ist not valid!'.' '.$value.' '.get_class($characteristics[$index]));
       }
 
     public function setCharacteristic($instanceID, $value, $accessory)
