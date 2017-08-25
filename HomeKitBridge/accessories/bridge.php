@@ -5,7 +5,7 @@ class HAPAccessoryBridge extends HAPAccessory
     public function __construct()
     {
         parent::__construct(
-            null,
+            [],
             [
                 new HAPServiceAccessoryInformation()
             ]

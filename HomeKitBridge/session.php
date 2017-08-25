@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 include_once __DIR__ . '/tlv.php';
 include_once __DIR__ . '/srp.php';
 
 class HomeKitSession
 {
-    private $sendDebug = null;
+    private $debug = null;
     private $pairings = null;
     private $codes = null;
     private $manager = null;
@@ -29,23 +31,23 @@ class HomeKitSession
     //Required for stage PS M1+M3
     private $salt = '';
     private $setupCode = '';
-    private $privateValue = null;
-    private $publicValue = null;
+    private $privateValue = '';
+    private $publicValue = '';
 
     //Required for stage PS M5
-    private $sharedSecret = null;
+    private $sharedSecret = '';
 
     //Required for stage PV M1+M3
-    private $sessionKey = null;
+    private $sessionKey = '';
 
-    private function SendDebug($message)
+    private function SendDebug(string $message)
     {
-        call_user_func($this->sendDebug, 'HomeKitSession', $message, 0);
+        ($this->debug)('HomeKitSession', $message, 0);
     }
 
-    public function __construct($sendDebug, $pairings, $codes, $manager, $bridgeID, $accessoryKP, $sessionData)
+    public function __construct(callable $debug, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData)
     {
-        $this->sendDebug = $sendDebug;
+        $this->debug = $debug;
         $this->pairings = $pairings;
         $this->codes = $codes;
         $this->manager = $manager;
@@ -86,7 +88,7 @@ class HomeKitSession
         $this->sessionKey = hex2bin($json->sessionKey);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return json_encode([
             'data'               => $this->data,
@@ -105,7 +107,7 @@ class HomeKitSession
         ]);
     }
 
-    public function processData($data)
+    public function processData($data): string
     {
 
         //Make check for disappeared sessions
@@ -115,7 +117,7 @@ class HomeKitSession
             if ($this->data == '' && substr($data, 0, 4) !== 'POST') {
                 $this->sendDebug('Session data lost. We cannot resume this connection!');
 
-                return;
+                return '';
             }
         }
 
@@ -127,14 +129,14 @@ class HomeKitSession
             if (strlen($this->encryptedData) < 2) {
                 $this->sendDebug('Waiting for data...');
 
-                return;
+                return '';
             }
 
             $expectedLength = unpack('v', $this->encryptedData)[1];
             if (strlen($this->encryptedData) < $expectedLength + 2 /* Length */ + 16 /* AuthTag */) {
                 $this->sendDebug('Waiting for data... ' . strlen($this->encryptedData) . ' / ' . $expectedLength);
 
-                return;
+                return '';
             }
 
             $message = substr($this->encryptedData, 2, $expectedLength + 16);
@@ -152,7 +154,7 @@ class HomeKitSession
 
                 //FIXME: We need to invalidate the whole session!
 
-                return;
+                return '';
             }
 
             //Increment nonce counter
@@ -176,10 +178,11 @@ class HomeKitSession
 
         //Check if we can parse the complete packet.
         //Otherwise bail out and wait for more data
-        if (!($http = $this->parseHTTP($this->data))) {
+        $http = $this->parseHTTP($this->data);
+        if (sizeof($http) == 0) {
             $this->SendDebug('Incomplete HTTP packet');
 
-            return;
+            return '';
         }
 
         //We consumed the data
@@ -196,7 +199,7 @@ class HomeKitSession
                     default:
                         $this->SendDebug('Unsupported uri for GET: ' . $http['uri']);
 
-                        return;
+                        return '';
                 }
                 break;
             case 'PUT':
@@ -206,7 +209,7 @@ class HomeKitSession
                     default:
                         $this->SendDebug('Unsupported uri for PUT' . $http['uri']);
 
-                        return;
+                        return '';
                 }
                 break;
             case 'POST':
@@ -222,16 +225,16 @@ class HomeKitSession
                     default:
                         $this->SendDebug('Unsupported uri for POST' . $http['uri']);
 
-                        return;
+                        return '';
                 }
             default:
                 $this->SendDebug('Unsupported method ' . $http['method']);
 
-                return;
+                return '';
         }
     }
 
-    private function parseHTTP($data)
+    private function parseHTTP($data): array
     {
 
         //Check for complete header
@@ -239,7 +242,7 @@ class HomeKitSession
         if ($headerEnd === false) {
             $this->SendDebug('Header is incomplete');
 
-            return;
+            return [];
         }
 
         $rawHeaders = explode("\r\n", substr($data, 0, $headerEnd));
@@ -248,7 +251,7 @@ class HomeKitSession
         if (count($rawHeaders) == 0) {
             $this->SendDebug('Header is empty');
 
-            return;
+            return [];
         }
 
         $top = explode(' ', $rawHeaders[0]);
@@ -257,7 +260,7 @@ class HomeKitSession
         if (count($top) != 3) {
             $this->SendDebug('Invalid first header line');
 
-            return;
+            return [];
         }
 
         $method = $top[0];
@@ -290,7 +293,7 @@ class HomeKitSession
             if (!isset($headers['content-length'])) {
                 $this->SendDebug('Content-Length missing');
 
-                return;
+                return [];
             }
 
             //Check if the body is complete
@@ -298,7 +301,7 @@ class HomeKitSession
             if (strlen($body) != intval($headers['content-length'])) {
                 $this->SendDebug('Content length does not match. Actual: ' . strlen($body) . ', Expected: ' . intval($headers['content-length']));
 
-                return;
+                return [];
             }
         }
 
@@ -313,7 +316,7 @@ class HomeKitSession
         ];
     }
 
-    private function buildHTTP($http)
+    private function buildHTTP($http): string
     {
         $content = $http['version'] . ' ' . $http['status'] . "\r\n";
 
@@ -338,12 +341,12 @@ class HomeKitSession
         return $content;
     }
 
-    private function buildPairingResponse($body)
+    private function buildPairingResponse($body): string
     {
 
         //A fatal error occoured. Forward null
         if ($body == null) {
-            return;
+            return '';
         }
 
         //FIXME: This is not very performant
@@ -363,17 +366,17 @@ class HomeKitSession
         ]);
     }
 
-    private function postPairSetup($http)
+    private function postPairSetup($http): string
     {
         $tlvs = new TLVParser($http['body']);
 
         $tlvState = $tlvs->getByType(TLVType::State);
 
         //State is required
-        if (!$tlvState) {
+        if (!$tlvState || !($tlvState instanceof TLV8_State)) {
             $this->SendDebug('State missing');
 
-            return;
+            return '';
         }
 
         switch ($tlvState->getState()) {
@@ -386,16 +389,16 @@ class HomeKitSession
             default:
                 $this->SendDebug('Unsupported pair setup state ' . $tlvState->getState());
 
-                return;
+                return '';
         }
     }
 
-    private function handlePairSetupM1($tlvs)
+    private function handlePairSetupM1(TLVParser $tlvs): string
     {
         $response = '';
 
         $tlvMethod = $tlvs->getByType(TLVType::Method);
-        if (!$tlvMethod || $tlvMethod->getMethod() != TLVMethod::PairSetup) {
+        if (!$tlvMethod || !($tlvMethod instanceof TLV8_Method) || $tlvMethod->getMethod() != TLVMethod::PairSetup) {
             $this->SendDebug('Method missing or not PairSetup');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -418,7 +421,7 @@ class HomeKitSession
         if (!$this->setupCode) {
             $this->SendDebug('No active SetupCode was found. Aborting.');
 
-            return;
+            return '';
         }
 
         $this->salt = random_bytes(16);
@@ -440,20 +443,20 @@ class HomeKitSession
         return $response;
     }
 
-    private function handlePairSetupM3($tlvs)
+    private function handlePairSetupM3(TLVParser $tlvs): string
     {
         $response = '';
 
         $tlvError = $tlvs->getByType(TLVType::Error);
-        if ($tlvError) {
+        if ($tlvError || ($tlvError instanceof TLV8_Error)) {
             $this->SendDebug('Error while PairSetup M3: ' . $tlvError->getError());
 
-            return;
+            return '';
         }
 
         $tlvPublicKey = $tlvs->getByType(TLVType::PublicKey);
         $tlvProof = $tlvs->getByType(TLVType::Proof);
-        if (!$tlvPublicKey || !$tlvProof) {
+        if (!$tlvPublicKey || !($tlvPublicKey instanceof TLV8_PublicKey) || !$tlvProof || !($tlvProof instanceof TLV8_Proof)) {
             $this->SendDebug('PublicKey or Proof missing');
             $response .= TLVBuilder::State(TLVState::M4);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -490,11 +493,18 @@ class HomeKitSession
         }
     }
 
-    private function handlePairSetupM5($tlvs)
+    private function handlePairSetupM5(TLVParser $tlvs): string
     {
         $response = '';
 
         $tlvEncryptedData = $tlvs->getByType(TLVType::EncryptedData);
+
+        //EncryptedData is required
+        if (!$tlvEncryptedData || !($tlvEncryptedData instanceof TLV8_EncryptedData)) {
+            $this->SendDebug('EncryptedData missing');
+
+            return '';
+        }
 
         $sessionKey = hash_hkdf('sha512', $this->sharedSecret, 32, 'Pair-Setup-Encrypt-Info', 'Pair-Setup-Encrypt-Salt');
 
@@ -511,16 +521,18 @@ class HomeKitSession
         $tlvs = new TLVParser($decryptedData);
 
         $tlvError = $tlvs->getByType(TLVType::Error);
-        if ($tlvError) {
+        if ($tlvError || ($tlvError instanceof TLV8_Error)) {
             $this->SendDebug('Error while PairSetup M5: ' . $tlvError->getError());
 
-            return;
+            return '';
         }
 
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
         $tlvPublicKey = $tlvs->getByType(TLVType::PublicKey);
         $tlvSignature = $tlvs->getByType(TLVType::Signature);
-        if (!$tlvIdentifier || !$tlvPublicKey || !$tlvSignature) {
+        if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)
+         || !$tlvPublicKey || !($tlvPublicKey instanceof TLV8_PublicKey)
+         || !$tlvSignature || !($tlvSignature instanceof TLV8_Signature)) {
             $this->SendDebug('Identifier, PublicKey or Signature missing');
             $response .= TLVBuilder::State(TLVState::M6);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -576,9 +588,9 @@ class HomeKitSession
         $this->setupCode = '';
         $this->data = '';
         $this->encrypted = false;
-        $this->privateValue = null;
-        $this->publicValue = null;
-        $this->sharedSecret = null;
+        $this->privateValue = '';
+        $this->publicValue = '';
+        $this->sharedSecret = '';
 
         //Remove current setup code
         $this->codes->removeSetupCode();
@@ -586,17 +598,17 @@ class HomeKitSession
         return $response;
     }
 
-    private function postPairVerify($http)
+    private function postPairVerify($http): string
     {
         $tlvs = new TLVParser($http['body']);
 
         $tlvState = $tlvs->getByType(TLVType::State);
 
         //State is required
-        if (!$tlvState) {
+        if (!$tlvState || !($tlvState instanceof TLV8_State)) {
             $this->SendDebug('State missing');
 
-            return;
+            return '';
         }
 
         switch ($tlvState->getState()) {
@@ -607,16 +619,16 @@ class HomeKitSession
             default:
                 $this->SendDebug('Unsupported pair verify state ' . $tlvState->getState());
 
-                return;
+                return '';
         }
     }
 
-    private function handlePairVerifyM1($tlvs)
+    private function handlePairVerifyM1(TLVParser $tlvs)
     {
         $response = '';
 
         $tlvPublicKey = $tlvs->getByType(TLVType::PublicKey);
-        if (!$tlvPublicKey) {
+        if (!$tlvPublicKey || !($tlvPublicKey instanceof TLV8_PublicKey)) {
             $this->SendDebug('PublicKey missing');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -667,11 +679,18 @@ class HomeKitSession
         return $response;
     }
 
-    private function handlePairVerifyM3($tlvs)
+    private function handlePairVerifyM3(TLVParser $tlvs)
     {
         $response = '';
 
         $tlvEncryptedData = $tlvs->getByType(TLVType::EncryptedData);
+
+        //EncryptedData is required
+        if (!$tlvEncryptedData || !($tlvEncryptedData instanceof TLV8_EncryptedData)) {
+            $this->SendDebug('EncryptedData missing');
+
+            return '';
+        }
 
         $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($tlvEncryptedData->getEncryptedData(), '', "\0\0\0\0PV-Msg03", $this->sessionKey);
 
@@ -689,6 +708,13 @@ class HomeKitSession
         //Search if we know this PairingID
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
 
+        //Identifier is required
+        if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)) {
+            $this->SendDebug('Identifier missing');
+
+            return '';
+        }
+
         $iOSDeviceLTPK = $this->pairings->getPairingPublicKey($tlvIdentifier->getIdentifier());
         if ($iOSDeviceLTPK == null) {
             $this->SendDebug('Identifier is invalid');
@@ -700,6 +726,13 @@ class HomeKitSession
 
         //Get Signature
         $tlvSignature = $tlvs->getByType(TLVType::Signature);
+
+        //Signature is required
+        if (!$tlvSignature || !($tlvSignature instanceof TLV8_Signature)) {
+            $this->SendDebug('Signature missing');
+
+            return '';
+        }
 
         //Build DeviceInfo
         $iOSDeviceInfo = $this->publicValue . $tlvIdentifier->getIdentifier() . $this->privateValue;
@@ -721,10 +754,10 @@ class HomeKitSession
         $this->messageSendKey = hash_hkdf('sha512', $this->sharedSecret, 32, 'Control-Read-Encryption-Key', 'Control-Salt');
 
         //Cleanup sensitive data
-        $this->sessionKey = null;
-        $this->sharedSecret = null;
-        $this->privateValue = null;
-        $this->publicValue = null;
+        $this->sessionKey = '';
+        $this->sharedSecret = '';
+        $this->privateValue = '';
+        $this->publicValue = '';
 
         //Mark Session as encrypted
         $this->encrypted = true;
@@ -733,7 +766,7 @@ class HomeKitSession
         return $response;
     }
 
-    private function buildEncryptedResponse($body)
+    private function buildEncryptedResponse(string $body): string
     {
 
         //Print debug
@@ -741,7 +774,7 @@ class HomeKitSession
 
         //A fatal error occoured. Forward null
         if ($body == null) {
-            return;
+            return '';
         }
 
         //Split into packets 1024 bytes each
@@ -774,28 +807,28 @@ class HomeKitSession
         return $body;
     }
 
-    private function postPairings($http)
+    private function postPairings(array $http): string
     {
         $tlvs = new TLVParser($http['body']);
 
         $tlvMethod = $tlvs->getByType(TLVType::Method);
-        if (!$tlvMethod) {
+        if (!$tlvMethod || !($tlvMethod instanceof TLV8_Method)) {
             $this->SendDebug('Method missing');
 
-            return;
+            return '';
         }
 
         $tlvState = $tlvs->getByType(TLVType::State);
-        if (!$tlvState) {
+        if (!$tlvState || !($tlvState instanceof TLV8_State)) {
             $this->SendDebug('State missing');
 
-            return;
+            return '';
         }
 
         if ($tlvState->getState() != TLVState::M1) {
             $this->SendDebug('State is not M1');
 
-            return;
+            return '';
         }
 
         switch ($tlvMethod->getMethod()) {
@@ -808,11 +841,11 @@ class HomeKitSession
             default:
                 $this->SendDebug('Unsupported pairing method ' . $tlvMethod->getMethod());
 
-                return;
+                return '';
         }
     }
 
-    private function handleAddPairing($tlvs)
+    private function handleAddPairing(TLVParser $tlvs): string
     {
         $response = '';
 
@@ -824,7 +857,7 @@ class HomeKitSession
         }
 
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
-        if (!$tlvIdentifier) {
+        if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)) {
             $this->SendDebug('Identifier is missing');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -833,7 +866,7 @@ class HomeKitSession
         }
 
         $tlvPublicKey = $tlvs->getByType(TLVType::PublicKey);
-        if (!$tlvPublicKey) {
+        if (!$tlvPublicKey || !($tlvPublicKey instanceof TLV8_PublicKey)) {
             $this->SendDebug('PublicKey missing');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -842,7 +875,7 @@ class HomeKitSession
         }
 
         $tlvPermissions = $tlvs->getByType(TLVType::Permissions);
-        if (!$tlvPermissions) {
+        if (!$tlvPermissions || !($tlvPermissions instanceof TLV8_Permissions)) {
             $this->SendDebug('Permissions is missing');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -857,7 +890,7 @@ class HomeKitSession
         return $response;
     }
 
-    private function handleRemovePairing($tlvs)
+    private function handleRemovePairing(TLVParser $tlvs): string
     {
         $response = '';
 
@@ -869,7 +902,7 @@ class HomeKitSession
         }
 
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
-        if (!$tlvIdentifier) {
+        if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)) {
             $this->SendDebug('Identifier is missing');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Unknown);
@@ -884,7 +917,7 @@ class HomeKitSession
         return $response;
     }
 
-    private function handleListPairing($tlvs)
+    private function handleListPairing(TLVParser $tlvs): string
     {
         $response = '';
 
@@ -902,7 +935,7 @@ class HomeKitSession
         $first = true;
         foreach ($pairings as $identifier => $publicKey) {
             if (!$first) {
-                $response .= TLVBuilder::Seperator();
+                $response .= TLVBuilder::Separator();
             } else {
                 $first = false;
             }
@@ -914,7 +947,7 @@ class HomeKitSession
         return $response;
     }
 
-    private function postIdentify($http)
+    private function postIdentify(array $http): string
     {
         return $this->buildHTTP([
             'status'  => '204 No Content',
@@ -924,7 +957,7 @@ class HomeKitSession
         ]);
     }
 
-    private function putCharacteristics($http)
+    private function putCharacteristics(array $http): string
     {
         $data = json_decode($http['body'], true);
         if (isset($data['characteristics'])) {
@@ -945,7 +978,7 @@ class HomeKitSession
         ]));
     }
 
-    private function getCharacteristics($http)
+    private function getCharacteristics(array $http): string
     {
         $characteristics = [];
 
@@ -975,9 +1008,8 @@ class HomeKitSession
         ]));
     }
 
-    private function buildAccessoriesResponse($body)
+    private function buildAccessoriesResponse(string $body): string
     {
-
         //Build the http response
         return $this->buildHTTP([
             'status'  => '200 OK',
@@ -989,7 +1021,7 @@ class HomeKitSession
         ]);
     }
 
-    private function getAccessories($http)
+    private function getAccessories(array $http): string
     {
         $response = [
             'accessories' => $this->manager->getAccessories()

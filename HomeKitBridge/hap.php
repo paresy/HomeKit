@@ -8,7 +8,7 @@ class HAPAccessory
 
     protected $data;
 
-    public function __construct($data, $services)
+    public function __construct(array $data, array $services)
     {
         if ((count($services) == 0) || !($services[0] instanceof HAPServiceAccessoryInformation)) {
             throw new Exception('First service is required to be HAPServiceAccessoryInformation');
@@ -17,7 +17,7 @@ class HAPAccessory
         $this->data = $data;
     }
 
-    public function doExport($accessoryID)
+    public function doExport(int $accessoryID): array
     {
         $instanceID = 1;
         $services = [];
@@ -32,7 +32,7 @@ class HAPAccessory
         ];
     }
 
-    public function setCharacteristic($instanceID, $value)
+    public function setCharacteristic(int $instanceID, $value): void
     {
         $index = intval(floor($instanceID / 100));
 
@@ -42,7 +42,7 @@ class HAPAccessory
         $this->services[$index]->setCharacteristic($instanceID % 100, $value, $this);
     }
 
-    public function getCharacteristic($instanceID)
+    public function getCharacteristic(int $instanceID)
     {
         $index = intval(floor($instanceID / 100));
 
@@ -60,14 +60,14 @@ class HAPService
     private $requiredCharacteristics;
     private $optionalCharacteristics;
 
-    public function __construct($type, $requiredCharacteristics, $optionalCharacteristics)
+    public function __construct(int $type, array $requiredCharacteristics, array $optionalCharacteristics)
     {
         $this->type = $type;
         $this->requiredCharacteristics = $requiredCharacteristics;
         $this->optionalCharacteristics = $optionalCharacteristics;
     }
 
-    public function setCharacteristic($instanceID, $value, $accessory)
+    public function setCharacteristic(int $instanceID, $value, HAPAccessory $accessory): void
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
 
@@ -79,7 +79,7 @@ class HAPService
         $accessory->{$this->makeSetFunctionName($characteristics[$index])}($value);
     }
 
-    public function getCharacteristic($instanceID, $accessory)
+    public function getCharacteristic(int $instanceID, HAPAccessory $accessory)
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
 
@@ -92,7 +92,7 @@ class HAPService
         return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
     }
 
-    public function doExport($baseInstanceID, $accessory)
+    public function doExport(int $baseInstanceID, HAPAccessory $accessory): array
     {
         $instanceID = $baseInstanceID;
         $characteristics = [];
@@ -169,13 +169,13 @@ class HAPService
         ];
     }
 
-    private function makeGetFunctionName($characteristic)
+    private function makeGetFunctionName(HAPCharacteristic $characteristic): string
     {
         //Filter HAP from Class Name
         return 'get' . substr(get_class($characteristic), 3);
     }
 
-    private function makeSetFunctionName($characteristic)
+    private function makeSetFunctionName(HAPCharacteristic $characteristic): string
     {
         //Filter HAP from Class Name
         return 'set' . substr(get_class($characteristic), 3);
@@ -226,7 +226,7 @@ class HAPCharacteristic
     private $unit;
     private $maxLen;
 
-    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
+    public function __construct(int $type, string $format, array $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
     {
         $this->type = $type;
         $this->format = $format;
@@ -238,7 +238,7 @@ class HAPCharacteristic
         $this->maxLen = $maxLen;
     }
 
-    public function doExport($instanceID, $value)
+    public function doExport(int $instanceID, $value): array
     {
         $export = [
             'type'   => strtoupper(dechex($this->getType())),
@@ -274,22 +274,22 @@ class HAPCharacteristic
         return $export;
     }
 
-    public function getType()
+    public function getType(): int
     {
         return $this->type;
     }
 
-    public function getFormat()
+    public function getFormat(): string
     {
         return $this->format;
     }
 
-    public function getPermissions()
+    public function getPermissions(): array
     {
         return $this->permissions;
     }
 
-    public function hasPermission($permission)
+    public function hasPermission($permission): bool
     {
         return in_array($permission, $this->permissions);
     }

@@ -5,17 +5,17 @@ declare(strict_types=1);
 class HomeKitPairings
 {
     private $instanceID = 0;
-    private $sendDebug = null;
+    private $debug = null;
 
     private function SendDebug(string $message): void
     {
-        ($this->sendDebug)('HomeKitPairings', $message, 0);
+        ($this->debug)('HomeKitPairings', $message, 0);
     }
 
     public function __construct(int $InstanceID, callable $sendDebug)
     {
         $this->instanceID = $InstanceID;
-        $this->sendDebug = $sendDebug;
+        $this->debug = $sendDebug;
     }
 
     public function addPairing(string $identifier, string $publicKey, int $permissions): void

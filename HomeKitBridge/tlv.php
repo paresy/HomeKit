@@ -220,7 +220,7 @@ class TLV8_Permissions extends TLV8
     }
 }
 
-class TLV8_Seperator extends TLV8
+class TLV8_Separator extends TLV8
 {
 }
 
@@ -235,7 +235,7 @@ class TLVParser
         }
     }
 
-    private function parseTLV(&$data): TLV8
+    private function parseTLV(string &$data): TLV8
     {
         switch (ord($data[0])) {
             case TLVType::Method:
@@ -263,19 +263,21 @@ class TLVParser
             case TLVType::Permissions:
                 return new TLV8_Permissions($data);
             case TLVType::Separator:
-                return new TLV8_Seperator($data);
+                return new TLV8_Separator($data);
             default:
                 return new TLV8($data);
         }
     }
 
-    public function getByType($type): TLV8
+    public function getByType(int $type) /* TLV8 | null */
     {
         foreach ($this->tlvList as $tlv) {
             if ($tlv->getType() == $type) {
                 return $tlv;
             }
         }
+
+        return null;
     }
 }
 
@@ -327,7 +329,7 @@ class TLVBuilder
         return self::Base(TLVType::State, chr($state));
     }
 
-    public static function Error(string $error): string
+    public static function Error(int $error): string
     {
         return self::Base(TLVType::Error, chr($error));
     }
@@ -352,7 +354,7 @@ class TLVBuilder
         return self::Base(TLVType::Permissions, chr($permissions));
     }
 
-    public static function Seperator(): string
+    public static function Separator(): string
     {
         return self::Base(TLVType::Separator, '');
     }

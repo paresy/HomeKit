@@ -24,7 +24,7 @@ class HomeKitManager
     private $registerProperty = null;
     private $instanceID = 0;
 
-    public function __construct(int $instanceID, string $registerProperty)
+    public function __construct(int $instanceID, callable $registerProperty)
     {
         $this->registerProperty = $registerProperty;
         $this->instanceID = $instanceID;
@@ -56,8 +56,13 @@ class HomeKitManager
                 if (in_array($data['ID'], $aidList)) {
                     throw new Exception('AccessoryID has to be unique for all accessories');
                 }
+
                 $class = self::classPrefix . $accessory;
-                $accessories[] = (new $class($data))->doExport($data['ID']);
+                $object = new $class($data);
+
+                if ($object instanceof HAPAccessory) {
+                    $accessories[] = $object->doExport($data['ID']);
+                }
 
                 //Add to id list
                 $aidList[] = $data['ID'];
@@ -236,7 +241,7 @@ class HomeKitManager
         throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
     }
 
-    public function getCharacteristics($aid, $iid)
+    public function getCharacteristics(int $aid, int $iid)
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';

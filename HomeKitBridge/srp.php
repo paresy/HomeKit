@@ -58,7 +58,7 @@ class SRP6aServer
         };
 
         //Private Key (x = H(s, H(I, ":", p)))
-        $this->x_dec = gmp_import(($this->H)($this->s_bin . call_user_func($this->H, $this->I_bin . ':' . $this->p_bin)));
+        $this->x_dec = gmp_import(($this->H)($this->s_bin . ($this->H)($this->I_bin . ':' . $this->p_bin)));
 
         //Verifier (c = g^x)
         $this->v_dec = gmp_powm($this->g_dec, $this->x_dec, $this->N_dec);
