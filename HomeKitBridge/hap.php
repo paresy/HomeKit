@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 class HAPAccessory
 {
     private $services;
 
     protected $data;
 
-    public function __construct(array $data, array $services)
+    public function __construct($data, $services)
     {
         if ((count($services) == 0) || !($services[0] instanceof HAPServiceAccessoryInformation)) {
             throw new Exception('First service is required to be HAPServiceAccessoryInformation');
@@ -17,7 +15,7 @@ class HAPAccessory
         $this->data = $data;
     }
 
-    public function doExport(int $accessoryID): array
+    public function doExport($accessoryID)
     {
         $instanceID = 1;
         $services = [];
@@ -32,7 +30,7 @@ class HAPAccessory
         ];
     }
 
-    public function setCharacteristic(int $instanceID, $value): void
+    public function setCharacteristic($instanceID, $value)
     {
         $index = intval(floor($instanceID / 100));
 
@@ -42,7 +40,7 @@ class HAPAccessory
         $this->services[$index]->setCharacteristic($instanceID % 100, $value, $this);
     }
 
-    public function getCharacteristic(int $instanceID)
+    public function getCharacteristic($instanceID)
     {
         $index = intval(floor($instanceID / 100));
 
@@ -60,14 +58,80 @@ class HAPService
     private $requiredCharacteristics;
     private $optionalCharacteristics;
 
-    public function __construct(int $type, array $requiredCharacteristics, array $optionalCharacteristics)
+    public function __construct($type, $requiredCharacteristics, $optionalCharacteristics)
     {
         $this->type = $type;
         $this->requiredCharacteristics = $requiredCharacteristics;
         $this->optionalCharacteristics = $optionalCharacteristics;
     }
 
-    public function setCharacteristic(int $instanceID, $value, HAPAccessory $accessory): void
+
+    private function validateCharacteristicValue($instanceID, $value)
+    {
+      $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
+
+      $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
+
+      if($index >= sizeof($characteristics))
+          throw new Exception("InstanceID is out of bounds for accessory!");
+
+      if (is_int($value)) {
+        if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
+            if ($value < $characteristics[$index]->getMinValue() OR $value > $characteristics[$index]->getMaxValue()) {
+              $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
+            } else {
+            switch ($characteristics[$index]->getformat()) {
+              case HAPCharacteristicFormat::UnsignedInt8:
+                IPS_LogMessage("validateCharacteristicValue", "UnsignedInt8");
+                return $value;
+                break;
+              case HAPCharacteristicFormat::UnsignedInt16:
+                IPS_LogMessage("validateCharacteristicValue", "UnsignedInt16");
+                return $value;
+                break;
+              case HAPCharacteristicFormat::UnsignedInt32:
+                IPS_LogMessage("validateCharacteristicValue", "UnsignedInt32");
+                return $value;
+                break;
+              case HAPCharacteristicFormat::UnsignedInt64:
+                IPS_LogMessage("validateCharacteristicValue", "UnsignedInt64");
+                return $value;
+                break;
+              case HAPCharacteristicFormat::Integer:
+                IPS_LogMessage("validateCharacteristicValue", "Integer");
+                return $value;
+                break;
+            }
+          }
+        }
+      }
+
+      if (is_bool($value)) {
+          IPS_LogMessage("validateCharacteristicValue", "Boolean");
+		  /*ToDo: Wenn is_bool nicht greift? Was wollen wir dann ausgeben? */
+          return $value;
+      }
+
+      if (is_float($value)) {
+          if (!is_null($characteristics[$index]->getMinValue())) { /* Sollte reichen?! Wenn MinValue gesetzt ist, ist auch MaxValue gesetzt! */
+              if ($value < $characteristics[$index]->getMinValue() OR $value > $characteristics[$index]->getMaxValue()) {
+                $value = $characteristics[$index]->getMaxValue(); /* ToDo: wenn über MaxValue, MaxValue ausgeben, wenn unter MinValue, MinValue ausgeben?! */
+              }
+            }
+          IPS_LogMessage("validateCharacteristicValue", "Float");
+          return $value;
+      }
+
+      if (is_string($value)) {
+          IPS_LogMessage("validateCharacteristicValue", "String");
+		  /*ToDo: Wenn is_string nicht greift? Was wollen wir dann ausgeben? Einfach einen String: "Value is not valid!"? */
+          return $value;
+      }
+      /*ToDo check value on type Data and TLV8 */
+      IPS_LogMessage("Apple HomeKit", "Value ist not valid!"." ".$value." ".get_class($characteristics[$index]));
+    }
+
+    public function setCharacteristic($instanceID, $value, $accessory)
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
 
@@ -79,7 +143,7 @@ class HAPService
         $accessory->{$this->makeSetFunctionName($characteristics[$index])}($value);
     }
 
-    public function getCharacteristic(int $instanceID, HAPAccessory $accessory)
+    public function getCharacteristic($instanceID, $accessory)
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
 
@@ -89,10 +153,16 @@ class HAPService
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
 
-        return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
+        //IPS_LogMessage("Format",$this->requiredCharacteristics[0]->getformat());
+        //IPS_LogMessage("Format",$characteristics[$index]->getformat());
+      	//IPS_LogMessage("Accessory",print_r($characteristics[$index], true));
+      	//IPS_LogMessage("Value", $accessory->{$this->makeGetFunctionName($characteristics[$index])}());
+        $value = $this->validateCharacteristicValue($instanceID,$accessory->{$this->makeGetFunctionName($characteristics[$index])}());
+        //return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
+        return $value;
     }
 
-    public function doExport(int $baseInstanceID, HAPAccessory $accessory): array
+    public function doExport($baseInstanceID, $accessory)
     {
         $instanceID = $baseInstanceID;
         $characteristics = [];
@@ -169,13 +239,13 @@ class HAPService
         ];
     }
 
-    private function makeGetFunctionName(HAPCharacteristic $characteristic): string
+    private function makeGetFunctionName($characteristic)
     {
         //Filter HAP from Class Name
         return 'get' . substr(get_class($characteristic), 3);
     }
 
-    private function makeSetFunctionName(HAPCharacteristic $characteristic): string
+    private function makeSetFunctionName($characteristic)
     {
         //Filter HAP from Class Name
         return 'set' . substr(get_class($characteristic), 3);
@@ -226,7 +296,7 @@ class HAPCharacteristic
     private $unit;
     private $maxLen;
 
-    public function __construct(int $type, string $format, array $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
+    public function __construct($type, $format, $permissions, $minValue = null, $maxValue = null, $minStep = null, $unit = null, $maxLen = null)
     {
         $this->type = $type;
         $this->format = $format;
@@ -238,7 +308,7 @@ class HAPCharacteristic
         $this->maxLen = $maxLen;
     }
 
-    public function doExport(int $instanceID, $value): array
+    public function doExport($instanceID, $value)
     {
         $export = [
             'type'   => strtoupper(dechex($this->getType())),
@@ -274,22 +344,22 @@ class HAPCharacteristic
         return $export;
     }
 
-    public function getType(): int
+    public function getType()
     {
         return $this->type;
     }
 
-    public function getFormat(): string
+    public function getFormat()
     {
         return $this->format;
     }
 
-    public function getPermissions(): array
+    public function getPermissions()
     {
         return $this->permissions;
     }
 
-    public function hasPermission($permission): bool
+    public function hasPermission($permission)
     {
         return in_array($permission, $this->permissions);
     }
