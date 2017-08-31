@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class SRP6aTest extends TestCase
 {
-
     public function testGeneration(): void
     {
         //Salt
@@ -59,6 +58,5 @@ class SRP6aTest extends TestCase
 
         //Client verifies proof
         $this->assertTrue($srpClient->verifyProof($A, $M, $KClient, $P));
-
     }
 }
