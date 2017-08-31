@@ -83,7 +83,6 @@ class SRP6aBase
     }
 }
 
-
 class SRP6aServer extends SRP6aBase
 {
     private $b_bin = '';
@@ -150,7 +149,6 @@ class SRP6aClient extends SRP6aBase
         parent::__construct($s, $I, $p);
 
         $this->a_bin = $a;
-
     }
 
     //We want to create public value A. We require the private value a
