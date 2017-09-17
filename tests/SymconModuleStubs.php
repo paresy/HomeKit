@@ -246,11 +246,7 @@ class IPSModule
 
     protected function SendDebug($Message, $Data, $Format)
     {
-        if ($Format == 1 /* Binary */) {
-            $Data = bin2hex($Data);
-        }
-
-        echo 'DEBUG: ' . $Message . ' | ' . $Data;
+        IPS_SendDebug($this->InstanceID, $Message, $Data, $Format);
     }
 
     protected function RegisterMessage($SenderID, $Message)

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 include_once __DIR__ . '/SymconGlobalStubs.php';
+include_once __DIR__ . '/SymconKernelStubs.php';
 include_once __DIR__ . '/SymconModuleStubs.php';
 include_once __DIR__ . '/../HomeKitDiscovery/module.php';
 
@@ -13,7 +14,7 @@ class HomeKitDiscoveryTest extends TestCase
     public function setUp()
     {
         //Register our library we need for testing
-        IPSKernel::loadLibrary(__DIR__ . '/../library.json');
+        IPS\Kernel::loadLibrary(__DIR__ . '/../library.json');
 
         parent::setUp();
     }
