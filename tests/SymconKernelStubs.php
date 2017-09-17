@@ -195,6 +195,205 @@ namespace IPS {
             return $id;
         }
 
+        public static function unregisterObject(int $ID) {
+            self::checkObject($ID);
+
+            if(self::hasChildren($ID)) {
+                throw new \Exception("Cannot call UnregisterObject if a children is present");
+            }
+
+            //Delete ID from Children array
+            $ParentID = self::$objects[$ID]['ParentID'];
+            if(($key = array_search($ID, self::$objects[$ParentID]['ChildrenIDs'])) !== false) {
+                unset(self::$objects[$ParentID]['ChildrenIDs'][$key]);
+            }
+
+            //Readd ID to available pool
+            self::$availableIDs[] = $ID;
+
+            return true;
+        }
+
+        public static function setParent(int $ID, int $ParentID)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ParentID'] = $ParentID;
+
+            //FIXME: Update ChildrenIDs
+
+            return true;
+        }
+
+        public static function setIdent(int $ID, string $Ident)
+        {
+            self::checkObject($ID);
+
+            //FIXME: Validate ident
+            //FIXME: Check for duplicates
+
+            self::$objects[$ID]['ObjectIdent'] = $Ident;
+
+            return true;
+        }
+
+        public static function setName(int $ID, string $Name)
+        {
+            self::checkObject($ID);
+
+            if($Name == "") {
+                $Name = sprintf("Unnamed Object (ID: %d)", $ID);
+            }
+
+            self::$objects[$ID]['ObjectName'] = $Name;
+
+            return true;
+        }
+
+        public static function setInfo(int $ID, string $Info)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectInfo'] = $Info;
+
+            return true;
+        }
+
+        public static function setIcon(int $ID, string $Icon)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectIcon'] = $Icon;
+
+            return true;
+        }
+
+        public static function setPosition(int $ID, int $Position)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectPosition'] = $Position;
+
+            return true;
+        }
+
+        public static function setHidden(int $ID, bool $Hidden)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectIsHidden'] = $Hidden;
+
+            return true;
+        }
+
+        public static function setDisabled(int $ID, bool $Disabled)
+        {
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectIsDisabled'] = $Disabled;
+
+            return true;
+        }
+
+        public static function objectExists(int $ID)
+        {
+            return isset(self::$objects[$ID]);
+        }
+
+        private static function checkObject(int $ID): void
+        {
+            if (!self::objectExists($ID)) {
+                throw new \Exception(sprintf('Object #%d does not exist', $ID));
+            }
+        }
+
+        public static function getObject(int $ID)
+        {
+            self::checkObject($ID);
+
+            return self::$objects[$ID];
+        }
+
+        public static function getObjectList()
+        {
+            return array_keys(self::$objects);
+        }
+
+        public static function getObjectIDByName(string $Name, int $ParentID)
+        {
+            if($Name == "") {
+                throw new \Exception("Name cannot be empty");
+            }
+
+            self::checkObject($ParentID);
+            foreach (self::$objects[$ParentID]['ChildrenIDs'] as $ChildID) {
+                self::checkObject($ChildID);
+                if(self::$objects[$ChildID]['ObjectName'] == $Name) {
+                    return $ChildID;
+                }
+            }
+
+            throw new \Exception(sprintf("Object with name %s could not be found", $Name));
+
+        }
+
+        public static function getObjectIDByIdent(string $Ident, int $ParentID)
+        {
+            if($Ident == "") {
+                throw new \Exception("Ident cannot be empty");
+            }
+
+            self::checkObject($ParentID);
+            foreach (self::$objects[$ParentID]['ChildrenIDs'] as $ChildID) {
+                self::checkObject($ChildID);
+                if(self::$objects[$ChildID]['ObjectIdent'] == $Ident) {
+                    return $ChildID;
+                }
+            }
+
+            throw new \Exception(sprintf("Object with ident %s could not be found", $Ident));
+        }
+
+        public static function hasChildren(int $ID)
+        {
+            return sizeof(self::getChildrenIDs($ID)) > 0;
+        }
+
+        public static function isChild(int $ID, int $ParentID, bool $Recursive)
+        {
+            return true;
+        }
+
+        public static function getChildrenIDs(int $ID)
+        {
+            self::checkObject($ID);
+
+            return self::$objects[$ID]['ChildrenIDs'];
+        }
+
+        public static function getName(int $ID)
+        {
+            return self::$objects[$ID]['ObjectName'];
+        }
+
+        public static function getParent(int $ID)
+        {
+            return self::$objects[$ID]['ParentID'];
+        }
+
+        public static function getLocation(int $ID)
+        {
+            $result = self::getName($ID);
+            $parentID = self::getParent($ID);
+
+            while($parentID > 0) {
+                $result = self::getName($parentID) . '\\' . $result;
+                $parentID = self::getParent($parentID);
+            }
+
+            return $result;
+        }
+
     }
 
     trait CategoryManager

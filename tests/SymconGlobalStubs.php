@@ -3,101 +3,100 @@
 declare(strict_types=1);
 
 /* Object Manager */
-function IPS_ObjectExists(int $ID)
-{
-    return false;
-}
-
-function IPS_GetName(int $ID)
-{
-    return '';
-}
-
-function IPS_GetObject(int $ID)
-{
-    return [];
-}
-
-function IPS_GetObjectIDByIdent(string $Ident, int $ParentID)
-{
-    return 0;
-}
-
-function IPS_GetObjectIDByName(string $Name, int $ParentID)
-{
-    return 0;
-}
-
-function IPS_GetObjectList()
-{
-    return [];
-}
-
-function IPS_GetChildrenIDs(int $ID)
-{
-    return [];
-}
-
-function IPS_GetLocation(int $ID)
-{
-    return '';
-}
-
-function IPS_GetParent(int $ID)
-{
-    return 0;
-}
-
-function IPS_HasChildren(int $ID)
-{
-    return true;
-}
-
-function IPS_IsChild(int $ID, int $ParentID, bool $Recursive)
-{
-    return true;
-}
-
-function IPS_SetName(int $ID, string $Name)
-{
-    return true;
-}
-
 function IPS_SetParent(int $ID, int $ParentID)
 {
-    return true;
-}
-
-function IPS_SetPosition(int $ID, int $Position)
-{
-    return true;
-}
-
-function IPS_SetHidden(int $ID, bool $Hidden)
-{
-    return true;
-}
-
-function IPS_SetIcon(int $ID, string $Icon)
-{
-    return true;
+    return IPS\Kernel::setParent($ID, $ParentID);
 }
 
 function IPS_SetIdent(int $ID, string $Ident)
 {
-    return true;
+    return IPS\Kernel::setIdent($ID, $Ident);
+}
+
+function IPS_SetName(int $ID, string $Name)
+{
+    return IPS\Kernel::setName($ID, $Name);
 }
 
 function IPS_SetInfo(int $ID, string $Info)
 {
-    return true;
+    return IPS\Kernel::setInfo($ID, $Info);
+}
+
+function IPS_SetIcon(int $ID, string $Icon)
+{
+    return IPS\Kernel::setIcon($ID, $Icon);
+}
+
+function IPS_SetPosition(int $ID, int $Position)
+{
+    return IPS\Kernel::setPosition($ID, $Position);
+}
+
+function IPS_SetHidden(int $ID, bool $Hidden)
+{
+    return IPS\Kernel::setHidden($ID, $Hidden);
 }
 
 function IPS_SetDisabled(int $ID, bool $Disabled)
 {
-    return true;
+    return IPS\Kernel::setDisabled($ID, $Disabled);
 }
 
+function IPS_ObjectExists(int $ID)
+{
+    return IPS\Kernel::objectExists($ID);
+}
+
+function IPS_GetObject(int $ID)
+{
+    return IPS\Kernel::getObject($ID);
+}
+
+function IPS_GetObjectList()
+{
+    return IPS\Kernel::getObjectList();
+}
+
+function IPS_GetObjectIDByName(string $Name, int $ParentID)
+{
+    return IPS\Kernel::getObjectIDByName($Name, $ParentID);
+}
+
+function IPS_GetObjectIDByIdent(string $Ident, int $ParentID)
+{
+    return IPS\Kernel::getObjectIDByIdent($Ident, $ParentID);
+}
+
+function IPS_HasChildren(int $ID)
+{
+    return IPS\Kernel::hasChildren($ID);
+}
+
+function IPS_IsChild(int $ID, int $ParentID, bool $Recursive)
+{
+    return IPS\Kernel::isChild($ID, $ParentID, $Recursive);
+}
+
+function IPS_GetChildrenIDs(int $ID)
+{
+    return IPS\Kernel::getChildrenIDs($ID);
+}
+
+function IPS_GetName(int $ID)
+{
+    return IPS\Kernel::getName($ID);
+}
+
+function IPS_GetParent(int $ID)
+{
+    return IPS\Kernel::getParent($ID);
+}
+
+function IPS_GetLocation(int $ID)
+{
+    return IPS\Kernel::getLocation($ID);
+}
 
 /* Category Manager */
 function IPS_CreateCategory()
