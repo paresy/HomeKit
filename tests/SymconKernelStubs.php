@@ -9,7 +9,7 @@ namespace IPS {
         private static $libraries = [];
         private static $modules = [];
 
-        public static function libraryExists(string $LibraryID)
+        public static function libraryExists(string $LibraryID): bool
         {
             return isset(self::$libraries[$LibraryID]);
         }
@@ -21,19 +21,19 @@ namespace IPS {
             }
         }
 
-        public static function getLibrary(string $LibraryID)
+        public static function getLibrary(string $LibraryID): array
         {
             self::checkLibrary($LibraryID);
 
             return self::$libraries[$LibraryID];
         }
 
-        public static function getLibraryList()
+        public static function getLibraryList(): array
         {
             return array_keys(self::$libraries);
         }
 
-        public static function getLibraryModules(string $LibraryID)
+        public static function getLibraryModules(string $LibraryID): array
         {
             $result = [];
             foreach(self::$modules as $module) {
@@ -45,31 +45,31 @@ namespace IPS {
             return $result;
         }
 
-        public static function moduleExists(string $ModuleID)
+        public static function moduleExists(string $ModuleID): bool
         {
             return isset(self::$modules[$ModuleID]);
         }
 
         private static function checkModule(string $ModuleID): void
         {
-            if (!self::libraryExists($ModuleID)) {
+            if (!self::moduleExists($ModuleID)) {
                 throw new \Exception(sprintf('Module #%s does not exist', $ModuleID));
             }
         }
 
-        public static function getModule(string $ModuleID)
+        public static function getModule(string $ModuleID): array
         {
             self::checkModule($ModuleID);
 
             return self::$modules[$ModuleID];
         }
 
-        public static function getModuleList()
+        public static function getModuleList(): array
         {
             return array_keys(self::$modules);
         }
 
-        public static function getModuleListByType(int $ModuleType)
+        public static function getModuleListByType(int $ModuleType): array
         {
             $result = [];
             foreach(self::$modules as $module) {
@@ -195,7 +195,7 @@ namespace IPS {
             return $id;
         }
 
-        public static function unregisterObject(int $ID) {
+        public static function unregisterObject(int $ID): void {
             self::checkObject($ID);
 
             if(self::hasChildren($ID)) {
@@ -210,34 +210,42 @@ namespace IPS {
 
             //Readd ID to available pool
             self::$availableIDs[] = $ID;
-
-            return true;
         }
 
-        public static function setParent(int $ID, int $ParentID)
+        public static function setParent(int $ID, int $ParentID): void
         {
+            self::checkRoot($ID);
             self::checkObject($ID);
 
             self::$objects[$ID]['ParentID'] = $ParentID;
 
             //FIXME: Update ChildrenIDs
 
-            return true;
         }
 
-        public static function setIdent(int $ID, string $Ident)
+        public static function setIdent(int $ID, string $Ident): void
         {
             self::checkObject($ID);
 
-            //FIXME: Validate ident
-            //FIXME: Check for duplicates
+            if(!preg_match('/[a-zA-Z0-9_]*/', $Ident)) {
+                throw new \Exception('Ident may contain only letters and numbers');
+            }
+
+            if($Ident != "") {
+                $ParentID = self::$objects[$ID]['ParentID'];
+                foreach(self::$objects[$ParentID]['ChildrenIDs'] as $ChildID) {
+                    if(self::$objects[$ChildID]['ObjectIdent'] == $Ident) {
+                        if($ChildID != $ID) {
+                            throw new \Exception("Ident must be unique for each category");
+                        }
+                    }
+                }
+            }
 
             self::$objects[$ID]['ObjectIdent'] = $Ident;
-
-            return true;
         }
 
-        public static function setName(int $ID, string $Name)
+        public static function setName(int $ID, string $Name): void
         {
             self::checkObject($ID);
 
@@ -246,58 +254,64 @@ namespace IPS {
             }
 
             self::$objects[$ID]['ObjectName'] = $Name;
-
-            return true;
         }
 
-        public static function setInfo(int $ID, string $Info)
+        public static function setInfo(int $ID, string $Info): void
         {
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectInfo'] = $Info;
-
-            return true;
         }
 
-        public static function setIcon(int $ID, string $Icon)
+        public static function setIcon(int $ID, string $Icon): void
         {
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectIcon'] = $Icon;
-
-            return true;
         }
 
-        public static function setPosition(int $ID, int $Position)
+        public static function setPosition(int $ID, int $Position): void
         {
+            self::checkRoot($ID);
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectPosition'] = $Position;
-
-            return true;
         }
 
-        public static function setHidden(int $ID, bool $Hidden)
+        public static function setReadOnly(int $ID, bool $ReadOnly): void
         {
+            self::checkRoot($ID);
+            self::checkObject($ID);
+
+            self::$objects[$ID]['ObjectIsReadOnly'] = $ReadOnly;
+        }
+
+        public static function setHidden(int $ID, bool $Hidden): void
+        {
+            self::checkRoot($ID);
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectIsHidden'] = $Hidden;
-
-            return true;
         }
 
-        public static function setDisabled(int $ID, bool $Disabled)
+        public static function setDisabled(int $ID, bool $Disabled): void
         {
+            self::checkRoot($ID);
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectIsDisabled'] = $Disabled;
-
-            return true;
         }
 
-        public static function objectExists(int $ID)
+        public static function objectExists(int $ID): bool
         {
             return isset(self::$objects[$ID]);
+        }
+
+        private static function checkRoot(int $ID): void
+        {
+            if($ID == 0) {
+                throw new \Exception('Cannot change root');
+            }
         }
 
         private static function checkObject(int $ID): void
@@ -307,19 +321,19 @@ namespace IPS {
             }
         }
 
-        public static function getObject(int $ID)
+        public static function getObject(int $ID): array
         {
             self::checkObject($ID);
 
             return self::$objects[$ID];
         }
 
-        public static function getObjectList()
+        public static function getObjectList(): array
         {
             return array_keys(self::$objects);
         }
 
-        public static function getObjectIDByName(string $Name, int $ParentID)
+        public static function getObjectIDByName(string $Name, int $ParentID): array
         {
             if($Name == "") {
                 throw new \Exception("Name cannot be empty");
@@ -337,7 +351,27 @@ namespace IPS {
 
         }
 
-        public static function getObjectIDByIdent(string $Ident, int $ParentID)
+        public static function getObjectIDByNameEx(string $Name, int $ParentID, int $ObjectType): int
+        {
+            if($Name == "") {
+                throw new \Exception("Name cannot be empty");
+            }
+
+            self::checkObject($ParentID);
+            foreach (self::$objects[$ParentID]['ChildrenIDs'] as $ChildID) {
+                self::checkObject($ChildID);
+                if(self::$objects[$ChildID]['ObjectType'] == $ObjectType) {
+                    if(self::$objects[$ChildID]['ObjectName'] == $Name) {
+                        return $ChildID;
+                    }
+                }
+            }
+
+            throw new \Exception(sprintf("Object with name %s could not be found", $Name));
+
+        }
+
+        public static function getObjectIDByIdent(string $Ident, int $ParentID): int
         {
             if($Ident == "") {
                 throw new \Exception("Ident cannot be empty");
@@ -354,34 +388,34 @@ namespace IPS {
             throw new \Exception(sprintf("Object with ident %s could not be found", $Ident));
         }
 
-        public static function hasChildren(int $ID)
+        public static function hasChildren(int $ID): bool
         {
             return sizeof(self::getChildrenIDs($ID)) > 0;
         }
 
-        public static function isChild(int $ID, int $ParentID, bool $Recursive)
+        public static function isChild(int $ID, int $ParentID, bool $Recursive): bool
         {
-            return true;
+            throw new \Exception('FIXME: Not implemented');
         }
 
-        public static function getChildrenIDs(int $ID)
+        public static function getChildrenIDs(int $ID): array
         {
             self::checkObject($ID);
 
             return self::$objects[$ID]['ChildrenIDs'];
         }
 
-        public static function getName(int $ID)
+        public static function getName(int $ID): string
         {
             return self::$objects[$ID]['ObjectName'];
         }
 
-        public static function getParent(int $ID)
+        public static function getParent(int $ID): int
         {
             return self::$objects[$ID]['ParentID'];
         }
 
-        public static function getLocation(int $ID)
+        public static function getLocation(int $ID): string
         {
             $result = self::getName($ID);
             $parentID = self::getParent($ID);
@@ -405,12 +439,10 @@ namespace IPS {
             self::$categories[$CategoryID] = [];
         }
 
-        public static function deleteCategory(int $CategoryID): bool
+        public static function deleteCategory(int $CategoryID): void
         {
             self::checkCategory($CategoryID);
             unset(self::$categories[$CategoryID]);
-
-            return true;
         }
 
         public static function categoryExists(int $CategoryID): bool
@@ -452,7 +484,98 @@ namespace IPS {
     trait InstanceManager
     {
         private static $instances = [];
+        private static $interfaces = [];
 
+        public static function createInstance(int $InstanceID, array $Module): void
+        {
+            if(!class_exists($Module['Class'])) {
+                throw new \Exception(sprintf("Cannot find class %s", $Module['Class']));
+            }
+
+            if(!in_array("IPSModule", class_parents($Module['Class']))) {
+                throw new \Exception(sprintf("Class %s does not inherit from IPSModule", $Module['Class']));
+            }
+
+            $interface = new $Module['Class']($InstanceID);
+            $interface->Create();
+            $interface->ApplyChanges();
+
+            self::$interfaces[$InstanceID] = $interface;
+            self::$instances[$InstanceID] = [
+                'InstanceID' => $InstanceID,
+                'ConnectionID' => 0,
+                'InstanceStatus' => 100 /* IS_CREATING */,
+                'InstanceChanged' => time(),
+                'ModuleInfo' => [
+                    'ModuleID' => $Module['ModuleID'],
+                    'ModuleName' => $Module['ModuleName'],
+                    'ModuleType' => $Module['ModuleType']
+                ],
+            ];
+        }
+
+        public static function deleteInstance(int $InstanceID): void
+        {
+            self::checkInstance($InstanceID);
+            unset(self::$instances[$InstanceID]);
+            unset(self::$interfaces[$InstanceID]);
+        }
+
+        public static function instanceExists(int $InstanceID): bool
+        {
+            return isset(self::$instances[$InstanceID]);
+        }
+
+        private static function checkInstance(int $InstanceID): void
+        {
+            if (!self::instanceExists($InstanceID)) {
+                throw new \Exception(sprintf('Instance #%d does not exist', $InstanceID));
+            }
+        }
+
+        public static function getInstance(int $InstanceID): array
+        {
+            self::checkInstance($InstanceID);
+
+            return self::$instances[$InstanceID];
+        }
+
+        public static function getInstanceInterface(int $InstanceID): \IPSModule
+        {
+            self::checkInstance($InstanceID);
+
+            return self::$interfaces[$InstanceID];
+        }
+
+        public static function getInstanceList(): array
+        {
+            return array_keys(self::$instances);
+        }
+
+        public static function getInstanceListByModuleType(int $ModuleType): array
+        {
+            $result = [];
+            foreach(self::$instances as $instance) {
+                if($instance['ModuleInfo']['ModuleType'] == $ModuleType) {
+                    $result[] = $instance['InstanceID'];
+                }
+            }
+
+            return $result;
+        }
+
+        public static function getInstanceListByModuleID(string $ModuleID): array
+        {
+            $result = [];
+            foreach(self::$instances as $instance) {
+                if($instance['ModuleInfo']['ModuleID'] == $ModuleID) {
+                    $result[] = $instance['InstanceID'];
+                }
+            }
+
+            return $result;
+        }        
+        
     }
 
     trait VariableManager
@@ -501,17 +624,17 @@ namespace IPS {
     {
         private static $debug = [];
 
-        public static function disableDebug(int $ID)
+        public static function disableDebug(int $ID): void
         {
             self::$debug[$ID] = 0;
         }
 
-        public static function enableDebug(int $ID, int $Duration)
+        public static function enableDebug(int $ID, int $Duration): void
         {
             self::$debug[$ID] = time() + $Duration;
         }
 
-        public static function sendDebug(int $SenderID, string $Message, string $Data, int $Format)
+        public static function sendDebug(int $SenderID, string $Message, string $Data, int $Format): void
         {
             if(!isset(self::$debug[$SenderID])) {
                 return;

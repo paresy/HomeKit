@@ -21,9 +21,8 @@ class HomeKitDiscoveryTest extends TestCase
 
     public function testCreate(): void
     {
-        $instance = new HomeKitDiscovery(0);
-        $instance->Create();
-        $form = json_decode($instance->GetConfigurationForParent(), true);
+        $iid = IPS_CreateInstance('{69D234C2-A453-4399-B766-71FB7D663700}' /* HomeKit Discovery */);
+        $form = json_decode(IPS_GetConfigurationForParent($iid), true);
 
         $this->assertEquals($form, [
             'Host'               => '224.0.0.251',

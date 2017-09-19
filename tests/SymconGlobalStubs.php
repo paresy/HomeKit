@@ -5,42 +5,42 @@ declare(strict_types=1);
 /* Object Manager */
 function IPS_SetParent(int $ID, int $ParentID)
 {
-    return IPS\Kernel::setParent($ID, $ParentID);
+    IPS\Kernel::setParent($ID, $ParentID);
 }
 
 function IPS_SetIdent(int $ID, string $Ident)
 {
-    return IPS\Kernel::setIdent($ID, $Ident);
+    IPS\Kernel::setIdent($ID, $Ident);
 }
 
 function IPS_SetName(int $ID, string $Name)
 {
-    return IPS\Kernel::setName($ID, $Name);
+    IPS\Kernel::setName($ID, $Name);
 }
 
 function IPS_SetInfo(int $ID, string $Info)
 {
-    return IPS\Kernel::setInfo($ID, $Info);
+    IPS\Kernel::setInfo($ID, $Info);
 }
 
 function IPS_SetIcon(int $ID, string $Icon)
 {
-    return IPS\Kernel::setIcon($ID, $Icon);
+    IPS\Kernel::setIcon($ID, $Icon);
 }
 
 function IPS_SetPosition(int $ID, int $Position)
 {
-    return IPS\Kernel::setPosition($ID, $Position);
+    IPS\Kernel::setPosition($ID, $Position);
 }
 
 function IPS_SetHidden(int $ID, bool $Hidden)
 {
-    return IPS\Kernel::setHidden($ID, $Hidden);
+    IPS\Kernel::setHidden($ID, $Hidden);
 }
 
 function IPS_SetDisabled(int $ID, bool $Disabled)
 {
-    return IPS\Kernel::setDisabled($ID, $Disabled);
+    IPS\Kernel::setDisabled($ID, $Disabled);
 }
 
 function IPS_ObjectExists(int $ID)
@@ -103,12 +103,14 @@ function IPS_CreateCategory()
 {
     $id = IPS\Kernel::registerObject(0 /* Category */);
     IPS\Kernel::createCategory($id);
+
     return $id;
 }
 
 function IPS_DeleteCategory(int $CategoryID)
 {
-    return IPS\Kernel::deleteCategory($CategoryID);
+    IPS\Kernel::deleteCategory($CategoryID);
+    IPS\Kernel::unregisterObject($CategoryID);
 }
 
 function IPS_CategoryExists(int $CategoryID)
@@ -134,88 +136,93 @@ function IPS_GetCategoryIDByName(string $Name, int $ParentID)
 /* Instance Manager */
 function IPS_CreateInstance(string $ModuleID)
 {
-    return 0;
+    $module = IPS\Kernel::getModule($ModuleID);
+    $id = IPS\Kernel::registerObject(0 /* Category */);
+    IPS\Kernel::createInstance($id, $module);
+
+    return $id;
 }
 
 function IPS_DeleteInstance(int $InstanceID)
 {
-    return true;
+    IPS\Kernel::deleteInstance($InstanceID);
+    IPS\Kernel::unregisterObject($InstanceID);
 }
 
 function IPS_InstanceExists(int $InstanceID)
 {
-    return false;
+    return IPS\Kernel::instanceExists($InstanceID);
 }
 
 function IPS_GetInstance(int $InstanceID)
 {
-    return [];
+    return IPS\Kernel::getInstance($InstanceID);
 }
 
 function IPS_GetInstanceList()
 {
-    return [];
+    return IPS\Kernel::getInstanceList();
 }
 
 function IPS_GetInstanceIDByName(string $Name, int $ParentID)
 {
-    return 0;
+    return IPS\Kernel::getObjectIDByNameEx($Name, $ParentID, 1 /* Instance */);
 }
 
 function IPS_GetInstanceListByModuleType(int $ModuleType)
 {
-    return [];
+    return IPS\Kernel::getInstanceListByModuleType($ModuleType);
 }
 
 function IPS_GetInstanceListByModuleID(string $ModuleID)
 {
-    return [];
+    return IPS\Kernel::getInstanceListByModuleID($ModuleID);
 }
 
 /* Instance Manager - Configuration */
 function IPS_HasChanges(int $InstanceID)
 {
-    return true;
+    return IPS\Kernel::getInstanceInterface($InstanceID)->HasChanges();
 }
 
 function IPS_ResetChanges(int $InstanceID)
 {
-    return true;
+    IPS\Kernel::getInstanceInterface($InstanceID)->ResetChanges();
 }
 
 function IPS_ApplyChanges(int $InstanceID)
 {
-    return true;
+    IPS\Kernel::getInstanceInterface($InstanceID)->ApplyChanges();
 }
 
 function IPS_GetProperty(int $InstanceID, string $Name)
 {
-    return '';
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetProperty($InstanceID, $Name);
 }
 
 function IPS_GetConfiguration(int $InstanceID)
 {
-    return '';
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfiguration($InstanceID);
 }
 
 function IPS_GetConfigurationForParent(int $InstanceID)
 {
-    return '';
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfigurationForParent();
 }
 
 function IPS_GetConfigurationForm(int $InstanceID)
 {
-    return '';
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfigurationForm();
 }
 
 function IPS_SetProperty(int $InstanceID, string $Name, $Value)
 {
-    return true;
+    return IPS\Kernel::getInstanceInterface($InstanceID)->SetProperty($Name, $Value);
 }
 
 function IPS_SetConfiguration(int $InstanceID, string $Configuration)
 {
-    return true;
+    return IPS\Kernel::getInstanceInterface($InstanceID)->SetConfiguration($InstanceID, $Configuration);
 }
 
 /* Instance Manager - Connections */
