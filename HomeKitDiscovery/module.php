@@ -86,7 +86,7 @@ class HomeKitDiscovery extends IPSModule
             }
         }
 
-        if ($number == null) {
+        if ($number === null) {
             throw new Exception($this->Translate('Cannot find associated HomeKit bridge!'));
         }
 
