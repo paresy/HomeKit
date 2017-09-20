@@ -1,5 +1,7 @@
 <?php
 
-class ClientSocket extends IPSModule {
+include_once __DIR__ . '/../VirtualIO/module.php';
+
+class ClientSocket extends VirtualIO {
 
 }
