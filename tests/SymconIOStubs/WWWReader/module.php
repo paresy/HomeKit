@@ -1,5 +1,6 @@
 <?php
 
-class WWWReader extends IPSModule {
-
+declare(strict_types=1);
+class WWWReader extends IPSModule
+{
 }
