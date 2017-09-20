@@ -287,6 +287,6 @@ EOT
     //TODO: Remove at some point...
     public function DebugAccessories()
     {
-        echo json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
+        return json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
     }
 }

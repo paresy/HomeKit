@@ -134,28 +134,14 @@ namespace IPS {
     {
         private static $availableIDs = [];
 
-        private static $objects = [
-            0 => [
-                'ObjectID'         => 0,
-                'ObjectType'       => 0 /* Category */,
-                'ObjectName'       => 'IP-Symcon',
-                'ObjectIcon'       => '',
-                'ObjectInfo'       => '',
-                'ObjectIdent'      => '',
-                'ObjectSummary'    => '',
-                'ObjectIsHidden'   => false,
-                'ObjectIsDisabled' => false,
-                'ObjectIsLocked'   => false,
-                'ObjectIsReadOnly' => false,
-                'ObjectPosition'   => 0,
-                'ParentID'         => 0,
-                'ChildrenIDs'      => [],
-                'HasChildren'      => false
-            ]
-        ];
+        private static $objects = [];
 
         public static function registerObject(int $ObjectType): int
         {
+            if(sizeof(self::$objects) == 0) {
+                throw new \Exception('Reset was not called on Kernel.');
+            }
+
             //Initialize
             if (sizeof(self::$availableIDs) == 0 && sizeof(self::$objects) == 1) {
                 for ($i = 10000; $i < 60000; $i++) {
@@ -692,5 +678,40 @@ namespace IPS {
         use LinkManager;
         use ProfileManager;
         use DebugServer;
+
+        public static function reset() {
+            self::$libraries = [];
+            self::$modules = [];
+            self::$availableIDs = [];
+            self::$objects = [
+                0 => [
+                    'ObjectID'         => 0,
+                    'ObjectType'       => 0 /* Category */,
+                    'ObjectName'       => 'IP-Symcon',
+                    'ObjectIcon'       => '',
+                    'ObjectInfo'       => '',
+                    'ObjectIdent'      => '',
+                    'ObjectSummary'    => '',
+                    'ObjectIsHidden'   => false,
+                    'ObjectIsDisabled' => false,
+                    'ObjectIsLocked'   => false,
+                    'ObjectIsReadOnly' => false,
+                    'ObjectPosition'   => 0,
+                    'ParentID'         => 0,
+                    'ChildrenIDs'      => [],
+                    'HasChildren'      => false
+                ]
+            ];
+            self::$categories = [];
+            self::$instances = [];
+            self::$interfaces = [];
+            self::$variables = [];
+            self::$scripts = [];
+            self::$events = [];
+            self::$medias = [];
+            self::$links = [];
+            self::$profiles = [];
+            self::$debug = [];
+        }
     }
 }
