@@ -10,7 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class HomeKitDiscoveryTest extends TestCase
 {
+    private $bridgeModuleID    = '{7FC71134-CFD0-4909-819C-B794FE067FBC}';
     private $discoveryModuleID = '{69D234C2-A453-4399-B766-71FB7D663700}';
+    private $multicastModuleID = '{BAB408E0-0A0F-48C3-B14E-9FB2FA81F66A}';
 
     public function setUp()
     {
@@ -27,8 +29,8 @@ class HomeKitDiscoveryTest extends TestCase
     {
         $iid = IPS_CreateInstance($this->discoveryModuleID);
         $this->assertEquals(sizeof(IPS_GetInstanceListByModuleID($this->discoveryModuleID)), 1);
-
-
+        $this->assertEquals(sizeof(IPS_GetInstanceListByModuleID($this->multicastModuleID)), 1);
+        $this->assertEquals(IPS_GetInstance($iid)['ConnectionID'], IPS_GetInstanceListByModuleID($this->multicastModuleID)[0]);
     }
 
     public function testConfigurationForm(): void {
@@ -44,5 +46,26 @@ class HomeKitDiscoveryTest extends TestCase
             'EnableReuseAddress' => true,
             'EnableLoopback'     => true
         ]);
+    }
+
+    public function testAnnounce(): void {
+        $discoveryID = IPS_CreateInstance($this->discoveryModuleID);
+        $discoveryInterface = IPS\Kernel::getInstanceInterface($discoveryID);
+        $multicastID = IPS_GetInstance($discoveryID)['ConnectionID'];
+        $multicastInterface = IPS\Kernel::getInstanceInterface($multicastID);
+        IPS_SetProperty($multicastID, "BindIP", "0.0.0.0");
+        IPS_ApplyChanges($multicastID);
+
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        //Associate Bridge with Discovery
+        IPS_SetProperty($bridgeID, 'DiscoveryInstanceID', $discoveryID);
+        IPS_ApplyChanges($bridgeID);
+
+        //This should send something through the multicast socket
+        $discoveryInterface->AnnounceBridge();
+
+        //Make just a simple check if our multicast socket received anything
+        $this->assertTrue($multicastInterface->HasText());
     }
 }
