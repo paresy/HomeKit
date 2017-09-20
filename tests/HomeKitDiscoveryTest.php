@@ -11,6 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 class HomeKitDiscoveryTest extends TestCase
 {
+    private $discoveryModuleID = '{69D234C2-A453-4399-B766-71FB7D663700}';
+
     public function setUp()
     {
         //Register our library we need for testing
@@ -21,7 +23,14 @@ class HomeKitDiscoveryTest extends TestCase
 
     public function testCreate(): void
     {
-        $iid = IPS_CreateInstance('{69D234C2-A453-4399-B766-71FB7D663700}' /* HomeKit Discovery */);
+        $iid = IPS_CreateInstance($this->discoveryModuleID);
+        $this->assertEquals(sizeof(IPS_GetInstanceListByModuleID($this->discoveryModuleID)), 1);
+
+
+    }
+
+    public function testConfigurationForm(): void {
+        $iid = IPS_CreateInstance($this->discoveryModuleID);
         $form = json_decode(IPS_GetConfigurationForParent($iid), true);
 
         $this->assertEquals($form, [

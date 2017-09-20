@@ -228,12 +228,12 @@ function IPS_SetConfiguration(int $InstanceID, string $Configuration)
 /* Instance Manager - Connections */
 function IPS_ConnectInstance(int $InstanceID, int $ParentID)
 {
-    return true;
+    IPS\Kernel::connectInstance($InstanceID, $ParentID);
 }
 
 function IPS_DisconnectInstance(int $InstanceID)
 {
-    return true;
+    IPS\Kernel::disconnectInstance($InstanceID);
 }
 
 /* Instance Manager - Searching */

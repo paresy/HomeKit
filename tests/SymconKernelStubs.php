@@ -497,8 +497,10 @@ namespace IPS {
             }
 
             $interface = new $Module['Class']($InstanceID);
-            $interface->Create();
-            $interface->ApplyChanges();
+            if($interface instanceof \IPSModule) {
+                $interface->Create();
+                $interface->ApplyChanges();
+            }
 
             self::$interfaces[$InstanceID] = $interface;
             self::$instances[$InstanceID] = [
@@ -574,8 +576,20 @@ namespace IPS {
             }
 
             return $result;
-        }        
-        
+        }
+
+        public static function connectInstance(int $InstanceID, int $ParentID): void
+        {
+            self::checkInstance($InstanceID);
+            self::$instances[$InstanceID] = $ParentID;
+        }
+
+        public static function disconnectInstance(int $InstanceID): void
+        {
+            self::checkInstance($InstanceID);
+            self::$instances[$InstanceID] = 0;
+        }
+
     }
 
     trait VariableManager
@@ -605,12 +619,6 @@ namespace IPS {
     trait LinkManager
     {
         private static $links = [];
-
-    }
-
-    trait FlowHandler
-    {
-        private static $flows = [];
 
     }
 
@@ -664,7 +672,6 @@ namespace IPS {
         use EventManager;
         use MediaManager;
         use LinkManager;
-        use FlowHandler;
         use ProfileManager;
         use DebugServer;
     }
