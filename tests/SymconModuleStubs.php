@@ -209,7 +209,7 @@ class IPSModule
     public function GetConfiguration() {
         $result = [];
         foreach($this->properties as $name => $property) {
-            $result[$name] = $result['Current'];
+            $result[$name] = $property['Current'];
         }
 
         return $result;
