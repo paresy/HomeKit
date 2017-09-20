@@ -1,0 +1,13 @@
+{
+	"id": "{6DC3D946-0D31-450F-A8C6-C42DB8D7D4F1}",
+	"name": "SerialPort",
+	"type": 1,
+	"vendor": "Symcon GmbH",
+	"aliases": [
+		"Serial Port"
+	],
+	"parentRequirements": [],
+	"childRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"implemented": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"prefix": "SPRT"
+}

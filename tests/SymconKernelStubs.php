@@ -102,14 +102,14 @@ namespace IPS {
             $filter = ['libs', 'docs', 'imgs', 'tests'];
             foreach ($modules as $module) {
                 if (!in_array(basename($module), $filter)) {
-                    self::loadModule($module . '/module.json', $libraryID);
+                    self::loadModule($module, $libraryID);
                 }
             }
         }
 
-        private static function loadModule(string $file, string $libraryID): void
+        private static function loadModule(string $folder, string $libraryID): void
         {
-            $module = json_decode(file_get_contents($file), true);
+            $module = json_decode(file_get_contents($folder . '/module.json'), true);
             self::$modules[$module['id']] = [
                 'ModuleID'           => $module['id'],
                 'ModuleName'         => $module['name'],
@@ -123,6 +123,9 @@ namespace IPS {
                 'Prefix'             => $module['prefix'],
                 'Class'              => str_replace(" ", "", $module['name'])
             ];
+
+            //Include module class file
+            require_once($folder . '/module.php');
 
         }
     }
@@ -268,6 +271,13 @@ namespace IPS {
             self::checkObject($ID);
 
             self::$objects[$ID]['ObjectIcon'] = $Icon;
+        }
+
+        public static function setSummary(int $ID, bool $Summary): void
+        {
+            self::checkRoot($ID);
+
+            self::$objects[$ID]['ObjectSummary'] = $Summary;
         }
 
         public static function setPosition(int $ID, int $Position): void
@@ -496,13 +506,6 @@ namespace IPS {
                 throw new \Exception(sprintf("Class %s does not inherit from IPSModule", $Module['Class']));
             }
 
-            $interface = new $Module['Class']($InstanceID);
-            if($interface instanceof \IPSModule) {
-                $interface->Create();
-                $interface->ApplyChanges();
-            }
-
-            self::$interfaces[$InstanceID] = $interface;
             self::$instances[$InstanceID] = [
                 'InstanceID' => $InstanceID,
                 'ConnectionID' => 0,
@@ -514,6 +517,15 @@ namespace IPS {
                     'ModuleType' => $Module['ModuleType']
                 ],
             ];
+
+            $interface = new $Module['Class']($InstanceID);
+
+            self::$interfaces[$InstanceID] = $interface;
+
+            if($interface instanceof \IPSModule) {
+                $interface->Create();
+                $interface->ApplyChanges();
+            }
         }
 
         public static function deleteInstance(int $InstanceID): void
@@ -578,16 +590,22 @@ namespace IPS {
             return $result;
         }
 
+        public static function setStatus($InstanceID, $Status): void {
+            self::checkInstance($InstanceID);
+
+            self::$instances[$InstanceID]['InstanceStatus'] = $Status;
+        }
+
         public static function connectInstance(int $InstanceID, int $ParentID): void
         {
             self::checkInstance($InstanceID);
-            self::$instances[$InstanceID] = $ParentID;
+            self::$instances[$InstanceID]['ConnectionID'] = $ParentID;
         }
 
         public static function disconnectInstance(int $InstanceID): void
         {
             self::checkInstance($InstanceID);
-            self::$instances[$InstanceID] = 0;
+            self::$instances[$InstanceID]['ConnectionID'] = 0;
         }
 
     }

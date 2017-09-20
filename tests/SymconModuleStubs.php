@@ -297,22 +297,64 @@ class IPSModule
 
     protected function ConnectParent($ModuleID)
     {
+        if(IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+            $ids = IPS_GetInstanceListByModuleID($ModuleID);
+            if(sizeof($ids) > 0) {
+                IPS_ConnectInstance($this->InstanceID, $ids[0]);
+                return;
+            }
+
+            //Let this function create our parent
+            $this->RequireParent($ModuleID);
+        }
     }
 
     protected function RequireParent($ModuleID)
     {
+        if(IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+            $id = IPS_CreateInstance($ModuleID);
+            $module = IPS_GetModule($ModuleID);
+            IPS_SetName($id, $module['ModuleName']);
+            IPS_ConnectInstance($this->InstanceID, $id);
+        }
     }
 
     protected function ForceParent($ModuleID)
     {
+        //Cleanup parent, if not correct
+        $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if($connectionID != 0) {
+            $instance = IPS_GetInstance($connectionID);
+            if($instance['ModuleInfo']['ModuleID'] != $ModuleID) {
+                IPS_DisconnectInstance($this->InstanceID);
+
+                //Only clean up instance, if no other instance is connected
+                $ids = IPS_GetInstanceList();
+                $inUse = false;
+                foreach ($ids as $id) {
+                    if(IPS_GetInstance($id)['ConnectionID'] == $connectionID) {
+                        $inUse = true;
+                        break;
+                    }
+                }
+                if(!$inUse) {
+                    IPS_DeleteInstance($connectionID);
+                }
+            }
+        }
+
+        //Let this function create our parent
+        $this->RequireParent($ModuleID);
     }
 
     protected function SetStatus($Status)
     {
+        IPS\Kernel::setStatus($this->InstanceID, $Status);
     }
 
     protected function SetSummary($Summary)
     {
+        IPS\Kernel::setSummary($Summary);
     }
 
     protected function SetBuffer($Name, $Data)
@@ -348,7 +390,7 @@ class IPSModule
     }
 
     public function HasChanges() {
-        foreach($this->properties as $property) {
+        foreach($this->properties as &$property) {
             if($property['Current'] != $property['Pending']) {
                 return true;
             }
@@ -359,15 +401,20 @@ class IPSModule
 
     public function ResetChanges()
     {
-        foreach($this->properties as $property) {
+        foreach($this->properties as &$property) {
             $property['Pending'] = $property['Current'];
         }
     }
 
     public function ApplyChanges()
     {
-        foreach($this->properties as $property) {
+        foreach($this->properties as &$property) {
             $property['Current'] = $property['Pending'];
+        }
+
+        //If the module overrides ApplyChanges, it might change the status again
+        if(IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 100 /* IS_CREATING */) {
+            $this->SetStatus(102 /* IS_ACTIVE */);
         }
     }
 

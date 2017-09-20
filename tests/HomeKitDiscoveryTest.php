@@ -5,7 +5,6 @@ declare(strict_types=1);
 include_once __DIR__ . '/SymconGlobalStubs.php';
 include_once __DIR__ . '/SymconKernelStubs.php';
 include_once __DIR__ . '/SymconModuleStubs.php';
-include_once __DIR__ . '/../HomeKitDiscovery/module.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -15,6 +14,9 @@ class HomeKitDiscoveryTest extends TestCase
 
     public function setUp()
     {
+        //Register our i/o stubs for testing
+        IPS\Kernel::loadLibrary(__DIR__ . '/SymconIOStubs/library.json');
+
         //Register our library we need for testing
         IPS\Kernel::loadLibrary(__DIR__ . '/../library.json');
 

@@ -197,12 +197,12 @@ function IPS_ApplyChanges(int $InstanceID)
 
 function IPS_GetProperty(int $InstanceID, string $Name)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetProperty($InstanceID, $Name);
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetProperty($Name);
 }
 
 function IPS_GetConfiguration(int $InstanceID)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfiguration($InstanceID);
+    return IPS\Kernel::getInstanceInterface($InstanceID)->GetConfiguration();
 }
 
 function IPS_GetConfigurationForParent(int $InstanceID)
@@ -217,12 +217,12 @@ function IPS_GetConfigurationForm(int $InstanceID)
 
 function IPS_SetProperty(int $InstanceID, string $Name, $Value)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->SetProperty($Name, $Value);
+    IPS\Kernel::getInstanceInterface($InstanceID)->SetProperty($Name, $Value);
 }
 
 function IPS_SetConfiguration(int $InstanceID, string $Configuration)
 {
-    return IPS\Kernel::getInstanceInterface($InstanceID)->SetConfiguration($InstanceID, $Configuration);
+    IPS\Kernel::getInstanceInterface($InstanceID)->SetConfiguration($Configuration);
 }
 
 /* Instance Manager - Connections */

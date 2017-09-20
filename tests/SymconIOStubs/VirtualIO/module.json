@@ -1,0 +1,13 @@
+{
+	"id": "{6179ED6A-FC31-413C-BB8E-1204150CF376}",
+	"name": "VirtualIO",
+	"type": 1,
+	"vendor": "Symcon GmbH",
+	"aliases": [
+		"Virtual IO"
+	],
+	"parentRequirements": [],
+	"childRequirements": ["{018EF6B5-AB94-40C6-AA53-46943E824ACF}"],
+	"implemented": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
+	"prefix": "VIO"
+}
