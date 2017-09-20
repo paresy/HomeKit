@@ -190,34 +190,38 @@ class IPSModule
         }
     }
 
-    public function GetProperty($Name) {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+    public function GetProperty($Name)
+    {
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
         return $this->properties[$Name]['Current'];
     }
 
-    public function SetProperty($Name, $Value) {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+    public function SetProperty($Name, $Value)
+    {
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
         $this->properties[$Name]['Pending'] = $Value;
     }
 
-    public function GetConfiguration() {
+    public function GetConfiguration()
+    {
         $result = [];
-        foreach($this->properties as $name => $property) {
+        foreach ($this->properties as $name => $property) {
             $result[$name] = $property['Current'];
         }
 
         return $result;
     }
 
-    public function SetConfiguration($Configuration) {
-        foreach($Configuration as $name => $value) {
-            if(isset($this->properties[$name])) {
+    public function SetConfiguration($Configuration)
+    {
+        foreach ($Configuration as $name => $value) {
+            if (isset($this->properties[$name])) {
                 $this->properties[$name]['Pending'] = $value;
             }
         }
@@ -225,12 +229,12 @@ class IPSModule
 
     protected function ReadPropertyBoolean($Name)
     {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
-        if($this->properties[$Name]['Type'] != 0) {
-            throw new Exception(sprintf("Property %s is not of type Boolean", $Name));
+        if ($this->properties[$Name]['Type'] != 0) {
+            throw new Exception(sprintf('Property %s is not of type Boolean', $Name));
         }
 
         return $this->properties[$Name]['Current'];
@@ -238,12 +242,12 @@ class IPSModule
 
     protected function ReadPropertyInteger($Name)
     {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
-        if($this->properties[$Name]['Type'] != 1) {
-            throw new Exception(sprintf("Property %s is not of type Integer", $Name));
+        if ($this->properties[$Name]['Type'] != 1) {
+            throw new Exception(sprintf('Property %s is not of type Integer', $Name));
         }
 
         return $this->properties[$Name]['Current'];
@@ -251,12 +255,12 @@ class IPSModule
 
     protected function ReadPropertyFloat($Name)
     {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
-        if($this->properties[$Name]['Type'] != 2) {
-            throw new Exception(sprintf("Property %s is not of type Float", $Name));
+        if ($this->properties[$Name]['Type'] != 2) {
+            throw new Exception(sprintf('Property %s is not of type Float', $Name));
         }
 
         return $this->properties[$Name]['Current'];
@@ -264,12 +268,12 @@ class IPSModule
 
     protected function ReadPropertyString($Name)
     {
-        if(!isset($this->properties[$Name])) {
-            throw new Exception(sprintf("Property %s not found", $Name));
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
         }
 
-        if($this->properties[$Name]['Type'] != 3) {
-            throw new Exception(sprintf("Property %s is not of type String", $Name));
+        if ($this->properties[$Name]['Type'] != 3) {
+            throw new Exception(sprintf('Property %s is not of type String', $Name));
         }
 
         return $this->properties[$Name]['Current'];
@@ -287,8 +291,8 @@ class IPSModule
     {
         //FIXME: We could validate something here
         $ids = IPS_GetInstanceList();
-        foreach($ids as $id) {
-            if(IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
+        foreach ($ids as $id) {
+            if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
                 $interface = IPS\Kernel::getInstanceInterface($id);
                 $interface->ReceiveData($Data);
             }
@@ -297,9 +301,9 @@ class IPSModule
 
     protected function ConnectParent($ModuleID)
     {
-        if(IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+        if (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
             $ids = IPS_GetInstanceListByModuleID($ModuleID);
-            if(sizeof($ids) > 0) {
+            if (count($ids) > 0) {
                 IPS_ConnectInstance($this->InstanceID, $ids[0]);
                 return;
             }
@@ -311,7 +315,7 @@ class IPSModule
 
     protected function RequireParent($ModuleID)
     {
-        if(IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+        if (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
             $id = IPS_CreateInstance($ModuleID);
             $module = IPS_GetModule($ModuleID);
             IPS_SetName($id, $module['ModuleName']);
@@ -323,21 +327,21 @@ class IPSModule
     {
         //Cleanup parent, if not correct
         $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        if($connectionID != 0) {
+        if ($connectionID != 0) {
             $instance = IPS_GetInstance($connectionID);
-            if($instance['ModuleInfo']['ModuleID'] != $ModuleID) {
+            if ($instance['ModuleInfo']['ModuleID'] != $ModuleID) {
                 IPS_DisconnectInstance($this->InstanceID);
 
                 //Only clean up instance, if no other instance is connected
                 $ids = IPS_GetInstanceList();
                 $inUse = false;
                 foreach ($ids as $id) {
-                    if(IPS_GetInstance($id)['ConnectionID'] == $connectionID) {
+                    if (IPS_GetInstance($id)['ConnectionID'] == $connectionID) {
                         $inUse = true;
                         break;
                     }
                 }
-                if(!$inUse) {
+                if (!$inUse) {
                     IPS_DeleteInstance($connectionID);
                 }
             }
@@ -389,9 +393,10 @@ class IPSModule
         //Has to be overwritten by implementing module
     }
 
-    public function HasChanges() {
-        foreach($this->properties as &$property) {
-            if($property['Current'] != $property['Pending']) {
+    public function HasChanges()
+    {
+        foreach ($this->properties as &$property) {
+            if ($property['Current'] != $property['Pending']) {
                 return true;
             }
         }
@@ -401,19 +406,19 @@ class IPSModule
 
     public function ResetChanges()
     {
-        foreach($this->properties as &$property) {
+        foreach ($this->properties as &$property) {
             $property['Pending'] = $property['Current'];
         }
     }
 
     public function ApplyChanges()
     {
-        foreach($this->properties as &$property) {
+        foreach ($this->properties as &$property) {
             $property['Current'] = $property['Pending'];
         }
 
         //If the module overrides ApplyChanges, it might change the status again
-        if(IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 100 /* IS_CREATING */) {
+        if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 100 /* IS_CREATING */) {
             $this->SetStatus(102 /* IS_ACTIVE */);
         }
     }

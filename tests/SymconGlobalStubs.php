@@ -346,7 +346,6 @@ function IPS_SetScriptFile(int $ScriptID, string $FilePath)
     return true;
 }
 
-
 function IPS_GetScript(int $ScriptID)
 {
     return [];
@@ -513,7 +512,6 @@ function IPS_MediaExists(int $MediaID)
 {
     return false;
 }
-
 
 function IPS_GetMedia(int $MediaID)
 {
@@ -950,7 +948,7 @@ function IPS_GetCompatibleInstances(int $InstanceID)
 /* Module Loader - Helper */
 function IPS_GetModules(array $Parameter)
 {
-    if(sizeof($Parameter) == 0) {
+    if (count($Parameter) == 0) {
         $Parameter = IPS_GetModuleList();
     }
     $result = [];
@@ -962,7 +960,7 @@ function IPS_GetModules(array $Parameter)
 
 function IPS_GetLibraries(array $Parameter)
 {
-    if(sizeof($Parameter) == 0) {
+    if (count($Parameter) == 0) {
         $Parameter = IPS_GetLibraryList();
     }
     $result = [];
