@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-include_once __DIR__ . '/SymconGlobalStubs.php';
-include_once __DIR__ . '/SymconKernelStubs.php';
-include_once __DIR__ . '/SymconModuleStubs.php';
+include_once __DIR__ . '/stubs/GlobalStubs.php';
+include_once __DIR__ . '/stubs/KernelStubs.php';
+include_once __DIR__ . '/stubs/ModuleStubs.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class HomeKitBridgeTest extends TestCase
         IPS\Kernel::reset();
 
         //Register our i/o stubs for testing
-        IPS\Kernel::loadLibrary(__DIR__ . '/SymconIOStubs/library.json');
+        IPS\Kernel::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
 
         //Register our library we need for testing
         IPS\Kernel::loadLibrary(__DIR__ . '/../library.json');
