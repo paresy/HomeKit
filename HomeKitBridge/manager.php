@@ -203,8 +203,8 @@ class HomeKitManager
                     'column'    => 'name',
                     'direction' => 'ascending'
                 ],
-                'columns'  => $columns,
-                'values'   => $values
+                'columns' => $columns,
+                'values'  => $values
             ];
         }
 
