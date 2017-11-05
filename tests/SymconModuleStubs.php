@@ -6,12 +6,10 @@ class IPSModule
 {
     protected $InstanceID;
 
-    private $propertiesBoolean = [];
-    private $propertiesInteger = [];
-    private $propertiesFloat = [];
-    private $propertiesString = [];
+    private $properties = [];
 
     private $buffer = [];
+
     private $receiveDataFilter = '';
     private $forwardDataFilter = '';
 
@@ -35,24 +33,34 @@ class IPSModule
         return IPS_GetObjectIDByIdent($Ident, $this->InstanceID);
     }
 
+    private function RegisterProperty($Name, $DefaultValue, $Type)
+    {
+        $this->properties[$Name] = [
+            'Type'    => $Type,
+            'Default' => $DefaultValue,
+            'Current' => $DefaultValue,
+            'Pending' => $DefaultValue
+        ];
+    }
+
     protected function RegisterPropertyBoolean($Name, $DefaultValue)
     {
-        $this->propertiesBoolean[$Name] = $DefaultValue;
+        $this->RegisterProperty($Name, $DefaultValue, 0);
     }
 
     protected function RegisterPropertyInteger($Name, $DefaultValue)
     {
-        $this->propertiesInteger[$Name] = $DefaultValue;
+        $this->RegisterProperty($Name, $DefaultValue, 1);
     }
 
     protected function RegisterPropertyFloat($Name, $DefaultValue)
     {
-        $this->propertiesFloat[$Name] = $DefaultValue;
+        $this->RegisterProperty($Name, $DefaultValue, 2);
     }
 
     protected function RegisterPropertyString($Name, $DefaultValue)
     {
-        $this->propertiesString[$Name] = $DefaultValue;
+        $this->RegisterProperty($Name, $DefaultValue, 3);
     }
 
     protected function RegisterTimer($Ident, $Milliseconds, $ScriptText)
@@ -182,52 +190,175 @@ class IPSModule
         }
     }
 
+    public function GetProperty($Name)
+    {
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        return $this->properties[$Name]['Current'];
+    }
+
+    public function SetProperty($Name, $Value)
+    {
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        $this->properties[$Name]['Pending'] = $Value;
+    }
+
+    public function GetConfiguration()
+    {
+        $result = [];
+        foreach ($this->properties as $name => $property) {
+            $result[$name] = $property['Current'];
+        }
+
+        return $result;
+    }
+
+    public function SetConfiguration($Configuration)
+    {
+        foreach ($Configuration as $name => $value) {
+            if (isset($this->properties[$name])) {
+                $this->properties[$name]['Pending'] = $value;
+            }
+        }
+    }
+
     protected function ReadPropertyBoolean($Name)
     {
-        return $this->propertiesBoolean[$Name];
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        if ($this->properties[$Name]['Type'] != 0) {
+            throw new Exception(sprintf('Property %s is not of type Boolean', $Name));
+        }
+
+        return $this->properties[$Name]['Current'];
     }
 
     protected function ReadPropertyInteger($Name)
     {
-        return $this->propertiesInteger[$Name];
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        if ($this->properties[$Name]['Type'] != 1) {
+            throw new Exception(sprintf('Property %s is not of type Integer', $Name));
+        }
+
+        return $this->properties[$Name]['Current'];
     }
 
     protected function ReadPropertyFloat($Name)
     {
-        return $this->propertiesFloat[$Name];
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        if ($this->properties[$Name]['Type'] != 2) {
+            throw new Exception(sprintf('Property %s is not of type Float', $Name));
+        }
+
+        return $this->properties[$Name]['Current'];
     }
 
     protected function ReadPropertyString($Name)
     {
-        return $this->propertiesString[$Name];
+        if (!isset($this->properties[$Name])) {
+            throw new Exception(sprintf('Property %s not found', $Name));
+        }
+
+        if ($this->properties[$Name]['Type'] != 3) {
+            throw new Exception(sprintf('Property %s is not of type String', $Name));
+        }
+
+        return $this->properties[$Name]['Current'];
     }
 
     protected function SendDataToParent($Data)
     {
+        //FIXME: We could validate something here
+        $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        $interface = IPS\Kernel::getInstanceInterface($connectionID);
+        $interface->ForwardData($Data);
     }
 
     protected function SendDataToChildren($Data)
     {
+        //FIXME: We could validate something here
+        $ids = IPS_GetInstanceList();
+        foreach ($ids as $id) {
+            if (IPS_GetInstance($id)['ConnectionID'] == $this->InstanceID) {
+                $interface = IPS\Kernel::getInstanceInterface($id);
+                $interface->ReceiveData($Data);
+            }
+        }
     }
 
     protected function ConnectParent($ModuleID)
     {
+        if (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+            $ids = IPS_GetInstanceListByModuleID($ModuleID);
+            if (count($ids) > 0) {
+                IPS_ConnectInstance($this->InstanceID, $ids[0]);
+                return;
+            }
+
+            //Let this function create our parent
+            $this->RequireParent($ModuleID);
+        }
     }
 
     protected function RequireParent($ModuleID)
     {
+        if (IPS_GetInstance($this->InstanceID)['ConnectionID'] == 0) {
+            $id = IPS_CreateInstance($ModuleID);
+            $module = IPS_GetModule($ModuleID);
+            IPS_SetName($id, $module['ModuleName']);
+            IPS_ConnectInstance($this->InstanceID, $id);
+        }
     }
 
     protected function ForceParent($ModuleID)
     {
+        //Cleanup parent, if not correct
+        $connectionID = IPS_GetInstance($this->InstanceID)['ConnectionID'];
+        if ($connectionID != 0) {
+            $instance = IPS_GetInstance($connectionID);
+            if ($instance['ModuleInfo']['ModuleID'] != $ModuleID) {
+                IPS_DisconnectInstance($this->InstanceID);
+
+                //Only clean up instance, if no other instance is connected
+                $ids = IPS_GetInstanceList();
+                $inUse = false;
+                foreach ($ids as $id) {
+                    if (IPS_GetInstance($id)['ConnectionID'] == $connectionID) {
+                        $inUse = true;
+                        break;
+                    }
+                }
+                if (!$inUse) {
+                    IPS_DeleteInstance($connectionID);
+                }
+            }
+        }
+
+        //Let this function create our parent
+        $this->RequireParent($ModuleID);
     }
 
     protected function SetStatus($Status)
     {
+        IPS\Kernel::setStatus($this->InstanceID, $Status);
     }
 
     protected function SetSummary($Summary)
     {
+        IPS\Kernel::setSummary($Summary);
     }
 
     protected function SetBuffer($Name, $Data)
@@ -246,11 +377,7 @@ class IPSModule
 
     protected function SendDebug($Message, $Data, $Format)
     {
-        if ($Format == 1 /* Binary */) {
-            $Data = bin2hex($Data);
-        }
-
-        echo 'DEBUG: ' . $Message . ' | ' . $Data;
+        IPS_SendDebug($this->InstanceID, $Message, $Data, $Format);
     }
 
     protected function RegisterMessage($SenderID, $Message)
@@ -266,8 +393,34 @@ class IPSModule
         //Has to be overwritten by implementing module
     }
 
+    public function HasChanges()
+    {
+        foreach ($this->properties as &$property) {
+            if ($property['Current'] != $property['Pending']) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function ResetChanges()
+    {
+        foreach ($this->properties as &$property) {
+            $property['Pending'] = $property['Current'];
+        }
+    }
+
     public function ApplyChanges()
     {
+        foreach ($this->properties as &$property) {
+            $property['Current'] = $property['Pending'];
+        }
+
+        //If the module overrides ApplyChanges, it might change the status again
+        if (IPS_GetInstance($this->InstanceID)['InstanceStatus'] == 100 /* IS_CREATING */) {
+            $this->SetStatus(102 /* IS_ACTIVE */);
+        }
     }
 
     protected function SetReceiveDataFilter($RequiredRegexMatch)

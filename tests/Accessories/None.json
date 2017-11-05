@@ -1,0 +1,57 @@
+[
+  {
+    "aid": 1,
+    "services": [
+      {
+        "type": "3E",
+        "iid": 1,
+        "characteristics": [
+          {
+            "type": "14",
+            "iid": 2,
+            "format": "bool",
+            "perms": [
+              "pw"
+            ]
+          },
+          {
+            "type": "20",
+            "iid": 3,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Symcon GmbH"
+          },
+          {
+            "type": "21",
+            "iid": 4,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "HomeKit Bridge"
+          },
+          {
+            "type": "23",
+            "iid": 5,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "IP-Symcon"
+          },
+          {
+            "type": "30",
+            "iid": 6,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Undefined"
+          }
+        ]
+      }
+    ]
+  }
+]
