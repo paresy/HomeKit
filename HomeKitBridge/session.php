@@ -362,7 +362,7 @@ class HomeKitSession
             'headers' => [
                 'Content-Type' => 'application/pairing+tlv8'
             ],
-            'body'    => $body
+            'body' => $body
         ]);
     }
 
@@ -1002,7 +1002,7 @@ class HomeKitSession
             'headers' => [
                 'Content-Type' => 'application/hap+json'
             ],
-            'body'    => json_encode([
+            'body' => json_encode([
                 'characteristics' => $characteristics
             ])
         ]));
@@ -1017,7 +1017,7 @@ class HomeKitSession
             'headers' => [
                 'Content-Type' => 'application/hap+json'
             ],
-            'body'    => $body
+            'body' => $body
         ]);
     }
 
