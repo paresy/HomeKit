@@ -194,7 +194,7 @@ class HomeKitManager
 
             $form[] = [
                 'type'     => 'List',
-                'name'     => 'Accessory' . $accessory,
+                'name'     => self::propertyPrefix . $accessory,
                 'caption'  => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
                 'rowCount' => 5,
                 'add'      => true,
