@@ -20,10 +20,10 @@ class HomeKitDiscoveryTest extends TestCase
         IPS\Kernel::reset();
 
         //Register our i/o stubs for testing
-        IPS\Kernel::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
+        IPS\ModuleLoader::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
 
         //Register our library we need for testing
-        IPS\Kernel::loadLibrary(__DIR__ . '/../library.json');
+        IPS\ModuleLoader::loadLibrary(__DIR__ . '/../library.json');
 
         parent::setUp();
     }
@@ -55,9 +55,9 @@ class HomeKitDiscoveryTest extends TestCase
     public function testAnnounce(): void
     {
         $discoveryID = IPS_CreateInstance($this->discoveryModuleID);
-        $discoveryInterface = IPS\Kernel::getInstanceInterface($discoveryID);
+        $discoveryInterface = IPS\InstanceManager::getInstanceInterface($discoveryID);
         $multicastID = IPS_GetInstance($discoveryID)['ConnectionID'];
-        $multicastInterface = IPS\Kernel::getInstanceInterface($multicastID);
+        $multicastInterface = IPS\InstanceManager::getInstanceInterface($multicastID);
         IPS_SetProperty($multicastID, 'BindIP', '0.0.0.0');
         IPS_ApplyChanges($multicastID);
 

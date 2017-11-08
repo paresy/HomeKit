@@ -20,10 +20,10 @@ class HomeKitBridgeTest extends TestCase
         IPS\Kernel::reset();
 
         //Register our i/o stubs for testing
-        IPS\Kernel::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
+        IPS\ModuleLoader::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
 
         //Register our library we need for testing
-        IPS\Kernel::loadLibrary(__DIR__ . '/../library.json');
+        IPS\ModuleLoader::loadLibrary(__DIR__ . '/../library.json');
 
         parent::setUp();
     }
@@ -60,7 +60,7 @@ class HomeKitBridgeTest extends TestCase
         IPS_SetProperty($bridgeID, 'DiscoveryInstanceID', $discoveryID);
         IPS_ApplyChanges($bridgeID);
 
-        $bridgeInterface = IPS\Kernel::getInstanceInterface($bridgeID);
+        $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode($bridgeInterface->DebugAccessories()), json_decode(file_get_contents(__DIR__ . '/Accessories/None.json')));
