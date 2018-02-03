@@ -182,7 +182,7 @@ class HomeKitBridge extends DNSSDModule
                 's#=1',
                 'ff=0',
                 'ci=2',
-                'sf=0'
+                'sf=1'
             ]
         );
 
