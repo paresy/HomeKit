@@ -94,7 +94,7 @@ class HomeKitBridge extends DNSSDModule
             ]
         ];
 
-        $discoveryLink = [
+        $dnssd = [
             [
                 'type'  => 'Label',
                 'label' => 'These options are for experts only! Do not touch!'
@@ -118,7 +118,7 @@ class HomeKitBridge extends DNSSDModule
 
         $accessories = $this->manager->getConfigurationForm();
 
-        return json_encode(['elements' => array_merge($pairing, $accessories, $discoveryLink)]);
+        return json_encode(['elements' => array_merge($pairing, $accessories, $dnssd)]);
     }
 
     public function ForwardData($JSONString)
@@ -220,7 +220,7 @@ class HomeKitBridge extends DNSSDModule
             $this->pairings,
             $this->codes,
             $this->manager,
-            IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgeID'),
+            $this->ReadPropertyString('BridgeID'),
             hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
             $data
         );

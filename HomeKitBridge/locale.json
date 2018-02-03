@@ -11,10 +11,6 @@
       "Request setup code!": "Code anfordern!",
       "You can add new items for each accessory type:": "Sie können pro Gerätetyp Einträge hinzufügen",
       "These options are for experts only! Do not touch!": "Diese Einstellungen sind nur für Experten. Nicht anfassen!",
-      "Discovery Instance": "Instanz (Erkennung)",
-      "Selected InstanceID is not a valid HomeKit Discovery instance!": "Ausgewählte InstanzID ist kein gültiger Erkennungsdienst",
-      "You need the HomeKit Discovery service before generating a setup code!": "Sie benötigen einen HomeKit Erkennungsdienst bevor der HomeKit-Code generiert werden kann!",
-      "The HomeKit Discovery service is not active!": "Der HomeKit Erkennungsdienst ist nicht aktiv!",
       "Our parent instance (ServerSocket) is not active!": "Die übergeordnete Instanz (ServerSocket) ist nicht aktiv!"
     }
   }
