@@ -20,7 +20,7 @@ class HomeKitBridge extends DNSSDModule
 
     public function __construct($InstanceID)
     {
-        parent::__construct($InstanceID, "", "", "", "", 0, []);
+        parent::__construct($InstanceID, '', '', '', '', 0, []);
 
         //Prepare a few basics
         $this->pairings = new HomeKitPairings(
@@ -78,7 +78,6 @@ class HomeKitBridge extends DNSSDModule
 
     public function GetConfigurationForm()
     {
-
         $pairing = [
             [
                 'type'  => 'Label',
@@ -171,19 +170,19 @@ class HomeKitBridge extends DNSSDModule
         // Update DNSSD Service parameters before we call ApplyChanges, which will update DNSSD the service
         $this->UpdateService(
             $this->ReadPropertyString('BridgeName'),
-            "_hap._tcp",
-            "",
-            "",
+            '_hap._tcp',
+            '',
+            '',
             $this->ReadPropertyInteger('BridgePort'),
             [
-                "md=" . $this->ReadPropertyString('BridgeName'),
-                "pv=1.0",
-                "id=" . $this->ReadPropertyString('BridgeID'),
-                "c#=" . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
-                "s#=1",
-                "ff=0",
-                "ci=2",
-                "sf=0"
+                'md=' . $this->ReadPropertyString('BridgeName'),
+                'pv=1.0',
+                'id=' . $this->ReadPropertyString('BridgeID'),
+                'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
+                's#=1',
+                'ff=0',
+                'ci=2',
+                'sf=0'
             ]
         );
 
