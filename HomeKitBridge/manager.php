@@ -34,10 +34,10 @@ class HomeKitManager
     {
 
         //This will be incremented after each change
-        ($this->registerProperty)('ConfigurationNumber', 0);
+        ($this->registerProperty)('ConfigurationNumber', "");
 
         //Save a hash over all accessory properties to only increment number on real changes
-        ($this->registerProperty)('ConfigurationHash', 0);
+        ($this->registerProperty)('ConfigurationHash', "");
 
         //Add all accessory specific properties
         foreach (self::$supportedAccessories as $accessory) {

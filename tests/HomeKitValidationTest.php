@@ -10,12 +10,7 @@ class HomeKitValidationTest extends TestCaseSymconValidation
     {
         $this->validateLibrary(__DIR__ . '/..');
     }
-
-    public function testValidateHomeKitDiscovery(): void
-    {
-        $this->validateModule(__DIR__ . '/../HomeKitDiscovery');
-    }
-
+    
     public function testValidateHomeKitBridge(): void
     {
         $this->validateModule(__DIR__ . '/../HomeKitBridge');

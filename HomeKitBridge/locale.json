@@ -1,15 +1,16 @@
 {
   "translations": {
     "de": {
-      "Before adding the bridge to your iOS device, please create the HomeKit Discovery service.": "Bevor die Bridge am iOS Gerät eingelernt werden kann, wird ein HomeKit Erkennungdienst benötigt!",
-      "Create Discovery service": "Erkennungsdienst erstellen",
-      "You already have created a HomeKit discovery service!": "Sie haben bereits einen Erkennungdienst erstellt!",
-      "HomeKit Discovery": "HomeKit Erkennungsdienst",
+      "Name": "Name",
+      "ID": "ID",
+      "Port": "Port",
+      "Name is required to consist only of letters and numbers!": "Name darf nur aus Buchstaben und Zahlen bestehen!",
+      "ID is not a valid MAC style address!": "ID muss wie eine MAC Adresse aussehen!",
       "OK!": "OK!",
       "Press the button to generate a setup code. It is valid for one pairing and at most 5 minutes.": "Hier drücken, um einen HomeKit-Code zu generieren. Code ist nur für einmaliges Verknüpfen und maximal 5 Minuten gültig.",
       "Request setup code!": "Code anfordern!",
       "You can add new items for each accessory type:": "Sie können pro Gerätetyp Einträge hinzufügen",
-      "Experts only! Do not change!": "Nur für Experten. Nicht ändern!",
+      "These options are for experts only! Do not touch!": "Diese Einstellungen sind nur für Experten. Nicht anfassen!",
       "Discovery Instance": "Instanz (Erkennung)",
       "Selected InstanceID is not a valid HomeKit Discovery instance!": "Ausgewählte InstanzID ist kein gültiger Erkennungsdienst",
       "You need the HomeKit Discovery service before generating a setup code!": "Sie benötigen einen HomeKit Erkennungsdienst bevor der HomeKit-Code generiert werden kann!",

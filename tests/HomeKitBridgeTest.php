@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 include_once __DIR__ . '/stubs/GlobalStubs.php';
+include_once __DIR__ . '/stubs/MessageStubs.php';
 include_once __DIR__ . '/stubs/KernelStubs.php';
 include_once __DIR__ . '/stubs/ModuleStubs.php';
 
@@ -12,7 +13,6 @@ class HomeKitBridgeTest extends TestCase
 {
     private $bridgeModuleID = '{7FC71134-CFD0-4909-819C-B794FE067FBC}';
     private $serverModuleID = '{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}';
-    private $discoveryModuleID = '{69D234C2-A453-4399-B766-71FB7D663700}';
 
     public function setUp()
     {
@@ -42,23 +42,13 @@ class HomeKitBridgeTest extends TestCase
         $form = json_decode(IPS_GetConfigurationForParent($iid), true);
 
         $this->assertEquals($form, [
-            'Open' => false,
-            'Port' => 0
+            'Port' => IPS_GetProperty($iid, "BridgePort")
         ]);
     }
 
     public function testAccessories(): void
     {
-        $discoveryID = IPS_CreateInstance($this->discoveryModuleID);
-        $multicastID = IPS_GetInstance($discoveryID)['ConnectionID'];
-        IPS_SetProperty($multicastID, 'BindIP', '0.0.0.0');
-        IPS_ApplyChanges($multicastID);
-
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
-
-        //Associate Bridge with Discovery
-        IPS_SetProperty($bridgeID, 'DiscoveryInstanceID', $discoveryID);
-        IPS_ApplyChanges($bridgeID);
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
