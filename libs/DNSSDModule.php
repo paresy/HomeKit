@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 class DNSSDModule extends IPSModule
 {
     private $name = '';
@@ -10,14 +11,14 @@ class DNSSDModule extends IPSModule
     private $port = 0;
     private $txtRecords = [];
 
-    public function __construct($InstanceID, $Name, $RegType, $Domain, $Host, $Port, $TXTRecords)
+    public function __construct(int $InstanceID, string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
     {
         parent::__construct($InstanceID);
 
         $this->UpdateService($Name, $RegType, $Domain, $Host, $Port, $TXTRecords);
     }
 
-    public function UpdateService($Name, $RegType, $Domain, $Host, $Port, $TXTRecords)
+    protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
     {
         $this->name = $Name;
         $this->regType = $RegType;
@@ -60,7 +61,7 @@ class DNSSDModule extends IPSModule
         }
     }
 
-    private function RegisterService($Name, $RegType, $Domain, $Host, $Port, $TXTRecords)
+    private function RegisterService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
     {
 
         //Lets expand the array our more complicated persistence format
