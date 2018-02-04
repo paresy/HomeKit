@@ -154,7 +154,8 @@ class HomeKitBridge extends DNSSDModule
         $this->setSession($data->ClientIP, $data->ClientPort, $session);
     }
 
-    private function UpdateDNSSD() {
+    private function UpdateDNSSD()
+    {
 
         // Verify name compliance
         if (ctype_alnum($this->ReadPropertyString('BridgeName')) === false) {
@@ -184,7 +185,6 @@ class HomeKitBridge extends DNSSDModule
                 'sf=1'
             ]
         );
-
     }
 
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
@@ -195,7 +195,6 @@ class HomeKitBridge extends DNSSDModule
 
         // Diese Zeile nicht löschen
         parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
-
     }
 
     public function ApplyChanges()
