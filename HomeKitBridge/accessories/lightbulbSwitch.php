@@ -79,7 +79,7 @@ class HAPAccessoryConfigurationLightbulbSwitch
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '100px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'

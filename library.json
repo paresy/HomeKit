@@ -4,7 +4,8 @@
     "name": "HomeKit",
     "url": "",
     "compatibility": {
-        "version": "5.0"
+        "version": "5.0",
+        "date": 1517747121
     },
     "version": "1.0",
     "build": 0,

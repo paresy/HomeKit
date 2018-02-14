@@ -1,6 +1,20 @@
 language: php
 php:
-  - nightly
+  - 7.2
+
+before_install:
+  - cd ..
+  - git clone git://github.com/jedisct1/libsodium.git
+  - cd libsodium
+  - git checkout 1.0.13
+  - ./autogen.sh
+  - ./configure
+  - echo "Installing libsodium..."
+  - sudo make install
+  - cd ..
+  - echo "Installing ext/sodium..."
+  - pecl install libsodium
+  - cd HomeKit
 
 script:
   - phpunit tests

@@ -34,10 +34,10 @@ class HomeKitManager
     {
 
         //This will be incremented after each change
-        ($this->registerProperty)('ConfigurationNumber', 0);
+        ($this->registerProperty)('ConfigurationNumber', '');
 
         //Save a hash over all accessory properties to only increment number on real changes
-        ($this->registerProperty)('ConfigurationHash', 0);
+        ($this->registerProperty)('ConfigurationHash', '');
 
         //Add all accessory specific properties
         foreach (self::$supportedAccessories as $accessory) {
@@ -167,7 +167,7 @@ class HomeKitManager
                 [
                     'label' => 'Name',
                     'name'  => 'Name',
-                    'width' => '150px',
+                    'width' => 'auto',
                     'add'   => '',
                     'edit'  => [
                         'type' => 'ValidationTextBox'
@@ -176,7 +176,7 @@ class HomeKitManager
                 [
                     'label' => 'Status',
                     'name'  => 'Status',
-                    'width' => '50px',
+                    'width' => '100px',
                     'add'   => '-'
                 ]
             ];
@@ -194,17 +194,17 @@ class HomeKitManager
 
             $form[] = [
                 'type'     => 'List',
-                'name'     => 'Accessory' . $accessory,
+                'name'     => self::propertyPrefix . $accessory,
                 'caption'  => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
                 'rowCount' => 5,
                 'add'      => true,
                 'delete'   => true,
                 'sort'     => [
-                    'column'    => 'name',
+                    'column'    => 'Name',
                     'direction' => 'ascending'
                 ],
-                'columns'  => $columns,
-                'values'   => $values
+                'columns' => $columns,
+                'values'  => $values
             ];
         }
 

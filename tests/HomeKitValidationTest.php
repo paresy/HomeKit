@@ -2,18 +2,13 @@
 
 declare(strict_types=1);
 
-include_once __DIR__ . '/SymconValidator.php';
+include_once __DIR__ . '/stubs/Validator.php';
 
-class HomeKitTest extends TestCaseSymconValidation
+class HomeKitValidationTest extends TestCaseSymconValidation
 {
     public function testValidateHomeKit(): void
     {
         $this->validateLibrary(__DIR__ . '/..');
-    }
-
-    public function testValidateHomeKitDiscovery(): void
-    {
-        $this->validateModule(__DIR__ . '/../HomeKitDiscovery');
     }
 
     public function testValidateHomeKitBridge(): void

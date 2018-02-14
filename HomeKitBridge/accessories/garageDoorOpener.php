@@ -99,7 +99,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
             [
                 'label' => 'CurrentDoorState',
                 'name'  => 'CurrentDoorState',
-                'width' => '100px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -108,7 +108,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
             [
                 'label' => 'TargetDoorState',
                 'name'  => 'TargetDoorState',
-                'width' => '100px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -117,7 +117,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
             [
                 'label' => 'ObstructionDetected',
                 'name'  => 'ObstructionDetected',
-                'width' => '100px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'

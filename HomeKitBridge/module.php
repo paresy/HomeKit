@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include_once __DIR__ . '/../libs/vendor/autoload.php';
+include_once __DIR__ . '/../libs/DNSSDModule.php';
 include_once __DIR__ . '/pairings.php';
 include_once __DIR__ . '/codes.php';
 include_once __DIR__ . '/manager.php';
@@ -12,7 +12,7 @@ include_once __DIR__ . '/characteristics/autoload.php';
 include_once __DIR__ . '/services/autoload.php';
 include_once __DIR__ . '/accessories/autoload.php';
 
-class HomeKitBridge extends IPSModule
+class HomeKitBridge extends DNSSDModule
 {
     private $pairings = null;
     private $codes = null;
@@ -20,7 +20,7 @@ class HomeKitBridge extends IPSModule
 
     public function __construct($InstanceID)
     {
-        parent::__construct($InstanceID);
+        parent::__construct($InstanceID, '', '', '', '', 0, []);
 
         //Prepare a few basics
         $this->pairings = new HomeKitPairings(
@@ -55,7 +55,10 @@ class HomeKitBridge extends IPSModule
         //Never delete this line!
         parent::Create();
 
-        $this->RegisterPropertyInteger('DiscoveryInstanceID', 0);
+        $this->RegisterPropertyString('BridgeID', implode(':', array_slice(str_split(strtoupper(md5(IPS_GetLicensee())), 2), 0, 6)));
+        $this->RegisterPropertyString('BridgeName', 'Symcon');
+        $this->RegisterPropertyInteger('BridgePort', 34587);
+
         $this->RegisterPropertyString('AccessoryKeyPair', bin2hex(sodium_crypto_sign_keypair()));
         $this->RegisterPropertyString('Pairings', '[]');
 
@@ -68,56 +71,13 @@ class HomeKitBridge extends IPSModule
 
     public function GetConfigurationForParent()
     {
-        if ($this->isDiscoveryInstanceValid()) {
-            return json_encode([
-                'Port' => IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgePort')
-            ]);
-        } else {
-            return json_encode(
-                [
-                    'Open' => false,
-                    'Port' => 0
-                ]
-            );
-        }
+        return json_encode([
+            'Port' => $this->ReadPropertyInteger('BridgePort')
+        ]);
     }
 
     public function GetConfigurationForm()
     {
-        $discovery = [];
-
-        //Check if we already have assigned a valid HomeKit discovery instance. Otherwise show a button to create it
-        if (!$this->isDiscoveryInstanceValid()) {
-            $discovery = [
-                [
-                    'type'  => 'Label',
-                    'label' => 'Before adding the bridge to your iOS device, please create the HomeKit Discovery service.'
-                ],
-                [
-                    'type'    => 'Button',
-                    'label'   => 'Create Discovery service',
-                    'onClick' => <<<'EOT'
-						if(sizeof(IPS_GetInstanceListByModuleID("{69D234C2-A453-4399-B766-71FB7D663700}")) > 0) { 
-							echo (new IPSModule($id))->Translate("You already have created a HomeKit discovery service!"); 
-						} else {
-						 	//Create Discovery instance
-							$iid = IPS_CreateInstance("{69D234C2-A453-4399-B766-71FB7D663700}");
-							IPS_SetName($iid, (new IPSModule($id))->Translate("HomeKit Discovery"));
-							$pid = IPS_GetInstance($iid)['ConnectionID'];
-							$configuration = json_decode(IPS_GetConfigurationForParent($iid));
-							$configuration->Open = true;
-							IPS_SetConfiguration($pid, json_encode($configuration));
-							IPS_ApplyChanges($pid);
-							//Self reconfigure ourselves to assign the new Discovery instance
-							IPS_SetProperty($id, "DiscoveryInstanceID", $iid);
-							IPS_ApplyChanges($id);
-							echo (new IPSModule($id))->Translate("OK!");
-						}
-EOT
-                ]
-            ];
-        }
-
         $pairing = [
             [
                 'type'  => 'Label',
@@ -134,21 +94,31 @@ EOT
             ]
         ];
 
-        $discoveryLink = [
+        $dnssd = [
             [
                 'type'  => 'Label',
-                'label' => 'Experts only! Do not change!'
+                'label' => 'These options are for experts only! Do not touch!'
             ],
             [
-                'type'    => 'SelectInstance',
-                'caption' => 'Discovery Instance',
-                'name'    => 'DiscoveryInstanceID'
+                'type'    => 'ValidationTextBox',
+                'caption' => 'Name',
+                'name'    => 'BridgeName'
+            ],
+            [
+                'type'    => 'ValidationTextBox',
+                'caption' => 'ID',
+                'name'    => 'BridgeID'
+            ],
+            [
+                'type'    => 'NumberSpinner',
+                'caption' => 'Port',
+                'name'    => 'BridgePort'
             ]
         ];
 
         $accessories = $this->manager->getConfigurationForm();
 
-        return json_encode(['elements' => array_merge($discovery, $pairing, $accessories, $discoveryLink)]);
+        return json_encode(['elements' => array_merge($pairing, $accessories, $dnssd)]);
     }
 
     public function ForwardData($JSONString)
@@ -159,13 +129,6 @@ EOT
     public function ReceiveData($JSONString)
     {
         $data = json_decode($JSONString);
-
-        //Check Discovery service
-        if (!$this->isDiscoveryInstanceValid()) {
-            $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Discovery Service is missing!', 0);
-
-            return;
-        }
 
         //Decode buffer
         $buffer = utf8_decode($data->Buffer);
@@ -191,18 +154,57 @@ EOT
         $this->setSession($data->ClientIP, $data->ClientPort, $session);
     }
 
+    private function UpdateDNSSD()
+    {
+
+        // Verify name compliance
+        if (ctype_alnum($this->ReadPropertyString('BridgeName')) === false) {
+            echo $this->Translate('Name is required to consist only of letters and numbers!');
+        }
+
+        // Verify id compliance
+        if (filter_var($this->ReadPropertyString('BridgeID'), FILTER_VALIDATE_MAC) === false) {
+            echo $this->Translate('ID is not a valid MAC style address!');
+        }
+
+        // Update DNSSD Service parameters before we call ApplyChanges, which will update DNSSD the service
+        $this->UpdateService(
+            $this->ReadPropertyString('BridgeName'),
+            '_hap._tcp',
+            '',
+            '',
+            $this->ReadPropertyInteger('BridgePort'),
+            [
+                'md=' . $this->ReadPropertyString('BridgeName'),
+                'pv=1.0',
+                'id=' . $this->ReadPropertyString('BridgeID'),
+                'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
+                's#=1',
+                'ff=0',
+                'ci=2',
+                'sf=1'
+            ]
+        );
+    }
+
+    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    {
+
+        //Update DNSSD parameters before we register the service
+        $this->UpdateDNSSD();
+
+        // Diese Zeile nicht löschen
+        parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
+    }
+
     public function ApplyChanges()
     {
 
+        //Update DNSSD parameters before we register the service
+        $this->UpdateDNSSD();
+
         // Diese Zeile nicht löschen
         parent::ApplyChanges();
-
-        // Verify that our Discovery instanceID is valid
-        if ($this->ReadPropertyInteger('DiscoveryInstanceID') > 0) {
-            if (!$this->isDiscoveryInstanceValid()) {
-                echo $this->Translate('Selected InstanceID is not a valid HomeKit Discovery instance!');
-            }
-        }
 
         // We need to check for IDs that have the value zero and assign a proper ID
         $this->manager->updateAccessories();
@@ -210,21 +212,6 @@ EOT
 
     public function GenerateSetupCode()
     {
-
-        //Check if the HomeKit Discovery service is created
-        if (!$this->isDiscoveryInstanceValid()) {
-            echo $this->Translate('You need the HomeKit Discovery service before generating a setup code!');
-
-            return;
-        }
-
-        //Check if the HomeKit Discovery service is active
-        $pid = IPS_GetInstance($this->ReadPropertyInteger('DiscoveryInstanceID'))['ConnectionID'];
-        if (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
-            echo $this->Translate('The HomeKit Discovery service is not active!');
-
-            return;
-        }
 
         //Check if our parent instance (ServerSocket) is active
         $pid = IPS_GetInstance($this->InstanceID)['ConnectionID'];
@@ -235,21 +222,6 @@ EOT
         }
 
         echo $this->codes->generateSetupCode();
-    }
-
-    private function isDiscoveryInstanceValid(): bool
-    {
-        $announceInstanceID = $this->ReadPropertyInteger('DiscoveryInstanceID');
-        if ($announceInstanceID > 0) {
-            if (IPS_InstanceExists($announceInstanceID)) {
-                $i = IPS_GetInstance($announceInstanceID);
-                if ($i['ModuleInfo']['ModuleID'] == '{69D234C2-A453-4399-B766-71FB7D663700}') {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private function getSession(string $clientIP, int $clientPort)
@@ -265,7 +237,7 @@ EOT
             $this->pairings,
             $this->codes,
             $this->manager,
-            IPS_GetProperty($this->ReadPropertyInteger('DiscoveryInstanceID'), 'BridgeID'),
+            $this->ReadPropertyString('BridgeID'),
             hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
             $data
         );
@@ -287,6 +259,6 @@ EOT
     //TODO: Remove at some point...
     public function DebugAccessories()
     {
-        echo json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
+        return json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
     }
 }
