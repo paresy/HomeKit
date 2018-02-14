@@ -15,6 +15,7 @@ class HAPCharacteristicCurrentAmbientLightLevel extends HAPCharacteristic
             ],
             0.0001,
             100000,
+            null,
             HAPCharacteristicUnit::Lux
         );
     }

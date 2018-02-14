@@ -14,6 +14,9 @@ class HAPCharacteristicLockManagementAutoSecurityTimeout extends HAPCharacterist
                 HAPCharacteristicPermission::PairedWrite,
                 HAPCharacteristicPermission::Notify
             ],
+            null,
+            null,
+            null,
             HAPCharacteristicUnit::Seconds
         );
     }
