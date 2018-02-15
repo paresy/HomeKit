@@ -17,4 +17,4 @@ before_install:
   - cd HomeKit
 
 script:
-  - phpunit tests
+  - phpunit tests --configuration tests/phpunit.xml
