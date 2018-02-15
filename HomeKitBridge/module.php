@@ -8,6 +8,7 @@ include_once __DIR__ . '/codes.php';
 include_once __DIR__ . '/manager.php';
 include_once __DIR__ . '/session.php';
 include_once __DIR__ . '/hap.php';
+include_once __DIR__ . '/simulate.php';
 include_once __DIR__ . '/characteristics/autoload.php';
 include_once __DIR__ . '/services/autoload.php';
 include_once __DIR__ . '/accessories/autoload.php';
@@ -17,6 +18,8 @@ class HomeKitBridge extends DNSSDModule
     private $pairings = null;
     private $codes = null;
     private $manager = null;
+
+    use Simulate;
 
     public function __construct($InstanceID)
     {
@@ -256,9 +259,4 @@ class HomeKitBridge extends DNSSDModule
         $this->SetBuffer($clientIP . ':' . $clientPort, $data);
     }
 
-    //TODO: Remove at some point...
-    public function DebugAccessories()
-    {
-        return json_encode($this->manager->getAccessories(), JSON_PRETTY_PRINT);
-    }
 }
