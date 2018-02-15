@@ -22,7 +22,7 @@ class HAPAccessoryBase extends HAPAccessory
 
     public function getCharacteristicName()
     {
-        if(isset($this->data['Name'])) {
+        if (isset($this->data['Name'])) {
             return $this->data['Name'];
         } else {
             return 'Undefined';
