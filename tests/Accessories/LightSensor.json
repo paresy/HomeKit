@@ -1,6 +1,6 @@
 [
   {
-    "aid": 1,
+    "aid": 3,
     "services": [
       {
         "type": "3E",
@@ -30,7 +30,7 @@
             "perms": [
               "pr"
             ],
-            "value": "Bridge"
+            "value": "LightSensor"
           },
           {
             "type": "23",
@@ -39,7 +39,7 @@
             "perms": [
               "pr"
             ],
-            "value": "Undefined"
+            "value": "Test"
           },
           {
             "type": "30",
@@ -49,6 +49,34 @@
               "pr"
             ],
             "value": "Undefined"
+          }
+        ]
+      },
+      {
+        "type": "84",
+        "iid": 101,
+        "characteristics": [
+          {
+            "type": "6B",
+            "iid": 102,
+            "format": "float",
+            "perms": [
+              "pr",
+              "ev"
+            ],
+            "value": 0,
+            "minValue": 0.0001,
+            "maxValue": 100000,
+            "unit": "lux"
+          },
+          {
+            "type": "23",
+            "iid": 103,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
           }
         ]
       }

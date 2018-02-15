@@ -1,6 +1,6 @@
 [
   {
-    "aid": 1,
+    "aid": 2,
     "services": [
       {
         "type": "3E",
@@ -30,7 +30,7 @@
             "perms": [
               "pr"
             ],
-            "value": "Bridge"
+            "value": "LightbulbSwitch"
           },
           {
             "type": "23",
@@ -39,7 +39,7 @@
             "perms": [
               "pr"
             ],
-            "value": "Undefined"
+            "value": "Test"
           },
           {
             "type": "30",
@@ -49,6 +49,32 @@
               "pr"
             ],
             "value": "Undefined"
+          }
+        ]
+      },
+      {
+        "type": "43",
+        "iid": 101,
+        "characteristics": [
+          {
+            "type": "25",
+            "iid": 102,
+            "format": "bool",
+            "perms": [
+              "pr",
+              "pw",
+              "ev"
+            ],
+            "value": false
+          },
+          {
+            "type": "23",
+            "iid": 105,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
           }
         ]
       }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessoryBridge extends HAPAccessory
+class HAPAccessoryBridge extends HAPAccessoryBase
 {
     public function __construct()
     {
@@ -12,31 +12,5 @@ class HAPAccessoryBridge extends HAPAccessory
                 new HAPServiceAccessoryInformation()
             ]
         );
-    }
-
-    public function setCharacteristicIdentify($value)
-    {
-
-        //TODO: We probably should send some event
-    }
-
-    public function getCharacteristicManufacturer()
-    {
-        return 'Symcon GmbH';
-    }
-
-    public function getCharacteristicModel()
-    {
-        return 'HomeKit Bridge';
-    }
-
-    public function getCharacteristicName()
-    {
-        return 'IP-Symcon';
-    }
-
-    public function getCharacteristicSerialNumber()
-    {
-        return 'Undefined';
     }
 }
