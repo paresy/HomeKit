@@ -258,5 +258,4 @@ class HomeKitBridge extends DNSSDModule
 
         $this->SetBuffer($clientIP . ':' . $clientPort, $data);
     }
-
 }
