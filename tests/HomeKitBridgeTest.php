@@ -103,5 +103,4 @@ class HomeKitBridgeTest extends TestCase
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $lightSensor), $bridgeInterface->DebugAccessories());
     }
-
 }
