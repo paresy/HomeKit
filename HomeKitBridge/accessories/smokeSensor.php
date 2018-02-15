@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessorySmokeSensor extends HAPAccessory
+class HAPAccessorySmokeSensor extends HAPAccessoryBase
 {
     public function __construct($data)
     {
@@ -13,32 +13,6 @@ class HAPAccessorySmokeSensor extends HAPAccessory
                 new HAPServiceSmokeSensor()
             ]
         );
-    }
-
-    public function setCharacteristicIdentify($value)
-    {
-
-        //TODO: We probably should send some event
-    }
-
-    public function getCharacteristicManufacturer()
-    {
-        return 'Kai Schnittcher';
-    }
-
-    public function getCharacteristicModel()
-    {
-        return str_replace('HAPAccessory', '', get_class($this));
-    }
-
-    public function getCharacteristicName()
-    {
-        return $this->data['Name'];
-    }
-
-    public function getCharacteristicSerialNumber()
-    {
-        return 'Undefined';
     }
 
     public function getCharacteristicSmokeDetected()

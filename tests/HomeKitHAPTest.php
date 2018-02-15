@@ -37,7 +37,7 @@ class HomeKitHAPTest extends TestCase
     public function testAccessories(): void
     {
         foreach (glob(__DIR__ . '/../HomeKitBridge/accessories/*.php') as $filename) {
-            if (basename($filename) != 'autoload.php') {
+            if (!in_array(basename($filename), ['autoload.php', 'base.php'])) {
                 $className = 'HAPAccessory' . ucfirst(basename($filename, '.php'));
                 $this->assertTrue(class_exists($className), $className . ' is missing!');
                 if ($className == 'HAPAccessoryBridge') {
