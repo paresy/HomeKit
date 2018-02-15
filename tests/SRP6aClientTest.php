@@ -47,7 +47,7 @@ class SRP6aClientTest extends TestCase
         $Averify = hex2bin($this->clean($Averify));
 
         //Verify A
-        $this->assertEquals($srp->createPublicValue(), $Averify);
+        $this->assertEquals($Averify, $srp->createPublicValue());
 
         //Precalculated B (normally received from server)
         $Bverify = '40F57088 A482D4C7 733384FE 0D301FDD CA9080AD 7D4F6FDF 09A01006 C3CB6D56
@@ -80,7 +80,7 @@ class SRP6aClientTest extends TestCase
         $Sverify = hex2bin($this->clean($Sverify));
 
         //Verify S
-        $this->assertEquals($srp->createPresharedSecret($Averify, $Bverify), $Sverify);
+        $this->assertEquals($Sverify, $srp->createPresharedSecret($Averify, $Bverify));
 
         //Precalculated K
         $Kverify = '5CBC219D B052138E E1148C71 CD449896 3D682549 CE91CA24 F098468F 06015BEB
@@ -88,6 +88,6 @@ class SRP6aClientTest extends TestCase
         $Kverify = hex2bin($this->clean($Kverify));
 
         //Verify K
-        $this->assertEquals($srp->createSessionKey($Sverify), $Kverify);
+        $this->assertEquals($Kverify, $srp->createSessionKey($Sverify));
     }
 }
