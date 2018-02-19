@@ -40,11 +40,7 @@ class HomeKitHAPTest extends TestCase
             if (!in_array(basename($filename), ['autoload.php', 'base.php'])) {
                 $className = 'HAPAccessory' . ucfirst(basename($filename, '.php'));
                 $this->assertTrue(class_exists($className), $className . ' is missing!');
-                if ($className == 'HAPAccessoryBridge') {
-                    new $className();
-                } else {
-                    new $className([]);
-                }
+                new $className([]);
             }
         }
     }
