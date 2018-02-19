@@ -20,6 +20,9 @@ class HomeKitSession
     //Data handling
     private $data = '';
 
+    //Identifier for this session
+    private $identifier = '';
+
     //Data encryption
     private $encrypted = false;
     private $encryptedData = '';
@@ -67,6 +70,9 @@ class HomeKitSession
         //Copy data
         $this->data = $json->data;
 
+        //Copy identifier
+        $this->identifier = $json->identifier;
+
         //Copy encryption
         $this->encrypted = $json->encrypted;
         $this->encryptedData = hex2bin($json->encryptedData);
@@ -92,6 +98,7 @@ class HomeKitSession
     {
         return json_encode([
             'data'               => $this->data,
+            'identifier'         => $this->identifier,
             'encrypted'          => $this->encrypted,
             'encryptedData'      => bin2hex($this->encryptedData),
             'messageRecvKey'     => bin2hex($this->messageRecvKey),
@@ -350,9 +357,12 @@ class HomeKitSession
         }
 
         //FIXME: This is not very performant
-        if ((new TLVParser($body))->getByType(TLVType::Error)) {
-            if((new TLVParser($body))->getByType(TLVType::Error)->getError() == TLVError::Unavailable) {
+        $tlvError = (new TLVParser($body))->getByType(TLVType::Error);
+        if ($tlvError && ($tlvError instanceof TLVError)) {
+            if($tlvError->getError() == TLVError::Unavailable) {
                 $status = '429 Too Many Requests';
+            } else if($tlvError->getError() == TLVError::Authentication) {
+                $status = '470 Connection Authorization Required';
             } else {
                 $status = '400 Bad Request';
             }
@@ -770,7 +780,8 @@ class HomeKitSession
 
         //Mark Session as encrypted
         $this->encrypted = true;
-        $this->sendDebug('Session is now using encrypted communication!');
+        $this->identifier = $tlvIdentifier->getIdentifier();
+        $this->sendDebug('Session for ' . $this->identifier . ' is now using encrypted communication!');
 
         return $response;
     }
@@ -865,6 +876,14 @@ class HomeKitSession
             return $response;
         }
 
+        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+            $this->SendDebug('Permissions denied');
+            $response .= TLVBuilder::State(TLVState::M2);
+            $response .= TLVBuilder::Error(TLVError::Authentication);
+
+            return $response;
+        }
+
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
         if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)) {
             $this->SendDebug('Identifier is missing');
@@ -910,6 +929,14 @@ class HomeKitSession
             return $response;
         }
 
+        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+            $this->SendDebug('Permissions denied');
+            $response .= TLVBuilder::State(TLVState::M2);
+            $response .= TLVBuilder::Error(TLVError::Authentication);
+
+            return $response;
+        }
+
         $tlvIdentifier = $tlvs->getByType(TLVType::Identifier);
         if (!$tlvIdentifier || !($tlvIdentifier instanceof TLV8_Identifier)) {
             $this->SendDebug('Identifier is missing');
@@ -931,6 +958,14 @@ class HomeKitSession
         $response = '';
 
         if (!$this->encrypted) {
+            $response .= TLVBuilder::State(TLVState::M2);
+            $response .= TLVBuilder::Error(TLVError::Authentication);
+
+            return $response;
+        }
+
+        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+            $this->SendDebug('Permissions denied');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Authentication);
 
