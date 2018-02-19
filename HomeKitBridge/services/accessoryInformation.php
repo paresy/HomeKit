@@ -14,11 +14,11 @@ class HAPServiceAccessoryInformation extends HAPService
                 new HAPCharacteristicManufacturer(),
                 new HAPCharacteristicModel(),
                 new HAPCharacteristicName(),
-                new HAPCharacteristicSerialNumber()
+                new HAPCharacteristicSerialNumber(),
+                new HAPCharacteristicFirmwareRevision()
             ],
             [
                 //Optional Characteristics
-                new HAPCharacteristicFirmwareRevision(),
                 new HAPCharacteristicHardwareRevision(),
                 new HAPCharacteristicAccessoryFlags()
             ]

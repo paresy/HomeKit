@@ -33,4 +33,9 @@ class HAPAccessoryBase extends HAPAccessory
     {
         return 'Undefined';
     }
+
+    public function getCharacteristicFirmwareRevision()
+    {
+        return 'Undefined';
+    }
 }
