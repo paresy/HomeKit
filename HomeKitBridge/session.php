@@ -933,15 +933,15 @@ class HomeKitSession
         $response .= TLVBuilder::State(TLVState::M2);
 
         $first = true;
-        foreach ($pairings as $identifier => $publicKey) {
+        foreach ($pairings as $identifier => $pairing) {
             if (!$first) {
                 $response .= TLVBuilder::Separator();
             } else {
                 $first = false;
             }
             $response .= TLVBuilder::Identifier($identifier);
-            $response .= TLVBuilder::PublicKey($publicKey);
-            $response .= TLVBuilder::Permissions(TLVPermissions::Admin);
+            $response .= TLVBuilder::PublicKey($pairing['publicKey']);
+            $response .= TLVBuilder::Permissions($pairing['permissions']);
         }
 
         return $response;
