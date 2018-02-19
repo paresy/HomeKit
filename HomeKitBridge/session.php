@@ -958,12 +958,22 @@ class HomeKitSession
 
     private function postIdentify(array $http): string
     {
-        return $this->buildHTTP([
-            'status'  => '204 No Content',
-            'version' => 'HTTP/1.1',
-            'headers' => null,
-            'body'    => null
-        ]);
+        if($this->pairings->hasPairings()) {
+            return $this->buildHTTP([
+                'status'  => '400 Bad Request',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => json_encode(["status" => -70401])
+            ]);
+
+        } else {
+            return $this->buildHTTP([
+                'status'  => '204 No Content',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]);
+        }
     }
 
     private function putCharacteristics(array $http): string
