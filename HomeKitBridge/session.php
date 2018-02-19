@@ -351,7 +351,11 @@ class HomeKitSession
 
         //FIXME: This is not very performant
         if ((new TLVParser($body))->getByType(TLVType::Error)) {
-            $status = '400 Bad Request';
+            if((new TLVParser($body))->getByType(TLVType::Error)->getError() == TLVError::Unavailable) {
+                $status = '429 Too Many Requests';
+            } else {
+                $status = '400 Bad Request';
+            }
         } else {
             $status = '200 OK';
         }
@@ -406,6 +410,14 @@ class HomeKitSession
             return $response;
         }
 
+        if ($this->pairings->hasPairings()) {
+            $this->SendDebug('Only one pairing is only allowed!');
+            $response .= TLVBuilder::State(TLVState::M2);
+            $response .= TLVBuilder::Error(TLVError::Unavailable);
+
+            return $response;
+        }
+
         if (false /* Check for retry count */) {
             $this->SendDebug('RetryCount exceeded while PairSetup');
             $response .= TLVBuilder::State(TLVState::M2);
@@ -419,9 +431,9 @@ class HomeKitSession
 
         //Abort if there is not valid setup code
         if (!$this->setupCode) {
-            $this->SendDebug('No active SetupCode was found. Aborting.');
-
-            return '';
+            $this->SendDebug('No active SetupCode was found. Creating new...');
+            $this->codes->generateSetupCode();
+            $this->setupCode = $this->codes->getSetupCode();
         }
 
         $this->salt = random_bytes(16);
@@ -591,9 +603,6 @@ class HomeKitSession
         $this->privateValue = '';
         $this->publicValue = '';
         $this->sharedSecret = '';
-
-        //Remove current setup code
-        $this->codes->removeSetupCode();
 
         return $response;
     }

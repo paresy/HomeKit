@@ -84,12 +84,12 @@ class HomeKitBridge extends DNSSDModule
         $pairing = [
             [
                 'type'  => 'Label',
-                'label' => 'Press the button to generate a setup code. It is valid for one pairing and at most 5 minutes.'
+                'label' => 'Press the button to start the pairing process. Code is valid for at most 5 minutes.'
             ],
             [
                 'type'    => 'Button',
-                'label'   => 'Request setup code!',
-                'onClick' => 'echo HK_GenerateSetupCode($id);'
+                'label'   => 'Start Pairing!',
+                'onClick' => 'echo HK_RestartPairing($id);'
             ],
             [
                 'type'  => 'Label',
@@ -183,9 +183,9 @@ class HomeKitBridge extends DNSSDModule
                 'id=' . $this->ReadPropertyString('BridgeID'),
                 'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
                 's#=1',
-                'ff=0',
+                'ff=0', /* Switch to 1 when we have a MFi certificate */
                 'ci=2',
-                'sf=1'
+                'sf=' . ($this->pairings->hasPairings() ? "0" : "1") /* Do not allow more than one pairing */
             ]
         );
     }
@@ -213,7 +213,7 @@ class HomeKitBridge extends DNSSDModule
         $this->manager->updateAccessories();
     }
 
-    public function GenerateSetupCode()
+    public function RestartPairing()
     {
 
         //Check if our parent instance (ServerSocket) is active
@@ -224,7 +224,21 @@ class HomeKitBridge extends DNSSDModule
             return;
         }
 
-        echo $this->codes->generateSetupCode();
+        //Remove all pairings before staring the pairing process
+        $this->pairings->clearPairings();
+
+        //Update DNSSD to announce we are fresh and ready to go
+        $this->UpdateDNSSD();
+
+        //Only generate new setup code when required
+        $setupCode = $this->codes->getSetupCode();
+        if(!$setupCode) {
+            $this->SendDebug('HomeKitPairing', 'Creating new setup code for pairing process!', 0);
+            $setupCode = $this->codes->generateSetupCode();
+        }
+
+        echo $setupCode;
+
     }
 
     private function getSession(string $clientIP, int $clientPort)
