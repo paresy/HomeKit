@@ -47,11 +47,24 @@ class HomeKitPairings
         IPS_ApplyChanges($this->instanceID);
     }
 
+    public function clearPairings(): void
+    {
+        $this->SendDebug('Clearing pairings');
+
+        IPS_SetProperty($this->instanceID, 'Pairings', '[]');
+        IPS_ApplyChanges($this->instanceID);
+    }
+
+    public function hasPairings(): bool
+    {
+        return count(json_decode(IPS_GetProperty($this->instanceID, 'Pairings'), true)) > 0;
+    }
+
     public function listPairings(): array
     {
         $this->SendDebug('Requesting list of pairings');
 
-        return json_decode(IPS_GetProperty($this->instanceID, 'Pairings'), true);
+        return array_keys(json_decode(IPS_GetProperty($this->instanceID, 'Pairings'), true));
     }
 
     public function getPairingPublicKey(string $identifier): string
@@ -67,16 +80,16 @@ class HomeKitPairings
         return hex2bin($pairings[$identifier]['publicKey']);
     }
 
-    public function getPairingPermissions(string $identifier): string
+    public function getPairingPermissions(string $identifier): int
     {
         $pairings = json_decode(IPS_GetProperty($this->instanceID, 'Pairings'), true);
 
         $this->SendDebug('Loading pairing permissions for identifier: ' . $identifier);
 
         if (!isset($pairings[$identifier])) {
-            return '';
+            return -1;
         }
 
-        return hex2bin($pairings[$identifier]['permissions']);
+        return $pairings[$identifier]['permissions'];
     }
 }
