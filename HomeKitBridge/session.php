@@ -286,7 +286,7 @@ class HomeKitSession
         }
 
         //We do not require advanced data handling for GET requests
-        if ($method == 'GET') {
+        if ($method == 'GET' || $uri == '/identify' /* This is an exception from the rule! */) {
             $body = null;
         } else {
             //Content-Length is required
