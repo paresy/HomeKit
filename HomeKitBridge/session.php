@@ -135,7 +135,7 @@ class HomeKitSession
         }
 
         //Bail out if session is locked
-        if($this->locked) {
+        if ($this->locked) {
             return $this->buildHTTP([
                 'status'  => '400 Bad Request',
                 'version' => 'HTTP/1.1',
@@ -970,14 +970,14 @@ class HomeKitSession
         //Check remaining pairings if we ran out of admins
         $identifiers = $this->pairings->listPairings();
         $count = 0;
-        foreach($identifiers as $identifier) {
-            if($this->pairings->getPairingPermissions($identifier) == TLVPermissions::Admin) {
+        foreach ($identifiers as $identifier) {
+            if ($this->pairings->getPairingPermissions($identifier) == TLVPermissions::Admin) {
                 $count++;
             }
         }
-        if($count == 0) {
+        if ($count == 0) {
             $this->SendDebug('No administrator is left. Unpair everyone!');
-            foreach($identifiers as $identifier) {
+            foreach ($identifiers as $identifier) {
                 ($this->terminateSessions)($identifier);
             }
         }
