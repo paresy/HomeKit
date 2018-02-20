@@ -191,13 +191,13 @@ class HomeKitSession
 
             //If we have an incomplete packet and the session is empty we probably lost the session
             //This might happen during runtime on module updates. Notify...
-            if($this->empty) {
+            if ($this->empty) {
                 $this->SendDebug('We probably lost the session...');
                 return $this->buildHTTP([
                     'status'  => '500 Internal Server Error',
                     'version' => 'HTTP/1.1',
                     'headers' => null,
-                    'body' => null
+                    'body'    => null
                 ]);
             }
 
