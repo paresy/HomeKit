@@ -68,7 +68,7 @@ class HomeKitSession
             $this->locked = $json->locked;
 
             //Copy data
-            $this->data = $json->data;
+            $this->data = hex2bin($json->data);
 
             //Copy identifier
             $this->identifier = $json->identifier;
@@ -99,7 +99,7 @@ class HomeKitSession
     {
         return json_encode([
             'locked'             => $this->locked,
-            'data'               => $this->data,
+            'data'               => bin2hex($this->data),
             'identifier'         => $this->identifier,
             'encrypted'          => $this->encrypted,
             'encryptedData'      => bin2hex($this->encryptedData),
