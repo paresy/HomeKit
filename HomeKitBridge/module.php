@@ -139,7 +139,7 @@ class HomeKitBridge extends DNSSDModule
         $buffer = utf8_decode($data->Buffer);
 
         //Show some debug data
-        switch($data->Type) {
+        switch ($data->Type) {
             case 0: /* Data */
                 $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Received: ' . $buffer, 0);
                 break;
@@ -170,13 +170,14 @@ class HomeKitBridge extends DNSSDModule
         $this->setSession($data->ClientIP, $data->ClientPort, $session);
     }
 
-    public function Cleanup() {
+    public function Cleanup()
+    {
 
         //This function is used to properly disconnect sessions after any responses were send
         foreach ($this->GetBufferList() as $name) {
             $json = json_decode($this->GetBuffer($name));
-            if(isset($json->locked) && $json->locked) {
-                list($clientIP, $clientPort) = explode(":", $name);
+            if (isset($json->locked) && $json->locked) {
+                list($clientIP, $clientPort) = explode(':', $name);
 
                 //Send disconnect request
                 $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Requesting disconnect...', 0);
@@ -188,8 +189,7 @@ class HomeKitBridge extends DNSSDModule
         }
 
         //Deactivate cleanup timer
-        $this->SetTimerInterval("Cleanup", 0);
-
+        $this->SetTimerInterval('Cleanup', 0);
     }
 
     private function UpdateDNSSD()
@@ -277,7 +277,7 @@ class HomeKitBridge extends DNSSDModule
 
     private function clearSession(string $clientIP, int $clientPort)
     {
-        $this->SetBuffer($clientIP . ':' . $clientPort, "");
+        $this->SetBuffer($clientIP . ':' . $clientPort, '');
     }
 
     private function getSession(string $clientIP, int $clientPort)
@@ -296,7 +296,7 @@ class HomeKitBridge extends DNSSDModule
             $this->ReadPropertyString('BridgeID'),
             hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
             $data,
-            function($Identifier) {
+            function ($Identifier) {
                 $this->terminateSessions($Identifier);
             }
         );
@@ -321,7 +321,7 @@ class HomeKitBridge extends DNSSDModule
 
         foreach ($this->GetBufferList() as $name) {
             $json = json_decode($this->GetBuffer($name));
-            if(isset($json->identifier) && ($json->identifier == $Identifier)) {
+            if (isset($json->identifier) && ($json->identifier == $Identifier)) {
                 //this will lock the session for further communication
                 $json->locked = true;
                 $this->SetBuffer($name, json_encode($json));
@@ -329,8 +329,6 @@ class HomeKitBridge extends DNSSDModule
         }
 
         //Activate cleanup timer
-        $this->SetTimerInterval("Cleanup", 3 * 1000);
-
+        $this->SetTimerInterval('Cleanup', 3 * 1000);
     }
-
 }
