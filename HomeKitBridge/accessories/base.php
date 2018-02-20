@@ -31,11 +31,11 @@ class HAPAccessoryBase extends HAPAccessory
 
     public function readCharacteristicSerialNumber()
     {
-        return 'Undefined';
+        return substr(IPS_GetKernelRevision(), 1, 8);
     }
 
     public function readCharacteristicFirmwareRevision()
     {
-        return 'Undefined';
+        return IPS_GetKernelVersion();
     }
 }
