@@ -68,6 +68,8 @@ class HomeKitBridge extends DNSSDModule
         //Always create our own ServerSocket, when no parent is already available
         $this->RequireParent('{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}');
 
+        $this->RegisterTimer('Cleanup', 0, 'HK_Cleanup($_IPS["TARGET"]);');
+
         //Each accessory is allowed to register properties for persistent data
         $this->manager->registerProperties();
     }
@@ -137,7 +139,18 @@ class HomeKitBridge extends DNSSDModule
         $buffer = utf8_decode($data->Buffer);
 
         //Show some debug data
-        $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Received: ' . $buffer, 0);
+        switch($data->Type) {
+            case 0: /* Data */
+                $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Received: ' . $buffer, 0);
+                break;
+            case 1: /* Connected */
+                $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Connected', 0);
+                return;
+            case 2: /* Disconnected */
+                $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Disconnected', 0);
+                $this->clearSession($data->ClientIP, $data->ClientPort);
+                return;
+        }
 
         //Get Session for ClientIP/ClientPort
         $session = $this->getSession($data->ClientIP, $data->ClientPort);
@@ -155,6 +168,28 @@ class HomeKitBridge extends DNSSDModule
 
         //Save session for ClientIP/ClientPort
         $this->setSession($data->ClientIP, $data->ClientPort, $session);
+    }
+
+    public function Cleanup() {
+
+        //This function is used to properly disconnect sessions after any responses were send
+        foreach ($this->GetBufferList() as $name) {
+            $json = json_decode($this->GetBuffer($name));
+            if(isset($json->locked) && $json->locked) {
+                list($clientIP, $clientPort) = explode(":", $name);
+
+                //Send disconnect request
+                $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Requesting disconnect...', 0);
+                $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => '', 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort), 'Type' => 2 /* Disconnect */]));
+
+                //Remove session
+                $this->clearSession($clientIP, intval($clientPort));
+            }
+        }
+
+        //Deactivate cleanup timer
+        $this->SetTimerInterval("Cleanup", 0);
+
     }
 
     private function UpdateDNSSD()
@@ -240,6 +275,11 @@ class HomeKitBridge extends DNSSDModule
         echo $setupCode;
     }
 
+    private function clearSession(string $clientIP, int $clientPort)
+    {
+        $this->SetBuffer($clientIP . ':' . $clientPort, "");
+    }
+
     private function getSession(string $clientIP, int $clientPort)
     {
         $data = $this->GetBuffer($clientIP . ':' . $clientPort);
@@ -255,7 +295,10 @@ class HomeKitBridge extends DNSSDModule
             $this->manager,
             $this->ReadPropertyString('BridgeID'),
             hex2bin($this->ReadPropertyString('AccessoryKeyPair')),
-            $data
+            $data,
+            function($Identifier) {
+                $this->terminateSessions($Identifier);
+            }
         );
     }
 
@@ -271,4 +314,23 @@ class HomeKitBridge extends DNSSDModule
 
         $this->SetBuffer($clientIP . ':' . $clientPort, $data);
     }
+
+    private function terminateSessions($Identifier)
+    {
+        $this->SendDebug('HomeKit', 'Terminate Sessions: ' . $Identifier, 0);
+
+        foreach ($this->GetBufferList() as $name) {
+            $json = json_decode($this->GetBuffer($name));
+            if(isset($json->identifier) && ($json->identifier == $Identifier)) {
+                //this will lock the session for further communication
+                $json->locked = true;
+                $this->SetBuffer($name, json_encode($json));
+            }
+        }
+
+        //Activate cleanup timer
+        $this->SetTimerInterval("Cleanup", 3 * 1000);
+
+    }
+
 }

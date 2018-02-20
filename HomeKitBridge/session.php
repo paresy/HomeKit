@@ -13,9 +13,11 @@ class HomeKitSession
     private $manager = null;
     private $bridgeID = '';
     private $accessoryKP = '';
+    private $terminateSessions = null;
 
-    //Flag for new sessions
+    //Flags for session
     private $new = false;
+    private $locked = false;
 
     //Data handling
     private $data = '';
@@ -48,7 +50,7 @@ class HomeKitSession
         ($this->debug)('HomeKitSession', $message, 0);
     }
 
-    public function __construct(callable $debug, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData)
+    public function __construct(callable $debug, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData, callable $terminateSessions)
     {
         $this->debug = $debug;
         $this->pairings = $pairings;
@@ -56,6 +58,7 @@ class HomeKitSession
         $this->manager = $manager;
         $this->bridgeID = $bridgeID;
         $this->accessoryKP = $accessoryKP;
+        $this->terminateSessions = $terminateSessions;
 
         //Fresh session use the predefined values
         if ($sessionData == '') {
@@ -66,6 +69,8 @@ class HomeKitSession
 
         //Decode session data which is JSON encoded
         $json = json_decode($sessionData);
+
+        $this->locked = $json->locked;
 
         //Copy data
         $this->data = $json->data;
@@ -97,6 +102,7 @@ class HomeKitSession
     public function __toString(): string
     {
         return json_encode([
+            'locked'             => $this->locked,
             'data'               => $this->data,
             'identifier'         => $this->identifier,
             'encrypted'          => $this->encrypted,
@@ -126,6 +132,16 @@ class HomeKitSession
 
                 return '';
             }
+        }
+
+        //Bail out if session is locked
+        if($this->locked) {
+            return $this->buildHTTP([
+                'status'  => '400 Bad Request',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => json_encode(['status' => -70401])
+            ]);
         }
 
         //If the session is in an encrypted state we need to decrypt first
@@ -358,7 +374,7 @@ class HomeKitSession
 
         //FIXME: This is not very performant
         $tlvError = (new TLVParser($body))->getByType(TLVType::Error);
-        if ($tlvError && ($tlvError instanceof TLVError)) {
+        if (false /*$tlvError instanceof TLV8_Error*/) {
             if ($tlvError->getError() == TLVError::Unavailable) {
                 $status = '429 Too Many Requests';
             } elseif ($tlvError->getError() == TLVError::Authentication) {
@@ -948,6 +964,24 @@ class HomeKitSession
 
         $this->pairings->removePairing($tlvIdentifier->getIdentifier());
 
+        //Now tear down any connections for this identifier
+        ($this->terminateSessions)($tlvIdentifier->getIdentifier());
+
+        //Check remaining pairings if we ran out of admins
+        $identifiers = $this->pairings->listPairings();
+        $count = 0;
+        foreach($identifiers as $identifier) {
+            if($this->pairings->getPairingPermissions($identifier) == TLVPermissions::Admin) {
+                $count++;
+            }
+        }
+        if($count == 0) {
+            $this->SendDebug('No administrator is left. Unpair everyone!');
+            foreach($identifiers as $identifier) {
+                ($this->terminateSessions)($identifier);
+            }
+        }
+
         $response .= TLVBuilder::State(TLVState::M2);
 
         return $response;
@@ -972,12 +1006,12 @@ class HomeKitSession
             return $response;
         }
 
-        $pairings = $this->pairings->listPairings();
+        $identifiers = $this->pairings->listPairings();
 
         $response .= TLVBuilder::State(TLVState::M2);
 
         $first = true;
-        foreach ($pairings as $identifier) {
+        foreach ($identifiers as $identifier) {
             if (!$first) {
                 $response .= TLVBuilder::Separator();
             } else {
