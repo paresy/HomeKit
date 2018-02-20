@@ -161,6 +161,9 @@ class HAPService
 
                 //Call the function to get the current value
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
+
+                //Validate the value against the rules
+                $this->validateCharacteristic($instanceID, $value, $accessory);
             }
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
@@ -196,6 +199,9 @@ class HAPService
 
             //Call the function to get the current value
             $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
+
+            //Validate the value against the rules
+            $this->validateCharacteristic($instanceID, $value, $accessory);
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
         }
