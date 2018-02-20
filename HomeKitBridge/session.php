@@ -16,7 +16,6 @@ class HomeKitSession
     private $terminateSessions = null;
 
     //Flags for session
-    private $new = false;
     private $locked = false;
 
     //Data handling
@@ -60,43 +59,38 @@ class HomeKitSession
         $this->accessoryKP = $accessoryKP;
         $this->terminateSessions = $terminateSessions;
 
-        //Fresh session use the predefined values
-        if ($sessionData == '') {
-            $this->new = true;
-
-            return;
-        }
-
         //Decode session data which is JSON encoded
-        $json = json_decode($sessionData);
+        if($sessionData != '') {
+            $json = json_decode($sessionData);
 
-        $this->locked = $json->locked;
+            $this->locked = $json->locked;
 
-        //Copy data
-        $this->data = $json->data;
+            //Copy data
+            $this->data = $json->data;
 
-        //Copy identifier
-        $this->identifier = $json->identifier;
+            //Copy identifier
+            $this->identifier = $json->identifier;
 
-        //Copy encryption
-        $this->encrypted = $json->encrypted;
-        $this->encryptedData = hex2bin($json->encryptedData);
-        $this->messageRecvKey = hex2bin($json->messageRecvKey);
-        $this->messageRecvCounter = $json->messageRecvCounter;
-        $this->messageSendKey = hex2bin($json->messageSendKey);
-        $this->messageSendCounter = $json->messageSendCounter;
+            //Copy encryption
+            $this->encrypted = $json->encrypted;
+            $this->encryptedData = hex2bin($json->encryptedData);
+            $this->messageRecvKey = hex2bin($json->messageRecvKey);
+            $this->messageRecvCounter = $json->messageRecvCounter;
+            $this->messageSendKey = hex2bin($json->messageSendKey);
+            $this->messageSendCounter = $json->messageSendCounter;
 
-        //Required for stage PS M1+M3
-        $this->setupCode = $json->setupCode;
-        $this->salt = hex2bin($json->salt);
-        $this->privateValue = hex2bin($json->privateValue);
-        $this->publicValue = hex2bin($json->publicValue);
+            //Required for stage PS M1+M3
+            $this->setupCode = $json->setupCode;
+            $this->salt = hex2bin($json->salt);
+            $this->privateValue = hex2bin($json->privateValue);
+            $this->publicValue = hex2bin($json->publicValue);
 
-        //Required for stage PS M5 and PV M1+M3
-        $this->sharedSecret = hex2bin($json->sharedSecret);
+            //Required for stage PS M5 and PV M1+M3
+            $this->sharedSecret = hex2bin($json->sharedSecret);
 
-        //Required for stage PV M1+M3
-        $this->sessionKey = hex2bin($json->sessionKey);
+            //Required for stage PV M1+M3
+            $this->sessionKey = hex2bin($json->sessionKey);
+        }
     }
 
     public function __toString(): string
@@ -122,18 +116,6 @@ class HomeKitSession
 
     public function processData($data): string
     {
-
-        //Make check for disappeared sessions
-        if ($this->new) {
-
-            //If we receive (first) encrypted data on a new session, then there is something wrong.
-            if ($this->data == '' && substr($data, 0, 4) !== 'POST') {
-                $this->sendDebug('Session data lost. We cannot resume this connection!');
-
-                return '';
-            }
-        }
-
         //Bail out if session is locked
         if ($this->locked) {
             return $this->buildHTTP([
@@ -230,7 +212,7 @@ class HomeKitSession
                     case '/characteristics':
                         return $this->writeCharacteristics($http);
                     default:
-                        $this->SendDebug('Unsupported uri for PUT' . $http['uri']);
+                        $this->SendDebug('Unsupported uri for PUT: ' . $http['uri']);
 
                         return '';
                 }
@@ -246,7 +228,7 @@ class HomeKitSession
                     case '/identify':
                         return $this->postIdentify($http);
                     default:
-                        $this->SendDebug('Unsupported uri for POST' . $http['uri']);
+                        $this->SendDebug('Unsupported uri for POST: ' . $http['uri']);
 
                         return '';
                 }
@@ -372,22 +354,8 @@ class HomeKitSession
             return '';
         }
 
-        //FIXME: This is not very performant
-        $tlvError = (new TLVParser($body))->getByType(TLVType::Error);
-        if (false /*$tlvError instanceof TLV8_Error*/) {
-            if ($tlvError->getError() == TLVError::Unavailable) {
-                $status = '429 Too Many Requests';
-            } elseif ($tlvError->getError() == TLVError::Authentication) {
-                $status = '470 Connection Authorization Required';
-            } else {
-                $status = '400 Bad Request';
-            }
-        } else {
-            $status = '200 OK';
-        }
-
         return $this->buildHTTP([
-            'status'  => $status,
+            'status'  => '200 OK',
             'version' => 'HTTP/1.1',
             'headers' => [
                 'Content-Type' => 'application/pairing+tlv8'
@@ -845,6 +813,15 @@ class HomeKitSession
 
     private function postPairings(array $http): string
     {
+        if (!$this->encrypted) {
+            return $this->buildHTTP([
+                'status'  => '470 Connection Authorization Required',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]);
+        }
+
         $tlvs = new TLVParser($http['body']);
 
         $tlvMethod = $tlvs->getByType(TLVType::Method);
@@ -1047,6 +1024,15 @@ class HomeKitSession
 
     private function writeCharacteristics(array $http): string
     {
+        if (!$this->encrypted) {
+            return $this->buildHTTP([
+                'status'  => '470 Connection Authorization Required',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]);
+        }
+
         $characteristics = [];
         $ok = true;
 
@@ -1122,6 +1108,15 @@ class HomeKitSession
 
     private function readCharacteristics(array $http): string
     {
+        if (!$this->encrypted) {
+            return $this->buildHTTP([
+                'status'  => '470 Connection Authorization Required',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]);
+        }
+
         $characteristics = [];
         $ok = true;
 
@@ -1182,6 +1177,15 @@ class HomeKitSession
 
     private function getAccessories(array $http): string
     {
+        if (!$this->encrypted) {
+            return $this->buildHTTP([
+                'status'  => '470 Connection Authorization Required',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]);
+        }
+
         $response = [
             'accessories' => $this->manager->getAccessories()
         ];
