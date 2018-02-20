@@ -217,7 +217,9 @@ class HomeKitManager
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
-            $bridge = new $class();
+            $bridge = new $class([
+                'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
+            ]);
             if ($bridge instanceof HAPAccessory) {
                 $bridge->setCharacteristic($iid, $value);
             }
