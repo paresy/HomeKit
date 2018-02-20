@@ -213,18 +213,18 @@ class HomeKitManager
         return $form;
     }
 
-    public function putCharacteristics(int $aid, int $iid, $value): void
+    private function getAccessoryObject(int $aid): object
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
             $bridge = new $class([
                 'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
             ]);
-            if ($bridge instanceof HAPAccessory) {
-                $bridge->setCharacteristic($iid, $value);
+            if (!($bridge instanceof HAPAccessory)) {
+                throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
             }
 
-            return;
+            return $bridge;
         }
 
         foreach (self::$supportedAccessories as $accessory) {
@@ -233,11 +233,11 @@ class HomeKitManager
                 if ($aid == $data['ID']) {
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
-                    if ($object instanceof HAPAccessory) {
-                        $object->setCharacteristic($iid, $value);
+                    if (!($object instanceof HAPAccessory)) {
+                        throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
                     }
 
-                    return;
+                    return $object;
                 }
             }
         }
@@ -245,33 +245,33 @@ class HomeKitManager
         throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
     }
 
-    public function getCharacteristics(int $aid, int $iid)
+    public function validateCharacteristics(int $aid, int $iid, &$value): bool
     {
-        if ($aid == 1) {
-            $class = self::classPrefix . 'Bridge';
-            $bridge = new $class([
-                'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
-            ]);
+        return $this->getAccessoryObject($aid)->validateCharacteristic($iid, $value);
+    }
 
-            if ($bridge instanceof HAPAccessory) {
-                return $bridge->getCharacteristic($iid);
-            }
-        }
+    public function supportsWriteCharacteristics(int $aid, int $iid): bool
+    {
+        return $this->getAccessoryObject($aid)->supportsWriteCharacteristic($iid);
+    }
 
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                if ($aid == $data['ID']) {
-                    $class = self::classPrefix . $accessory;
-                    $object = new $class($data);
+    public function writeCharacteristics(int $aid, int $iid, $value): void
+    {
+        $this->getAccessoryObject($aid)->writeCharacteristic($iid, $value);
+    }
 
-                    if ($object instanceof HAPAccessory) {
-                        return $object->getCharacteristic($iid);
-                    }
-                }
-            }
-        }
+    public function supportsReadCharacteristics(int $aid, int $iid): bool
+    {
+        return $this->getAccessoryObject($aid)->supportsReadCharacteristic($iid);
+    }
 
-        throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
+    public function readCharacteristics(int $aid, int $iid)
+    {
+        return $this->getAccessoryObject($aid)->readCharacteristic($iid);
+    }
+
+    public function supportsNotifyCharacteristics(int $aid, int $iid): bool
+    {
+        return $this->getAccessoryObject($aid)->supportsNotifyCharacteristic($iid);
     }
 }

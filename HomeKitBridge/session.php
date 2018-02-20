@@ -218,7 +218,7 @@ class HomeKitSession
                     case '/accessories':
                         return $this->getAccessories($http);
                     case '/characteristics':
-                        return $this->getCharacteristics($http);
+                        return $this->readCharacteristics($http);
                     default:
                         $this->SendDebug('Unsupported uri for GET: ' . $http['uri']);
 
@@ -228,7 +228,7 @@ class HomeKitSession
             case 'PUT':
                 switch ($http['uri']) {
                     case '/characteristics':
-                        return $this->putCharacteristics($http);
+                        return $this->writeCharacteristics($http);
                     default:
                         $this->SendDebug('Unsupported uri for PUT' . $http['uri']);
 
@@ -1045,30 +1045,85 @@ class HomeKitSession
         }
     }
 
-    private function putCharacteristics(array $http): string
+    private function writeCharacteristics(array $http): string
     {
+        $characteristics = [];
+        $ok = true;
+
         $data = json_decode($http['body'], true);
         if (isset($data['characteristics'])) {
             foreach ($data['characteristics'] as $characteristic) {
                 if (isset($characteristic['value'])) {
-                    $this->manager->putCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
+                    if(!$this->manager->supportsWriteCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                        $ok = false; //We need to send Multi-Status response
+                        $characteristics[] = [
+                            'aid'   => $characteristic['aid'],
+                            'iid'   => $characteristic['iid'],
+                            'status' => -70404
+                        ];
+                    } else if(!$this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value'])) {
+                        $ok = false; //We need to send Multi-Status response
+                        $characteristics[] = [
+                            'aid'   => $characteristic['aid'],
+                            'iid'   => $characteristic['iid'],
+                            'status' => -70410
+                        ];
+                    } else {
+                        $characteristics[] = [
+                            'aid'   => $characteristic['aid'],
+                            'iid'   => $characteristic['iid'],
+                            'status' => 0
+                        ];
+                        $this->manager->writeCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
+                    }
+                } else if (isset($characteristic['ev'])) {
+                    if(!$this->manager->supportsNotifyCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                        $ok = false; //We need to send Multi-Status response
+                        $characteristics[] = [
+                            'aid'   => $characteristic['aid'],
+                            'iid'   => $characteristic['iid'],
+                            'status' => -70406
+                        ];
+                    } else {
+                        $characteristics[] = [
+                            'aid'   => $characteristic['aid'],
+                            'iid'   => $characteristic['iid'],
+                            'status' => 0
+                        ];
+                        $this->sendDebug('Registering Notify: ' . print_r($characteristic, true));
+                    }
                 } else {
-                    $this->sendDebug('Unsupported put characteristic: ' . print_r($characteristic, true));
+                    $this->sendDebug('Unsupported write characteristic: ' . print_r($characteristic, true));
                 }
             }
         }
 
-        return $this->buildEncryptedResponse($this->buildHTTP([
-            'status'  => '204 No Content',
-            'version' => 'HTTP/1.1',
-            'headers' => null,
-            'body'    => null
-        ]));
+        if($ok) {
+            return $this->buildEncryptedResponse($this->buildHTTP([
+                'status'  => '204 No Content',
+                'version' => 'HTTP/1.1',
+                'headers' => null,
+                'body'    => null
+            ]));
+        } else {
+            return $this->buildEncryptedResponse($this->buildHTTP([
+                'status'  => '207 Multi-Status',
+                'version' => 'HTTP/1.1',
+                'headers' => [
+                    'Content-Type' => 'application/hap+json'
+                ],
+                'body' => json_encode([
+                    'characteristics' => $characteristics
+                ])
+            ]));
+        }
+
     }
 
-    private function getCharacteristics(array $http): string
+    private function readCharacteristics(array $http): string
     {
         $characteristics = [];
+        $ok = true;
 
         $ids = explode(',', $http['query']['id']);
 
@@ -1076,16 +1131,32 @@ class HomeKitSession
             $target = explode('.', $id);
             $aid = intval($target[0]);
             $iid = intval($target[1]);
-            $value = $this->manager->getCharacteristics($aid, $iid);
-            $characteristics[] = [
-                'aid'   => $aid,
-                'iid'   => $iid,
-                'value' => $value
-            ];
+
+            if(!$this->manager->supportsReadCharacteristics($aid, $iid)) {
+                $ok = false; //We need to send Multi-Status response
+                $characteristics[] = [
+                    'aid'   => $aid,
+                    'iid'   => $iid,
+                    'status' => -70405
+                ];
+            } else {
+                $value = $this->manager->readCharacteristics($aid, $iid);
+
+                $validatedValue = $value;
+                if(!$this->manager->validateCharacteristics($aid, $iid, $validatedValue)) {
+                    $this->SendDebug("Invalid characteristic value " . $value . " fixed to " . $validatedValue);
+                }
+
+                $characteristics[] = [
+                    'aid'   => $aid,
+                    'iid'   => $iid,
+                    'value' => $validatedValue
+                ];
+            }
         }
 
         return $this->buildEncryptedResponse($this->buildHTTP([
-            'status'  => '200 OK',
+            'status'  => $ok ? '200 OK' : '207 Multi-Status',
             'version' => 'HTTP/1.1',
             'headers' => [
                 'Content-Type' => 'application/hap+json'

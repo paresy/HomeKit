@@ -15,7 +15,7 @@ class HAPAccessoryTemperatureSensor extends HAPAccessoryBase
         );
     }
 
-    public function getCharacteristicCurrentTemperature()
+    public function readCharacteristicCurrentTemperature()
     {
         return GetValue($this->data['VariableID']);
     }

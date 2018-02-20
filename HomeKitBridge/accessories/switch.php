@@ -15,12 +15,12 @@ class HAPAccessorySwitch extends HAPAccessoryBase
         );
     }
 
-    public function getCharacteristicOn()
+    public function readCharacteristicOn()
     {
         return GetValue($this->data['VariableID']);
     }
 
-    public function setCharacteristicOn($value)
+    public function writeCharacteristicOn($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
     }

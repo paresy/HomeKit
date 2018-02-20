@@ -15,7 +15,7 @@ class HAPAccessoryLeakSensor extends HAPAccessoryBase
         );
     }
 
-    public function getCharacteristicLeakDetected()
+    public function readCharacteristicLeakDetected()
     {
         $targetVariable = IPS_GetVariable($this->data['VariableID']);
 

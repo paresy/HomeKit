@@ -15,32 +15,32 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
         );
     }
 
-    public function getCharacteristicCurrentDoorState()
+    public function readCharacteristicCurrentDoorState()
     {
         return GetValue($this->data['CurrentDoorState']);
     }
 
-    public function getCharacteristicTargetDoorState()
+    public function readCharacteristicTargetDoorState()
     {
         return GetValue($this->data['TargetDoorState']);
     }
 
-    public function getCharacteristicObstructionDetected()
+    public function readCharacteristicObstructionDetected()
     {
         return GetValue($this->data['ObstructionDetected']);
     }
 
-    public function setCharacteristicCurrentDoorState($value)
+    public function writeCharacteristicCurrentDoorState($value)
     {
         $this->switchDevice($this->data['CurrentDoorState'], $value);
     }
 
-    public function setCharacteristicTargetDoorState($value)
+    public function writeCharacteristicTargetDoorState($value)
     {
         $this->switchDevice($this->data['TargetDoorState'], $value);
     }
 
-    public function setCharacteristicObstructionDetected($value)
+    public function writeCharacteristicObstructionDetected($value)
     {
         $this->switchDevice($this->data['ObstructionDetected'], $value);
     }

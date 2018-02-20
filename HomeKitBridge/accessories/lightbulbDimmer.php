@@ -6,20 +6,20 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
 {
-    public function getCharacteristicOn()
+    public function readCharacteristicOn()
     {
         $profile = $this->getProfile();
 
         return GetValue($this->data['VariableID']) > $profile['MinValue'];
     }
 
-    public function setCharacteristicOn($value)
+    public function writeCharacteristicOn($value)
     {
         $profile = $this->getProfile();
 
         //Only switch the device on, if it isn't on.
         //This should fix the problem that Apple sends on before dimming
-        if ($value && $this->getCharacteristicOn()) {
+        if ($value && $this->readCharacteristicOn()) {
             return;
         }
 
@@ -32,7 +32,7 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
         $this->switchDevice($this->data['VariableID'], $value);
     }
 
-    public function getCharacteristicBrightness()
+    public function readCharacteristicBrightness()
     {
         $profile = $this->getProfile();
 
@@ -43,7 +43,7 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
         return $valueToPercent(GetValue($this->data['VariableID']));
     }
 
-    public function setCharacteristicBrightness($value)
+    public function writeCharacteristicBrightness($value)
     {
         $profile = $this->getProfile();
 

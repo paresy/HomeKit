@@ -15,7 +15,7 @@ class HAPAccessoryMotionSensor extends HAPAccessoryBase
         );
     }
 
-    public function getCharacteristicMotionDetected()
+    public function readCharacteristicMotionDetected()
     {
         $targetVariable = IPS_GetVariable($this->data['VariableID']);
 

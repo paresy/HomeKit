@@ -6,42 +6,42 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 {
-    public function getCharacteristicOn()
+    public function readCharacteristicOn()
     {
         return GetValue($this->data['VariableID']);
     }
 
-    public function setCharacteristicOn($value)
+    public function writeCharacteristicOn($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
     }
 
-    public function getCharacteristicHue()
+    public function readCharacteristicHue()
     {
         return GetValue($this->data['VariableID']);
     }
 
-    public function setCharacteristicHue($value)
+    public function writeCharacteristicHue($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
     }
 
-    public function getCharacteristicSaturation()
+    public function readCharacteristicSaturation()
     {
         return GetValue($this->data['VariableID']);
     }
 
-    public function setCharacteristicSaturation($value)
+    public function writeCharacteristicSaturation($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
     }
 
-    public function getCharacteristicColorTemperature()
+    public function readCharacteristicColorTemperature()
     {
         return GetValue($this->data['VariableID']);
     }
 
-    public function setCharacteristicColorTemperature($value)
+    public function writeCharacteristicColorTemperature($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
     }

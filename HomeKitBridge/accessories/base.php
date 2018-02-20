@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 class HAPAccessoryBase extends HAPAccessory
 {
-    public function setCharacteristicIdentify($value)
+    public function writeCharacteristicIdentify($value)
     {
 
         //TODO: We probably should send some event
     }
 
-    public function getCharacteristicManufacturer()
+    public function readCharacteristicManufacturer()
     {
         return 'IP-Symcon Community';
     }
 
-    public function getCharacteristicModel()
+    public function readCharacteristicModel()
     {
         return str_replace('HAPAccessory', '', get_class($this));
     }
 
-    public function getCharacteristicName()
+    public function readCharacteristicName()
     {
         if (isset($this->data['Name'])) {
             return $this->data['Name'];
@@ -29,12 +29,12 @@ class HAPAccessoryBase extends HAPAccessory
         }
     }
 
-    public function getCharacteristicSerialNumber()
+    public function readCharacteristicSerialNumber()
     {
         return 'Undefined';
     }
 
-    public function getCharacteristicFirmwareRevision()
+    public function readCharacteristicFirmwareRevision()
     {
         return 'Undefined';
     }

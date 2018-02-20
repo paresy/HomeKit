@@ -32,25 +32,45 @@ class HAPAccessory
         ];
     }
 
-    public function setCharacteristic(int $instanceID, $value): void
+    private function getServiceObject(int $instanceID): object
     {
         $index = intval(floor($instanceID / 100));
 
         if ($index >= count($this->services)) {
             throw new Exception('InstanceID is out of bounds for accessory!');
         }
-        $this->services[$index]->setCharacteristic($instanceID % 100, $value, $this);
+
+        return $this->services[$index];
     }
 
-    public function getCharacteristic(int $instanceID)
+    public function validateCharacteristic(int $instanceID, &$value)
     {
-        $index = intval(floor($instanceID / 100));
+        return $this->getServiceObject($instanceID)->validateCharacteristic($instanceID % 100, $value, $this);
+    }
 
-        if ($index >= count($this->services)) {
-            throw new Exception('InstanceID is out of bounds for accessory!');
-        }
+    public function supportsWriteCharacteristic(int $instanceID)
+    {
+        return $this->getServiceObject($instanceID)->supportsWriteCharacteristic($instanceID % 100, $this);
+    }
 
-        return $this->services[$index]->getCharacteristic($instanceID % 100, $this);
+    public function writeCharacteristic(int $instanceID, $value): void
+    {
+        $this->getServiceObject($instanceID)->writeCharacteristic($instanceID % 100, $value, $this);
+    }
+
+    public function supportsReadCharacteristic(int $instanceID)
+    {
+        return $this->getServiceObject($instanceID)->supportsReadCharacteristic($instanceID % 100, $this);
+    }
+
+    public function readCharacteristic(int $instanceID)
+    {
+        return $this->getServiceObject($instanceID)->readCharacteristic($instanceID % 100, $this);
+    }
+
+    public function supportsNotifyCharacteristic(int $instanceID)
+    {
+        return $this->getServiceObject($instanceID)->supportsNotifyCharacteristic($instanceID % 100, $this);
     }
 }
 
@@ -67,7 +87,7 @@ class HAPService
         $this->optionalCharacteristics = $optionalCharacteristics;
     }
 
-    public function setCharacteristic(int $instanceID, $value, HAPAccessory $accessory): void
+    private function getCharacteristicObject(int $instanceID): object
     {
         $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
 
@@ -76,20 +96,38 @@ class HAPService
         if ($index >= count($characteristics)) {
             throw new Exception('InstanceID is out of bounds for service!');
         }
-        $accessory->{$this->makeSetFunctionName($characteristics[$index])}($value);
+
+        return $characteristics[$index];
     }
 
-    public function getCharacteristic(int $instanceID, HAPAccessory $accessory)
+    public function validateCharacteristic(int $instanceID, &$value, HAPAccessory $accessory): bool
     {
-        $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
+        return true;
+    }
 
-        $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
+    public function supportsWriteCharacteristic(int $instanceID, HAPAccessory $accessory): bool
+    {
+        return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::PairedWrite);
+    }
 
-        if ($index >= count($characteristics)) {
-            throw new Exception('InstanceID is out of bounds for accessory!');
-        }
+    public function writeCharacteristic(int $instanceID, $value, HAPAccessory $accessory): void
+    {
+        $accessory->{$this->makeWriteFunctionName($this->getCharacteristicObject($instanceID))}($value);
+    }
 
-        return $accessory->{$this->makeGetFunctionName($characteristics[$index])}();
+    public function supportsReadCharacteristic(int $instanceID, HAPAccessory $accessory): bool
+    {
+        return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::PairedRead);
+    }
+
+    public function readCharacteristic(int $instanceID, HAPAccessory $accessory)
+    {
+        return $accessory->{$this->makeReadFunctionName($this->getCharacteristicObject($instanceID))}();
+    }
+
+    public function supportsNotifyCharacteristic(int $instanceID, HAPAccessory $accessory): bool
+    {
+        return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::Notify);
     }
 
     public function doExport(int $baseInstanceID, HAPAccessory $accessory): array
@@ -109,20 +147,20 @@ class HAPService
             if ($characteristic->hasPermission(HAPCharacteristicPermission::PairedWrite)) {
 
                 //Check if Class properly implements the setter
-                if (!method_exists($accessory, $this->makeSetFunctionName($characteristic))) {
-                    throw new Exception('Missing function ' . $this->makeSetFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                if (!method_exists($accessory, $this->makeWriteFunctionName($characteristic))) {
+                    throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
             }
 
             if ($characteristic->hasPermission(HAPCharacteristicPermission::PairedRead)) {
 
                 //Check if Class properly implements the getter
-                if (!method_exists($accessory, $this->makeGetFunctionName($characteristic))) {
-                    throw new Exception('Missing function ' . $this->makeGetFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                if (!method_exists($accessory, $this->makeReadFunctionName($characteristic))) {
+                    throw new Exception('Missing function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
 
                 //Call the function to get the current value
-                $value = $accessory->{$this->makeGetFunctionName($characteristic)}();
+                $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
             }
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
@@ -140,8 +178,8 @@ class HAPService
             $requireSetter = $characteristic->hasPermission(HAPCharacteristicPermission::PairedWrite);
             $requireGetter = $characteristic->hasPermission(HAPCharacteristicPermission::PairedRead);
 
-            $hasSetter = method_exists($accessory, $this->makeSetFunctionName($characteristic));
-            $hasGetter = method_exists($accessory, $this->makeGetFunctionName($characteristic));
+            $hasSetter = method_exists($accessory, $this->makeWriteFunctionName($characteristic));
+            $hasGetter = method_exists($accessory, $this->makeReadFunctionName($characteristic));
 
             //Characteristic is not defined. Just continue as it is optional
             if (!$hasSetter && !$hasGetter) {
@@ -157,7 +195,7 @@ class HAPService
             }
 
             //Call the function to get the current value
-            $value = $accessory->{$this->makeGetFunctionName($characteristic)}();
+            $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
         }
@@ -169,16 +207,16 @@ class HAPService
         ];
     }
 
-    private function makeGetFunctionName(HAPCharacteristic $characteristic): string
+    private function makeReadFunctionName(HAPCharacteristic $characteristic): string
     {
         //Filter HAP from Class Name
-        return 'get' . substr(get_class($characteristic), 3);
+        return 'read' . substr(get_class($characteristic), 3);
     }
 
-    private function makeSetFunctionName(HAPCharacteristic $characteristic): string
+    private function makeWriteFunctionName(HAPCharacteristic $characteristic): string
     {
         //Filter HAP from Class Name
-        return 'set' . substr(get_class($characteristic), 3);
+        return 'write' . substr(get_class($characteristic), 3);
     }
 }
 
