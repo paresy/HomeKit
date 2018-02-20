@@ -185,7 +185,7 @@ class HomeKitBridge extends DNSSDModule
                 's#=1',
                 'ff=0', /* Switch to 1 when we have a MFi certificate */
                 'ci=2',
-                'sf=' . ($this->pairings->hasPairings() ? "0" : "1") /* Do not allow more than one pairing */
+                'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
             ]
         );
     }
@@ -232,13 +232,12 @@ class HomeKitBridge extends DNSSDModule
 
         //Only generate new setup code when required
         $setupCode = $this->codes->getSetupCode();
-        if(!$setupCode) {
+        if (!$setupCode) {
             $this->SendDebug('HomeKitPairing', 'Creating new setup code for pairing process!', 0);
             $setupCode = $this->codes->generateSetupCode();
         }
 
         echo $setupCode;
-
     }
 
     private function getSession(string $clientIP, int $clientPort)

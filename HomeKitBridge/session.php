@@ -359,9 +359,9 @@ class HomeKitSession
         //FIXME: This is not very performant
         $tlvError = (new TLVParser($body))->getByType(TLVType::Error);
         if ($tlvError && ($tlvError instanceof TLVError)) {
-            if($tlvError->getError() == TLVError::Unavailable) {
+            if ($tlvError->getError() == TLVError::Unavailable) {
                 $status = '429 Too Many Requests';
-            } else if($tlvError->getError() == TLVError::Authentication) {
+            } elseif ($tlvError->getError() == TLVError::Authentication) {
                 $status = '470 Connection Authorization Required';
             } else {
                 $status = '400 Bad Request';
@@ -876,7 +876,7 @@ class HomeKitSession
             return $response;
         }
 
-        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+        if ($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
             $this->SendDebug('Permissions denied');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -929,7 +929,7 @@ class HomeKitSession
             return $response;
         }
 
-        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+        if ($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
             $this->SendDebug('Permissions denied');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -964,7 +964,7 @@ class HomeKitSession
             return $response;
         }
 
-        if($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
+        if ($this->pairings->getPairingPermissions($this->identifier) != TLVPermissions::Admin) {
             $this->SendDebug('Permissions denied');
             $response .= TLVBuilder::State(TLVState::M2);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -993,14 +993,13 @@ class HomeKitSession
 
     private function postIdentify(array $http): string
     {
-        if($this->pairings->hasPairings()) {
+        if ($this->pairings->hasPairings()) {
             return $this->buildHTTP([
                 'status'  => '400 Bad Request',
                 'version' => 'HTTP/1.1',
                 'headers' => null,
-                'body'    => json_encode(["status" => -70401])
+                'body'    => json_encode(['status' => -70401])
             ]);
-
         } else {
             return $this->buildHTTP([
                 'status'  => '204 No Content',
