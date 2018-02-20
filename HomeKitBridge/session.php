@@ -60,7 +60,7 @@ class HomeKitSession
         $this->terminateSessions = $terminateSessions;
 
         //Decode session data which is JSON encoded
-        if($sessionData != '') {
+        if ($sessionData != '') {
             $json = json_decode($sessionData);
 
             $this->locked = $json->locked;
@@ -1040,40 +1040,40 @@ class HomeKitSession
         if (isset($data['characteristics'])) {
             foreach ($data['characteristics'] as $characteristic) {
                 if (isset($characteristic['value'])) {
-                    if(!$this->manager->supportsWriteCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                    if (!$this->manager->supportsWriteCharacteristics($characteristic['aid'], $characteristic['iid'])) {
                         $ok = false; //We need to send Multi-Status response
                         $characteristics[] = [
-                            'aid'   => $characteristic['aid'],
-                            'iid'   => $characteristic['iid'],
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
                             'status' => -70404
                         ];
-                    } else if(!$this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value'])) {
+                    } elseif (!$this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value'])) {
                         $ok = false; //We need to send Multi-Status response
                         $characteristics[] = [
-                            'aid'   => $characteristic['aid'],
-                            'iid'   => $characteristic['iid'],
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
                             'status' => -70410
                         ];
                     } else {
                         $characteristics[] = [
-                            'aid'   => $characteristic['aid'],
-                            'iid'   => $characteristic['iid'],
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
                             'status' => 0
                         ];
                         $this->manager->writeCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
                     }
-                } else if (isset($characteristic['ev'])) {
-                    if(!$this->manager->supportsNotifyCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                } elseif (isset($characteristic['ev'])) {
+                    if (!$this->manager->supportsNotifyCharacteristics($characteristic['aid'], $characteristic['iid'])) {
                         $ok = false; //We need to send Multi-Status response
                         $characteristics[] = [
-                            'aid'   => $characteristic['aid'],
-                            'iid'   => $characteristic['iid'],
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
                             'status' => -70406
                         ];
                     } else {
                         $characteristics[] = [
-                            'aid'   => $characteristic['aid'],
-                            'iid'   => $characteristic['iid'],
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
                             'status' => 0
                         ];
                         $this->sendDebug('Registering Notify: ' . print_r($characteristic, true));
@@ -1084,7 +1084,7 @@ class HomeKitSession
             }
         }
 
-        if($ok) {
+        if ($ok) {
             return $this->buildEncryptedResponse($this->buildHTTP([
                 'status'  => '204 No Content',
                 'version' => 'HTTP/1.1',
@@ -1103,7 +1103,6 @@ class HomeKitSession
                 ])
             ]));
         }
-
     }
 
     private function readCharacteristics(array $http): string
@@ -1127,19 +1126,19 @@ class HomeKitSession
             $aid = intval($target[0]);
             $iid = intval($target[1]);
 
-            if(!$this->manager->supportsReadCharacteristics($aid, $iid)) {
+            if (!$this->manager->supportsReadCharacteristics($aid, $iid)) {
                 $ok = false; //We need to send Multi-Status response
                 $characteristics[] = [
-                    'aid'   => $aid,
-                    'iid'   => $iid,
+                    'aid'    => $aid,
+                    'iid'    => $iid,
                     'status' => -70405
                 ];
             } else {
                 $value = $this->manager->readCharacteristics($aid, $iid);
 
                 $validatedValue = $value;
-                if(!$this->manager->validateCharacteristics($aid, $iid, $validatedValue)) {
-                    $this->SendDebug("Invalid characteristic value " . $value . " fixed to " . $validatedValue);
+                if (!$this->manager->validateCharacteristics($aid, $iid, $validatedValue)) {
+                    $this->SendDebug('Invalid characteristic value ' . $value . ' fixed to ' . $validatedValue);
                 }
 
                 $characteristics[] = [
