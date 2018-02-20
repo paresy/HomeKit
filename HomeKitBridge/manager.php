@@ -50,7 +50,7 @@ class HomeKitManager
         $aidList = [];
 
         $accessories = [(new HAPAccessoryBridge([
-            "Name" => IPS_GetProperty($this->instanceID, 'BridgeName')
+            'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
         ]))->doExport(1)];
         foreach (self::$supportedAccessories as $accessory) {
             $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
