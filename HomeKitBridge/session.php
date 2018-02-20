@@ -980,6 +980,7 @@ class HomeKitSession
             foreach ($identifiers as $identifier) {
                 ($this->terminateSessions)($identifier);
             }
+            $this->pairings->clearPairings();
         }
 
         $response .= TLVBuilder::State(TLVState::M2);
