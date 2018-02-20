@@ -16,6 +16,7 @@ class HomeKitSession
     private $terminateSessions = null;
 
     //Flags for session
+    private $empty = true;
     private $locked = false;
 
     //Data handling
@@ -63,6 +64,7 @@ class HomeKitSession
         if ($sessionData != '') {
             $json = json_decode($sessionData);
 
+            $this->empty = false;
             $this->locked = $json->locked;
 
             //Copy data
@@ -186,6 +188,18 @@ class HomeKitSession
         $http = $this->parseHTTP($this->data);
         if (count($http) == 0) {
             $this->SendDebug('Incomplete HTTP packet');
+
+            //If we have an incomplete packet and the session is empty we probably lost the session
+            //This might happen during runtime on module updates. Notify...
+            if($this->empty) {
+                $this->SendDebug('We probably lost the session...');
+                return $this->buildHTTP([
+                    'status'  => '500 Internal Server Error',
+                    'version' => 'HTTP/1.1',
+                    'headers' => null,
+                    'body' => null
+                ]);
+            }
 
             return '';
         }
