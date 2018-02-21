@@ -98,7 +98,7 @@ class HomeKitBridgeTest extends TestCase
         IPS_ApplyChanges($bridgeID);
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
-        
+
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
     }
@@ -145,5 +145,4 @@ class HomeKitBridgeTest extends TestCase
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
     }
-
 }

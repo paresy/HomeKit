@@ -82,7 +82,7 @@ class HAPAccessoryConfigurationLightbulbDimmer extends HAPAccessoryConfiguration
 
     public static function getStatus($data)
     {
-        if(!IPS_VariableExists($data['VariableID'])) {
+        if (!IPS_VariableExists($data['VariableID'])) {
             return 'Variable missing';
         }
 

@@ -60,7 +60,7 @@ class HomeKitManager
                 }
 
                 //Only add accessories that are OK
-                if(call_user_func(self::configurationClassPrefix . $accessory . "::getStatus", $data) == "OK") {
+                if (call_user_func(self::configurationClassPrefix . $accessory . '::getStatus', $data) == 'OK') {
                     $class = self::classPrefix . $accessory;
                     $object = new $class($data);
 
