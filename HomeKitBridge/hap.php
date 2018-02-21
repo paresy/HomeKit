@@ -280,8 +280,7 @@ class HAPCharacteristic
 
     public function validate($value)
     {
-        $validateNumericBoundaries = function($value)
-        {
+        $validateNumericBoundaries = function ($value) {
             $minValue = $this->getMinValue();
             if ($minValue != null) {
                 if ($minValue > $value) {
@@ -305,8 +304,7 @@ class HAPCharacteristic
             return $value;
         };
 
-        $validateStringBoundaries = function($value)
-        {
+        $validateStringBoundaries = function ($value) {
             $maxLen = $this->getMaxLen();
             if ($maxLen == null) {
                 $maxLen = 64;
@@ -320,7 +318,7 @@ class HAPCharacteristic
             return $value;
         };
 
-        switch($this->getFormat()) {
+        switch ($this->getFormat()) {
             case HAPCharacteristicFormat::Boolean:
                 return boolval($value);
             case HAPCharacteristicFormat::UnsignedInt8:
@@ -343,7 +341,6 @@ class HAPCharacteristic
             default:
                 throw Exception('Cannot validate value for Unknown format');
         }
-
     }
 
     public function doExport(int $instanceID, $value): array
