@@ -65,7 +65,7 @@ class HAPAccessoryConfigurationMotionSensor
 
     public static function getStatus($data)
     {
-        if(!IPS_VariableExists($data['VariableID'])) {
+        if (!IPS_VariableExists($data['VariableID'])) {
             return 'Variable missing';
         }
 
