@@ -245,7 +245,7 @@ class HomeKitManager
         throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
     }
 
-    public function validateCharacteristics(int $aid, int $iid, &$value): bool
+    public function validateCharacteristics(int $aid, int $iid, $value)
     {
         return $this->getAccessoryObject($aid)->validateCharacteristic($iid, $value);
     }

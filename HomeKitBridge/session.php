@@ -1061,7 +1061,7 @@ class HomeKitSession
                             'iid'    => $characteristic['iid'],
                             'status' => -70404
                         ];
-                    } elseif (!$this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value'])) {
+                    } elseif ($this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']) != $characteristic['value']) {
                         $ok = false; //We need to send Multi-Status response
                         $characteristics[] = [
                             'aid'    => $characteristic['aid'],
@@ -1149,9 +1149,10 @@ class HomeKitSession
                 ];
             } else {
                 $value = $this->manager->readCharacteristics($aid, $iid);
+                $validatedValue = $this->manager->validateCharacteristics($aid, $iid, $value);
 
-                $validatedValue = $value;
-                if (!$this->manager->validateCharacteristics($aid, $iid, $validatedValue)) {
+                //Lets log this fixup behaviour...
+                if ($value != $validatedValue) {
                     $this->SendDebug('Invalid characteristic value ' . $value . ' fixed to ' . $validatedValue);
                 }
 

@@ -43,7 +43,7 @@ class HAPAccessory
         return $this->services[$index];
     }
 
-    public function validateCharacteristic(int $instanceID, &$value)
+    public function validateCharacteristic(int $instanceID, $value)
     {
         return $this->getServiceObject($instanceID)->validateCharacteristic($instanceID % 100, $value, $this);
     }
@@ -100,9 +100,9 @@ class HAPService
         return $characteristics[$index];
     }
 
-    public function validateCharacteristic(int $instanceID, &$value, HAPAccessory $accessory): bool
+    public function validateCharacteristic(int $instanceID, $value, HAPAccessory $accessory)
     {
-        return true;
+        return $value;
     }
 
     public function supportsWriteCharacteristic(int $instanceID, HAPAccessory $accessory): bool
@@ -163,7 +163,7 @@ class HAPService
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
 
                 //Validate the value against the rules
-                $this->validateCharacteristic($instanceID, $value, $accessory);
+                $value = $this->validateCharacteristic($instanceID, $value, $accessory);
             }
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
@@ -201,7 +201,7 @@ class HAPService
             $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
 
             //Validate the value against the rules
-            $this->validateCharacteristic($instanceID, $value, $accessory);
+            $value = $this->validateCharacteristic($instanceID, $value, $accessory);
 
             $characteristics[] = $characteristic->doExport($instanceID, $value);
         }
