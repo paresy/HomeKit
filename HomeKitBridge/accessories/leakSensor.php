@@ -65,6 +65,10 @@ class HAPAccessoryConfigurationLeakSensor
 
     public static function getStatus($data)
     {
+        if(!IPS_VariableExists($data['VariableID'])) {
+            return 'Variable missing';
+        }
+
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {

@@ -59,15 +59,18 @@ class HomeKitManager
                     throw new Exception('AccessoryID has to be unique for all accessories');
                 }
 
-                $class = self::classPrefix . $accessory;
-                $object = new $class($data);
+                //Only add accessories that are OK
+                if(call_user_func(self::configurationClassPrefix . $accessory . "::getStatus", $data) == "OK") {
+                    $class = self::classPrefix . $accessory;
+                    $object = new $class($data);
 
-                if ($object instanceof HAPAccessory) {
-                    $accessories[] = $object->doExport($data['ID']);
+                    if ($object instanceof HAPAccessory) {
+                        $accessories[] = $object->doExport($data['ID']);
+                    }
+
+                    //Add to id list
+                    $aidList[] = $data['ID'];
                 }
-
-                //Add to id list
-                $aidList[] = $data['ID'];
             }
         }
 

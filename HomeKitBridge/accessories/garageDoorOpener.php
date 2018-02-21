@@ -129,6 +129,18 @@ class HAPAccessoryConfigurationGarageDoorOpener
 
     public static function getStatus($data)
     {
+        if(!IPS_VariableExists($data['CurrentDoorState'])) {
+            return 'CurrentDoorState missing';
+        }
+
+        if(!IPS_VariableExists($data['TargetDoorState'])) {
+            return 'TargetDoorState missing';
+        }
+
+        if(!IPS_VariableExists($data['ObstructionDetected'])) {
+            return 'ObstructionDetected missing';
+        }
+
         $variableCurrentDoorState = IPS_GetVariable($data['CurrentDoorState']);
         $variableTargetDoorState = IPS_GetVariable($data['TargetDoorState']);
         $variableObstructionDetected = IPS_GetVariable($data['ObstructionDetected']);

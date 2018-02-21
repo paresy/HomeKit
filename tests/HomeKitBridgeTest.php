@@ -62,6 +62,8 @@ class HomeKitBridgeTest extends TestCase
 
         $vid = IPS_CreateVariable(0 /* Boolean */);
 
+        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
+
         IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
             [
                 'ID'         => 2,
@@ -78,6 +80,27 @@ class HomeKitBridgeTest extends TestCase
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $lightbulbSwitch), $bridgeInterface->DebugAccessories());
+    }
+
+    public function testAccessoryLightbulbSwitchBroken(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        $vid = IPS_CreateVariable(0 /* Boolean */);
+
+        IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
+            [
+                'ID'         => 2,
+                'Name'       => 'Test',
+                'VariableID' => $vid /* The action is missing */
+            ]
+        ]));
+        IPS_ApplyChanges($bridgeID);
+
+        $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
+        
+        //Check if the generated content matches our test file
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
     }
 
     public function testAccessoryLightSensor(): void
@@ -103,4 +126,24 @@ class HomeKitBridgeTest extends TestCase
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $lightSensor), $bridgeInterface->DebugAccessories());
     }
+
+    public function testAccessoryLightSensorBroken(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        IPS_SetProperty($bridgeID, 'AccessoryLightSensor', json_encode([
+            [
+                'ID'         => 3,
+                'Name'       => 'Test',
+                'VariableID' => 9999 /* This is always an invalid variableID */
+            ]
+        ]));
+        IPS_ApplyChanges($bridgeID);
+
+        $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
+
+        //Check if the generated content matches our test file
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
+    }
+
 }
