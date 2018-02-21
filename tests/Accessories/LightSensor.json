@@ -73,7 +73,7 @@
               "pr",
               "ev"
             ],
-            "value": 0,
+            "value": 0.0001,
             "minValue": 0.0001,
             "maxValue": 100000,
             "unit": "lux"

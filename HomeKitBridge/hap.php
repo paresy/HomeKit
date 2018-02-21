@@ -102,7 +102,7 @@ class HAPService
 
     public function validateCharacteristic(int $instanceID, $value, HAPAccessory $accessory)
     {
-        return $value;
+        return $this->getCharacteristicObject($instanceID)->validate($value);
     }
 
     public function supportsWriteCharacteristic(int $instanceID, HAPAccessory $accessory): bool
@@ -161,11 +161,9 @@ class HAPService
 
                 //Call the function to get the current value
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
-
-                //Validate the value against the rules
-                $value = $this->validateCharacteristic($instanceID, $value, $accessory);
             }
 
+            //Exporting will also validate the value
             $characteristics[] = $characteristic->doExport($instanceID, $value);
         }
 
@@ -200,9 +198,7 @@ class HAPService
             //Call the function to get the current value
             $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
 
-            //Validate the value against the rules
-            $value = $this->validateCharacteristic($instanceID, $value, $accessory);
-
+            //Exporting will also validate the value
             $characteristics[] = $characteristic->doExport($instanceID, $value);
         }
 
@@ -282,6 +278,74 @@ class HAPCharacteristic
         $this->maxLen = $maxLen;
     }
 
+    public function validate($value)
+    {
+        $validateNumericBoundaries = function($value)
+        {
+            $minValue = $this->getMinValue();
+            if ($minValue != null) {
+                if ($minValue > $value) {
+                    $value = $minValue;
+                }
+            }
+            $maxValue = $this->getMaxValue();
+            if ($maxValue != null) {
+                if ($maxValue < $value) {
+                    $value = $maxValue;
+                }
+            }
+            $minStep = $this->getMinStep();
+            if ($minStep != null) {
+                if ($minValue != null) {
+                    $value = $minValue + floor(($value - $minValue) / $minStep) * $minStep;
+                } else {
+                    $value = floor($value / $minStep) * $minStep;
+                }
+            }
+            return $value;
+        };
+
+        $validateStringBoundaries = function($value)
+        {
+            $maxLen = $this->getMaxLen();
+            if ($maxLen == null) {
+                $maxLen = 64;
+            }
+            if ($maxLen > 256) {
+                throw new Exception('Cannot validate value for String format: Max length exceeds bounds');
+            }
+            if (strlen($value) > $maxLen) {
+                $value = substr($value, 0, $maxLen);
+            }
+            return $value;
+        };
+
+        switch($this->getFormat()) {
+            case HAPCharacteristicFormat::Boolean:
+                return boolval($value);
+            case HAPCharacteristicFormat::UnsignedInt8:
+            case HAPCharacteristicFormat::UnsignedInt16:
+            case HAPCharacteristicFormat::UnsignedInt32:
+            case HAPCharacteristicFormat::UnsignedInt64:
+            case HAPCharacteristicFormat::Integer:
+                $value = intval($value);
+                return $validateNumericBoundaries($value);
+            case HAPCharacteristicFormat::Float:
+                $value = floatval($value);
+                return $validateNumericBoundaries($value);
+            case HAPCharacteristicFormat::String:
+                $value = strval($value);
+                return $validateStringBoundaries($value);
+            case HAPCharacteristicFormat::TLV8:
+                throw Exception('Cannot validate value for TLV8 format');
+            case HAPCharacteristicFormat::Data:
+                throw Exception('Cannot validate value for Data format');
+            default:
+                throw Exception('Cannot validate value for Unknown format');
+        }
+
+    }
+
     public function doExport(int $instanceID, $value): array
     {
         $export = [
@@ -292,7 +356,7 @@ class HAPCharacteristic
         ];
 
         if ($value !== null) {
-            $export['value'] = $value;
+            $export['value'] = $this->validate($value);
         }
 
         if ($this->getMinValue() !== null) {
