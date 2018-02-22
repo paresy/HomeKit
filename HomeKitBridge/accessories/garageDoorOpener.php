@@ -145,18 +145,16 @@ class HAPAccessoryConfigurationGarageDoorOpener
         $variableTargetDoorState = IPS_GetVariable($data['TargetDoorState']);
         $variableObstructionDetected = IPS_GetVariable($data['ObstructionDetected']);
 
-        $error = null;
-
         if ($variableCurrentDoorState['VariableType'] != 1 /* Integer */) {
-            $error .= 'CurrentDorstate: Integer required / ';
+            return 'CurrentDorstate: Integer required';
         }
 
         if ($variableTargetDoorState['VariableType'] != 1 /* Integer */) {
-            $error .= 'TargetDoorState: Integer required / ';
+            return 'TargetDoorState: Integer required';
         }
 
         if ($variableObstructionDetected['VariableType'] != 0 /* Boolean */) {
-            $error .= 'ObstructionDetected: Bool required / ';
+            return 'ObstructionDetected: Bool required';
         }
 
         if ($variableTargetDoorState['VariableCustomAction'] != '') {
@@ -166,11 +164,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         }
 
         if (!($profileAction > 10000)) {
-            $error .= 'TargetDoorState: Action required';
-        }
-
-        if (!is_null($error)) {
-            return $error;
+            return 'TargetDoorState: Action required';
         }
 
         return 'OK';
