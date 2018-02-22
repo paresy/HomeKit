@@ -33,5 +33,4 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
     }
-
 }
