@@ -6,7 +6,6 @@ include_once __DIR__ . '/HomeKitBaseTest.php';
 
 class HomeKitLightSensorTest extends HomeKitBaseTest
 {
-
     public function testAccessoryLightSensor(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
@@ -75,5 +74,4 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
     }
-
 }

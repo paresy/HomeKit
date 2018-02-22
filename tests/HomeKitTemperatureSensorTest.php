@@ -6,7 +6,6 @@ include_once __DIR__ . '/HomeKitBaseTest.php';
 
 class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 {
-
     public function testAccessoryTemperatureSensor(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
@@ -56,5 +55,4 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $temperatureSensor), $bridgeInterface->DebugAccessories());
     }
-
 }

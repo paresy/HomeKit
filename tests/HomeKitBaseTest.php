@@ -32,5 +32,4 @@ class HomeKitBaseTest extends TestCase
     {
         $this->assertTrue(true);
     }
-
 }
