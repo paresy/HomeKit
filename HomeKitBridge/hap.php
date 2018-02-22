@@ -282,20 +282,20 @@ class HAPCharacteristic
     {
         $validateNumericBoundaries = function ($value) {
             $minValue = $this->getMinValue();
-            if ($minValue != null) {
+            if ($minValue !== null) {
                 if ($minValue > $value) {
                     $value = $minValue;
                 }
             }
             $maxValue = $this->getMaxValue();
-            if ($maxValue != null) {
+            if ($maxValue !== null) {
                 if ($maxValue < $value) {
                     $value = $maxValue;
                 }
             }
             $minStep = $this->getMinStep();
-            if ($minStep != null) {
-                if ($minValue != null) {
+            if ($minStep !== null) {
+                if ($minValue !== null) {
                     $value = $minValue + floor(($value - $minValue) / $minStep) * $minStep;
                 } else {
                     $value = floor($value / $minStep) * $minStep;
@@ -306,7 +306,7 @@ class HAPCharacteristic
 
         $validateStringBoundaries = function ($value) {
             $maxLen = $this->getMaxLen();
-            if ($maxLen == null) {
+            if ($maxLen === null) {
                 $maxLen = 64;
             }
             if ($maxLen > 256) {

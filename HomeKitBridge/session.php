@@ -156,7 +156,7 @@ class HomeKitSession
             }
 
             $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($message, $ad, $nonce, $this->messageRecvKey);
-            if ($decryptedData == null) {
+            if ($decryptedData === null) {
                 $this->sendDebug('Decrypting failed!');
 
                 //FIXME: We need to invalidate the whole session!
@@ -364,7 +364,7 @@ class HomeKitSession
     {
 
         //A fatal error occoured. Forward null
-        if ($body == null) {
+        if ($body === null) {
             return '';
         }
 
@@ -531,7 +531,7 @@ class HomeKitSession
         $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($tlvEncryptedData->getEncryptedData(), '', "\0\0\0\0PS-Msg05", $sessionKey);
 
         //Verify that data is authentic
-        if ($decryptedData == null) {
+        if ($decryptedData === null) {
             $response .= TLVBuilder::State(TLVState::M6);
             $response .= TLVBuilder::Error(TLVError::Authentication);
 
@@ -712,7 +712,7 @@ class HomeKitSession
         $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($tlvEncryptedData->getEncryptedData(), '', "\0\0\0\0PV-Msg03", $this->sessionKey);
 
         //Verify that data is authentic
-        if ($decryptedData == null) {
+        if ($decryptedData === null) {
             $this->SendDebug('Decrypting failed');
             $response .= TLVBuilder::State(TLVState::M4);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -733,7 +733,7 @@ class HomeKitSession
         }
 
         $iOSDeviceLTPK = $this->pairings->getPairingPublicKey($tlvIdentifier->getIdentifier());
-        if ($iOSDeviceLTPK == null) {
+        if ($iOSDeviceLTPK === null) {
             $this->SendDebug('Identifier is invalid');
             $response .= TLVBuilder::State(TLVState::M4);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -791,7 +791,7 @@ class HomeKitSession
         $this->sendDebug('Encrypted data: ' . $body);
 
         //A fatal error occoured. Forward null
-        if ($body == null) {
+        if ($body === null) {
             return '';
         }
 

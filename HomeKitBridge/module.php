@@ -159,7 +159,7 @@ class HomeKitBridge extends DNSSDModule
         $response = $session->processData($buffer);
 
         //Only if we have a valid response
-        if ($response != null) {
+        if ($response !== null) {
             $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Transmit: ' . $response, 0);
 
             //Send response

@@ -83,7 +83,7 @@ class HomeKitCodes
     {
         $code = $this->getSetupCode();
 
-        if ($code == null) {
+        if ($code === null) {
             return;
         }
 
