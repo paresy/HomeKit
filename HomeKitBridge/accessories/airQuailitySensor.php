@@ -18,7 +18,6 @@ class HAPAccessoryAirQualitySensor extends HAPAccessoryBase
     public function readCharacteristicAirQuality()
     {
         return GetValue($this->data['VariableID']);
-
     }
 }
 
