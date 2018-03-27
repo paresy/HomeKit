@@ -30,7 +30,7 @@
             "perms": [
               "pr"
             ],
-            "value": "TemperatureSensor"
+            "value": "AirQualitySensor"
           },
           {
             "type": "23",
