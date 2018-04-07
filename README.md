@@ -6,7 +6,7 @@
 <a href="https://codeclimate.com/github/paresy/HomeKit/test_coverage"><img src="https://api.codeclimate.com/v1/badges/73bc1f8c7663b95f3381/test_coverage" /></a>
 <br/>
 
-_Diese Bibliothek kann nur mit dem noch nicht veröffentlichten IP-Symcon 5.0, welches PHP 7.2 enthält, genutzt werden. IP-Symcon 5.0 kommt wohl gegen Ende Q2/2018._ 
+_Diese Bibliothek kann nur mit [IP-Symcon 5.0 (Beta)]((https://www.symcon.de/forum/threads/37413)) verwendet werden._ 
 
 _Dieses Repository enthält keine von Apple zertifizierte Bridge. Außerdem wird es ausschließlich von der IP-Symcon Community (<a href="https://www.symcon.de/forum/members/1-paresy">paresy</a>, <a href="https://www.symcon.de/forum/members/10751-KaiS">KaiS</a>) gepflegt und nicht von der Symcon GmbH angeboten._
 
