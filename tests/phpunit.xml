@@ -3,4 +3,10 @@
     <php>
         <const name="PHPUNIT_TESTSUITE" value="true"/>
     </php>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../HomeKitBridge</directory>
+            <directory suffix=".php">../libs</directory>
+        </whitelist>
+    </filter>
 </phpunit>

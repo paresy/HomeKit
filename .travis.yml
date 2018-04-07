@@ -1,8 +1,15 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=ef623ee7366a025f6191b4255e27896dc5376e8223831e4b9c288238d3077825
+
 language: php
 php:
   - 7.2
 
 before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
   - cd ..
   - git clone git://github.com/jedisct1/libsodium.git
   - cd libsodium
@@ -17,4 +24,7 @@ before_install:
   - cd HomeKit
 
 script:
-  - phpunit tests --configuration tests/phpunit.xml
+  - phpdbg -qrr phpunit tests --configuration tests/phpunit.xml --coverage-clover clover.xml
+
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
