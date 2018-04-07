@@ -7,9 +7,15 @@ php:
   - 7.2
 
 before_install:
+  #Install our own PHPUnit
+  - wget https://phar.phpunit.de/phpunit.phar
+
+  #Install Code Climate
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+
+  #Install sodium Extension from source/pecl until Travis-CI starts bundling it
   - cd ..
   - git clone git://github.com/jedisct1/libsodium.git
   - cd libsodium
@@ -24,7 +30,7 @@ before_install:
   - cd HomeKit
 
 script:
-  - phpdbg -qrr phpunit tests --configuration tests/phpunit.xml --coverage-clover clover.xml
+  - phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml --coverage-clover clover.xml
 
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
