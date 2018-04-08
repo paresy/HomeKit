@@ -22,6 +22,9 @@ class HomeKitBaseTest extends TestCase
         //Register our i/o stubs for testing
         IPS\ModuleLoader::loadLibrary(__DIR__ . '/stubs/IOStubs/library.json');
 
+        //Register our core stubs for testing
+        IPS\ModuleLoader::loadLibrary(__DIR__ . '/stubs/CoreStubs/library.json');
+
         //Register our library we need for testing
         IPS\ModuleLoader::loadLibrary(__DIR__ . '/../library.json');
 
