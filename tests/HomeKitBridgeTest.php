@@ -57,7 +57,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
 
         $serverInterface = IPS\InstanceManager::getInstanceInterface($serverID);
 
-        $clientIP = "127.0.0.1";
+        $clientIP = '127.0.0.1';
         $clientPort = 34455;
 
         $data = "Totally Invalid Packet\r\n\r\n\r\n";
@@ -66,13 +66,11 @@ class HomeKitBridgeTest extends HomeKitBaseTest
 
         $this->assertTrue($serverInterface->HasPacket());
 
-        $this->assertEquals(array (
-            'Type' => 0 /* Data */,
-            'Buffer' => 'HTTP/1.1 500 Internal Server Error' . "\r\n\r\n",
-            'ClientIP' => $clientIP,
+        $this->assertEquals([
+            'Type'       => 0 /* Data */,
+            'Buffer'     => 'HTTP/1.1 500 Internal Server Error' . "\r\n\r\n",
+            'ClientIP'   => $clientIP,
             'ClientPort' => $clientPort,
-        ), $serverInterface->PeekPacket());
-
+        ], $serverInterface->PeekPacket());
     }
-
 }
