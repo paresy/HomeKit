@@ -8,9 +8,10 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
 {
     protected $dnssdModuleID = '{780B2D48-916C-4D59-AD35-5A429B2355A5}';
 
-    private function cleanup() {
+    private function cleanup()
+    {
         $ids = IPS_GetInstanceListByModuleID($this->dnssdModuleID);
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             IPS_DeleteInstance($id);
         }
     }
@@ -33,20 +34,20 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
         IPS_ApplyChanges($bridgeID);
 
         $expectedServiceProperty = [
-            'Name' => 'Symcon',
-            'RegType' => '_hap._tcp',
-            'Domain' => '',
-            'Host' => '',
-            'Port' => 34587,
-            'TXTRecords' => array ( 0 => array ( 'Value' => 'md=Symcon', ), 1 => array ( 'Value' => 'pv=1.0', ), 2 => array ( 'Value' => 'id=3E:64:C3:71:BA:2B', ), 3 => array ( 'Value' => 'c#=1', ), 4 => array ( 'Value' => 's#=1', ), 5 => array ( 'Value' => 'ff=0', ), 6 => array ( 'Value' => 'ci=2', ), 7 => array ( 'Value' => 'sf=1' ) )
+            'Name'       => 'Symcon',
+            'RegType'    => '_hap._tcp',
+            'Domain'     => '',
+            'Host'       => '',
+            'Port'       => 34587,
+            'TXTRecords' => [0 => ['Value' => 'md=Symcon'], 1 => ['Value' => 'pv=1.0'], 2 => ['Value' => 'id=3E:64:C3:71:BA:2B'], 3 => ['Value' => 'c#=1'], 4 => ['Value' => 's#=1'], 5 => ['Value' => 'ff=0'], 6 => ['Value' => 'ci=2'], 7 => ['Value' => 'sf=1']]
         ];
 
         $this->assertEquals([
             $expectedServiceProperty
-        ], json_decode(IPS_GetProperty($dnssdID, "Services"), true));
+        ], json_decode(IPS_GetProperty($dnssdID, 'Services'), true));
 
         //reset service
-        IPS_SetProperty($dnssdID, "Services", "[]");
+        IPS_SetProperty($dnssdID, 'Services', '[]');
         IPS_ApplyChanges($dnssdID);
 
         //simulate KR_READY event
@@ -56,10 +57,8 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
 
         $this->assertEquals([
             $expectedServiceProperty
-        ], json_decode(IPS_GetProperty($dnssdID, "Services"), true));
+        ], json_decode(IPS_GetProperty($dnssdID, 'Services'), true));
 
         //
-
     }
-
 }
