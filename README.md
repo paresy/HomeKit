@@ -3,7 +3,7 @@
 <a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.0-blue.svg?style=flat-square"/></a>
 <a href="https://styleci.io/repos/100034267/"><img src="https://styleci.io/repos/100034267/shield" alt="StyleCI"></a>
 <a href="https://travis-ci.org/paresy/HomeKit"><img src="https://img.shields.io/travis/paresy/HomeKit/master.svg?style=flat-square" alt="Build status"></a>
-<a href="https://codeclimate.com/github/paresy/HomeKit/test_coverage"><img src="https://api.codeclimate.com/v1/badges/73bc1f8c7663b95f3381/test_coverage" /></a>
+<a href="https://codeclimate.com/github/paresy/HomeKit/test_coverage"><img src="https://img.shields.io/codeclimate/coverage/paresy/HomeKit.svg?style=flat-square" alt="Test coverage"/></a>
 <br/>
 
 _Diese Bibliothek kann nur mit [IP-Symcon 5.0 (Beta)]((https://www.symcon.de/forum/threads/37413)) verwendet werden._ 
