@@ -256,7 +256,7 @@ class HomeKitBridge extends DNSSDModule
         if (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
             echo $this->Translate('Our parent instance (ServerSocket) is not active!');
 
-            return;
+            return '';
         }
 
         //Remove all pairings before staring the pairing process
@@ -272,7 +272,7 @@ class HomeKitBridge extends DNSSDModule
             $setupCode = $this->codes->generateSetupCode();
         }
 
-        echo $setupCode;
+        return $setupCode;
     }
 
     private function clearSession(string $clientIP, int $clientPort)
