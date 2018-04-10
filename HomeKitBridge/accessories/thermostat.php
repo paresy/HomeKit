@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessoryWindow extends HAPAccessoryBase
+class HAPAccessoryThermostat extends HAPAccessoryBase
 {
     public function __construct($data)
     {
@@ -10,39 +10,59 @@ class HAPAccessoryWindow extends HAPAccessoryBase
             $data,
             [
                 new HAPServiceAccessoryInformation(),
-                new HAPServiceWindow()
+                new HAPServiceThermostat()
             ]
         );
     }
 
-    public function readCharacteristicTargetPosition()
+    public function readCharacteristicCurrentHeatingCoolingState()
     {
-        return GetValue($this->data['TargetPosition']);
+        return GetValue($this->data['CurrentHeatingCoolingState']);
     }
 
-    public function readCharacteristicCurrentPosition()
+    public function readCharacteristicTargetHeatingCoolingState()
     {
-        return GetValue($this->data['CurrentPosition']);
+        return GetValue($this->data['TargetHeatingCoolingState']);
     }
 
-    public function readCharacteristicPositionState()
+    public function readCharacteristicCurrentTemperature()
     {
-        return GetValue($this->data['PositionState']);
+        return GetValue($this->data['CurrentTemperature']);
     }
 
-    public function writeCharacteristicTargetPosition($value)
+    public function readCharacteristicTargetTemperature()
     {
-        $this->switchDevice($this->data['TargetPosition'], $value);
+        return GetValue($this->data['TargetTemperature']);
     }
 
-    public function writeCharacteristicCurrentPosition($value)
+    public function readCharacteristicTemperatureDisplayUnits()
     {
-        $this->switchDevice($this->data['CurrentPosition'], $value);
+        return GetValue($this->data['TemperatureDisplayUnits']);
     }
 
-    public function writeCharacteristicPositionState($value)
+    public function writeCharacteristicCurrentHeatingCoolingState($value)
     {
-        $this->switchDevice($this->data['PositionState'], $value);
+        $this->switchDevice($this->data['CurrentHeatingCoolingState'], $value);
+    }
+
+    public function writeCharacteristicTargetHeatingCoolingState($value)
+    {
+        $this->switchDevice($this->data['TargetHeatingCoolingState'], $value);
+    }
+
+    public function writeCharacteristicCurrentTemperature($value)
+    {
+        $this->switchDevice($this->data['CurrentTemperature'], $value);
+    }
+
+    public function writeCharacteristicTargetTemperature($value)
+    {
+        $this->switchDevice($this->data['TargetTemperature'], $value);
+    }
+
+    public function writeCharacteristicTemperatureDisplayUnits($value)
+    {
+        $this->switchDevice($this->data['TemperatureDisplayUnits'], $value);
     }
 
     protected function switchDevice($variableID, $value)
@@ -81,24 +101,24 @@ class HAPAccessoryWindow extends HAPAccessoryBase
     }
 }
 
-class HAPAccessoryConfigurationWindow
+class HAPAccessoryConfigurationThermostat
 {
     public static function getPosition()
     {
-        return 90;
+        return 100;
     }
 
     public static function getCaption()
     {
-        return 'Window';
+        return 'Thermostat';
     }
 
     public static function getColumns()
     {
         return [
             [
-                'label' => 'TargetPosition',
-                'name'  => 'TargetPosition',
+                'label' => 'CurrentHeatingCoolingState',
+                'name'  => 'CurrentHeatingCoolingState',
                 'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
@@ -106,8 +126,8 @@ class HAPAccessoryConfigurationWindow
                 ]
             ],
             [
-                'label' => 'CurrentPosition',
-                'name'  => 'CurrentPosition',
+                'label' => 'TargetHeatingCoolingState',
+                'name'  => 'TargetHeatingCoolingState',
                 'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
@@ -115,8 +135,26 @@ class HAPAccessoryConfigurationWindow
                 ]
             ],
             [
-                'label' => 'PositionState',
-                'name'  => 'PositionState',
+                'label' => 'CurrentTemperature',
+                'name'  => 'CurrentTemperature',
+                'width' => '150px',
+                'add'   => 0,
+                'edit'  => [
+                    'type' => 'SelectVariable'
+                ]
+            ],
+            [
+                'label' => 'TargetTemperature',
+                'name'  => 'TargetTemperature',
+                'width' => '150px',
+                'add'   => 0,
+                'edit'  => [
+                    'type' => 'SelectVariable'
+                ]
+            ],
+            [
+                'label' => 'TemperatureDisplayUnits',
+                'name'  => 'TemperatureDisplayUnits',
                 'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
@@ -128,46 +166,70 @@ class HAPAccessoryConfigurationWindow
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['TargetPosition'])) {
-            return 'TargetPosition missing';
+        if (!IPS_VariableExists($data['CurrentHeatingCoolingState'])) {
+            return 'CurrentHeatingCoolingState missing';
         }
 
-        if (!IPS_VariableExists($data['CurrentPosition'])) {
-            return 'CurrentPosition missing';
+        if (!IPS_VariableExists($data['TargetHeatingCoolingState'])) {
+            return 'TargetHeatingCoolingState missing';
         }
 
-        if (!IPS_VariableExists($data['PositionState'])) {
-            return 'PositionState missing';
+        if (!IPS_VariableExists($data['CurrentTemperature'])) {
+            return 'CurrentTemperature missing';
         }
 
-        $variableTargetPosition = IPS_GetVariable($data['TargetPosition']);
-        $variableCurrentPosition = IPS_GetVariable($data['CurrentPosition']);
-        $variablePositionState = IPS_GetVariable($data['PositionState']);
-
-        if ($variableTargetPosition['VariableType'] != 1 /* Integer */) {
-            return 'TargetPosition: Integer required';
+        if (!IPS_VariableExists($data['TargetTemperature'])) {
+            return 'TargetTemperature missing';
         }
 
-        if ($variableCurrentPosition['VariableType'] != 1 /* Integer */) {
-            return 'CurrentPosition: Integer required';
+        if (!IPS_VariableExists($data['TemperatureDisplayUnits'])) {
+            return 'TemperatureDisplayUnits missing';
         }
 
-        if ($variablePositionState['VariableType'] != 1 /* Integer */) {
-            return 'PositionState: Integer required';
+        $variableCurrentHeatingCoolingState = IPS_GetVariable($data['CurrentHeatingCoolingState']);
+        $variableTargetHeatingCoolingState = IPS_GetVariable($data['TargetHeatingCoolingState']);
+        $variableCurrentTemperature = IPS_GetVariable($data['CurrentTemperature']);
+        $variableTargetTemperature = IPS_GetVariable($data['TargetTemperature']);
+        $variableTemperatureDisplayUnits = IPS_GetVariable($data['TemperatureDisplayUnits']);
+
+        if ($variableCurrentHeatingCoolingState['VariableType'] != 1 /* Integer */) {
+            return 'CurrentHeatingCoolingState: Integer required';
         }
 
-        if ($variableTargetPosition['VariableCustomAction'] != '') {
-            $profileAction = $variableTargetPosition['VariableCustomAction'];
+        if ($variableTargetHeatingCoolingState['VariableType'] != 1 /* Integer */) {
+            return 'TargetHeatingCoolingState: Integer required';
+        }
+
+        if ($variableCurrentTemperature['VariableType'] != 2 /* Float */) {
+            return 'CurrentTemperature: Float required';
+        }
+
+        if ($variableTemperatureDisplayUnits['VariableType'] != 1 /* Integer */) {
+            return 'TemperatureDisplayUnits: Integer required';
+        }
+
+        if ($variableTargetTemperature['VariableCustomAction'] != '') {
+            $profileAction = $variableTargetTemperature['VariableCustomAction'];
         } else {
-            $profileAction = $variableTargetPosition['VariableAction'];
+            $profileAction = $variableTargetTemperature['VariableAction'];
         }
 
         if (!($profileAction > 10000)) {
-            return 'TargetDoorState: Action required';
+            return 'TargetTemperature: Action required';
+        }
+
+        if ($variableTargetHeatingCoolingState['VariableCustomAction'] != '') {
+            $profileAction = $variableTargetHeatingCoolingState['VariableCustomAction'];
+        } else {
+            $profileAction = $variableTargetHeatingCoolingState['VariableAction'];
+        }
+
+        if (!($profileAction > 10000)) {
+            return 'TargetHeatingCoolingState: Action required';
         }
 
         return 'OK';
     }
 }
 
-HomeKitManager::registerAccessory('Window');
+HomeKitManager::registerAccessory('Thermostat');
