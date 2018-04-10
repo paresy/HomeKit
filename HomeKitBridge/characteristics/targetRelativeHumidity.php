@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPCharacteristicRelativeHumidity extends HAPCharacteristic
+class HAPCharacteristicTargetRelativeHumidity extends HAPCharacteristic
 {
     public function __construct()
     {
