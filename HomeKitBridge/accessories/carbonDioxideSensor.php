@@ -54,7 +54,7 @@ class HAPAccessoryConfigurationCarbonDioxideSensor
             return 'CarbonDioxideDetected missing';
         }
 
-        $targetVariable = IPS_GetVariable($data['ContactSensorState']);
+        $targetVariable = IPS_GetVariable($data['CarbonDioxideDetected']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'Integer required';
