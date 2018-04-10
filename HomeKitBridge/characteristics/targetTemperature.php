@@ -2,24 +2,22 @@
 
 declare(strict_types=1);
 
-class HAPCharacteristicTemperatureDisplayUnits extends HAPCharacteristic
+class HAPCharacteristicTargetTemperature extends HAPCharacteristic
 {
-    const Celsius = 0;
-    const Fahrenheit = 1;
-
     public function __construct()
     {
         parent::__construct(
-            0x36,
-            HAPCharacteristicFormat::UnsignedInt8,
+            0x35,
+            HAPCharacteristicFormat::Float,
             [
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::PairedWrite,
                 HAPCharacteristicPermission::Notify
             ],
-            0,
-            1,
-            1
+            10.0,
+            38.0,
+            0.1,
+            HAPCharacteristicUnit::Celsius
         );
     }
 }
