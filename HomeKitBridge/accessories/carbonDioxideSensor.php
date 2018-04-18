@@ -17,7 +17,7 @@ class HAPAccessoryCarbonDioxideSensor extends HAPAccessoryBase
 
     public function readCharacteristicCarbonDioxideDetected()
     {
-        return GetValue($this->data['CarbonDioxideDetected']);
+        return GetValue($this->data['VariableID']);
     }
 }
 
@@ -50,11 +50,11 @@ class HAPAccessoryConfigurationCarbonDioxideSensor
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['CarbonDioxideDetected'])) {
+        if (!IPS_VariableExists($data['VariableID'])) {
             return 'CarbonDioxideDetected missing';
         }
 
-        $targetVariable = IPS_GetVariable($data['CarbonDioxideDetected']);
+        $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'Integer required';
