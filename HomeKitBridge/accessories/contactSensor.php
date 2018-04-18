@@ -17,7 +17,7 @@ class HAPAccessoryContactSensor extends HAPAccessoryBase
 
     public function readCharacteristicContactSensorState()
     {
-        return GetValue($this->data['ContactSensorState']);
+        return GetValue($this->data['VariableID']);
     }
 }
 
@@ -50,11 +50,11 @@ class HAPAccessoryConfigurationContactSensor
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['ContactSensorState'])) {
-            return 'ContactSensorState missing';
+        if (!IPS_VariableExists($data['VariableID'])) {
+            return 'VariableID missing';
         }
 
-        $targetVariable = IPS_GetVariable($data['ContactSensorState']);
+        $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'Integer required';
