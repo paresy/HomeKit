@@ -6,7 +6,7 @@ include_once __DIR__ . '/HomeKitBaseTest.php';
 
 class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 {
-    public function testAccessoryTemperatureSensor(): void
+    public function testAccessory(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
@@ -23,14 +23,14 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
-        $base = json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true);
-        $temperatureSensor = json_decode(file_get_contents(__DIR__ . '/Accessories/TemperatureSensor.json'), true);
+        $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/TemperatureSensor.json'), true);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(array_merge($base, $temperatureSensor), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
     }
 
-    public function testAccessoryTemperatureSensorInvalidValue(): void
+    public function testAccessoryInvalidValue(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
@@ -49,10 +49,10 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
-        $base = json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true);
-        $temperatureSensor = json_decode(file_get_contents(__DIR__ . '/Accessories/TemperatureSensor.json'), true);
+        $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/TemperatureSensor.json'), true);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(array_merge($base, $temperatureSensor), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
     }
 }

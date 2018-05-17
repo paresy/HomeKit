@@ -31,7 +31,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
 
     public function testSetupCode(): void

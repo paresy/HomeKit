@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/HomeKitBaseTest.php';
 
-class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
+class HomeKitMotionSensorTest extends HomeKitBaseTest
 {
     public function testAccessory(): void
     {
@@ -12,11 +12,9 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(0 /* Boolean */);
 
-        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
-
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'AccessoryMotionSensor', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 3,
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -26,7 +24,7 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
-        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/LightbulbSwitch.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/MotionSensor.json'), true);
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
@@ -36,13 +34,11 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $vid = IPS_CreateVariable(0 /* Boolean */);
-
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'AccessoryMotionSensor', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 3,
                 'Name'       => 'Test',
-                'VariableID' => $vid /* The action is missing */
+                'VariableID' => 9999 /* This is always an invalid variableID */
             ]
         ]));
         IPS_ApplyChanges($bridgeID);
@@ -52,5 +48,4 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
-
 }

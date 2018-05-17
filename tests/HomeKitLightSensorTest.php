@@ -6,7 +6,7 @@ include_once __DIR__ . '/HomeKitBaseTest.php';
 
 class HomeKitLightSensorTest extends HomeKitBaseTest
 {
-    public function testAccessoryLightSensor(): void
+    public function testAccessory(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
@@ -23,14 +23,14 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
-        $base = json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true);
-        $lightSensor = json_decode(file_get_contents(__DIR__ . '/Accessories/LightSensor.json'), true);
+        $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/LightSensor.json'), true);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(array_merge($base, $lightSensor), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
     }
 
-    public function testAccessoryLightSensorInvalidValue(): void
+    public function testAccessoryInvalidValue(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
@@ -49,14 +49,14 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
-        $base = json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true);
-        $lightSensor = json_decode(file_get_contents(__DIR__ . '/Accessories/LightSensor.json'), true);
+        $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/LightSensor.json'), true);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(array_merge($base, $lightSensor), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
     }
 
-    public function testAccessoryLightSensorBroken(): void
+    public function testAccessoryBroken(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
@@ -72,6 +72,6 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         //Check if the generated content matches our test file
-        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/Accessories/None.json'), true), $bridgeInterface->DebugAccessories());
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
 }
