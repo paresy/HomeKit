@@ -1104,19 +1104,19 @@ class HomeKitSession
                             'iid'    => $characteristic['iid'],
                             'status' => 0
                         ];
-                        if($characteristic['ev']) {
+                        if ($characteristic['ev']) {
                             $this->sendDebug('Registering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
                             $ids = $this->manager->notifyCharacteristics($characteristic['aid'], $characteristic['iid']);
-                            if(sizeof($ids) > 0) {
-                                foreach($ids as $id) {
+                            if (count($ids) > 0) {
+                                foreach ($ids as $id) {
                                     $this->subscribeVariable($id);
                                 }
                                 $this->events[$characteristic['aid']][$characteristic['iid']] = $ids;
                             }
                         } else {
-                            if(isset($this->events[$characteristic['aid']]) && isset($this->events[$characteristic['aid']][$characteristic['iid']])) {
+                            if (isset($this->events[$characteristic['aid']]) && isset($this->events[$characteristic['aid']][$characteristic['iid']])) {
                                 unset($this->events[$characteristic['aid']][$characteristic['iid']]);
-                                if(sizeof($this->events[$characteristic['aid']]) == 0) {
+                                if (count($this->events[$characteristic['aid']]) == 0) {
                                     unset($this->events[$characteristic['aid']]);
                                 }
                             }
@@ -1251,8 +1251,8 @@ class HomeKitSession
         return $this->buildEncryptedResponse($this->buildAccessoriesResponse(json_encode($response)));
     }
 
-    private function sendNotify($aid, $iid, $value) {
-
+    private function sendNotify($aid, $iid, $value)
+    {
         if (!$this->encrypted) {
             return null;
         }
@@ -1268,22 +1268,20 @@ class HomeKitSession
         return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
             'characteristics' => $characteristics
         ])));
-
     }
 
-    public function notifyVariable($variableID, $value) {
-
+    public function notifyVariable($variableID, $value)
+    {
         foreach ($this->events as $accessoryID => $instances) {
             foreach ($instances as $instanceID => $ids) {
                 foreach ($ids as $id) {
                     if ($variableID == $id) {
-                       return $this->sendNotify($accessoryID, $instanceID, $value);
+                        return $this->sendNotify($accessoryID, $instanceID, $value);
                     }
                 }
             }
         }
 
         return null;
-
     }
 }

@@ -135,7 +135,6 @@ class HAPService
         return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::Notify);
     }
 
-
     public function notifyCharacteristic(int $instanceID, HAPAccessory $accessory): array
     {
         return $accessory->{$this->makeNotifyFunctionName($this->getCharacteristicObject($instanceID))}();
@@ -202,7 +201,6 @@ class HAPService
             $hasSetter = method_exists($accessory, $this->makeWriteFunctionName($characteristic));
             $hasGetter = method_exists($accessory, $this->makeReadFunctionName($characteristic));
             $hasNotify = method_exists($accessory, $this->makeNotifyFunctionName($characteristic));
-
 
             //Characteristic is not defined. Just continue as it is optional
             if (!$hasSetter && !$hasGetter && !$hasNotify) {

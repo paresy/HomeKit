@@ -117,4 +117,4 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
     }
 }
 
-HomeKitManager::registerAccessory("LightbulbColor");
+HomeKitManager::registerAccessory('LightbulbColor');

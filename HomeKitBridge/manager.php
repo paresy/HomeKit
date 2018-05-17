@@ -282,5 +282,4 @@ class HomeKitManager
     {
         return $this->getAccessoryObject($aid)->notifyCharacteristic($iid);
     }
-
 }

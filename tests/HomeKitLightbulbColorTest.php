@@ -12,7 +12,7 @@ class HomeKitLightbulbColorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(1 /* Integer */);
 
-        IPS_SetVariableCustomProfile($vid, "~HexColor");
+        IPS_SetVariableCustomProfile($vid, '~HexColor');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryLightbulbColor', json_encode([
@@ -53,5 +53,4 @@ class HomeKitLightbulbColorTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
-
 }

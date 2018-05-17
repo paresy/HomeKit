@@ -232,7 +232,7 @@ class HomeKitBridge extends DNSSDModule
         $this->UpdateDNSSD();
 
         //Forward variable events to sessions
-        if(($Message == VM_UPDATE) && $Data[1] /* Changed */) {
+        if (($Message == VM_UPDATE) && $Data[1] /* Changed */) {
             $this->processNotifications($SenderID, $Data[0] /* Value */);
         }
 
@@ -295,7 +295,7 @@ class HomeKitBridge extends DNSSDModule
             function ($Message, $Data, $Type) {
                 $this->SendDebug($Message, $Data, $Type);
             },
-            function($VariableID) {
+            function ($VariableID) {
                 $this->RegisterMessage($VariableID, VM_UPDATE);
             },
             $this->pairings,
@@ -340,9 +340,9 @@ class HomeKitBridge extends DNSSDModule
         $this->SetTimerInterval('Cleanup', 3 * 1000);
     }
 
-    private function processNotifications($VariableID, $Value) {
-
-        $this->SendDebug('Notify Event', "VariableID " . $VariableID . " = " . var_export($Value, true), 0);
+    private function processNotifications($VariableID, $Value)
+    {
+        $this->SendDebug('Notify Event', 'VariableID ' . $VariableID . ' = ' . var_export($Value, true), 0);
         foreach ($this->GetBufferList() as $name) {
             list($clientIP, $clientPort) = explode(':', $name);
 
@@ -363,6 +363,5 @@ class HomeKitBridge extends DNSSDModule
             //Save session for ClientIP/ClientPort
             $this->setSession($clientIP, intval($clientPort), $session);
         }
-
     }
 }
