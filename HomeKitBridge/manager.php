@@ -277,4 +277,10 @@ class HomeKitManager
     {
         return $this->getAccessoryObject($aid)->supportsNotifyCharacteristic($iid);
     }
+
+    public function notifyCharacteristics(int $aid, int $iid)
+    {
+        return $this->getAccessoryObject($aid)->notifyCharacteristic($iid);
+    }
+
 }

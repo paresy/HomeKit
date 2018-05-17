@@ -15,6 +15,13 @@ class HAPAccessoryHumiditySensor extends HAPAccessoryBase
         );
     }
 
+    public function notifyCharacteristicCurrentRelativeHumidity()
+    {
+        return [
+            $this->data['VariableID']
+        ];
+    }
+
     public function readCharacteristicCurrentRelativeHumidity()
     {
         return GetValue($this->data['VariableID']);

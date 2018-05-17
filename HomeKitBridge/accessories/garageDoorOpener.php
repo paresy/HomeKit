@@ -15,19 +15,16 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
         );
     }
 
+    public function notifyCharacteristicCurrentDoorState()
+    {
+        return [
+            $this->data['CurrentDoorState']
+        ];
+    }
+
     public function readCharacteristicCurrentDoorState()
     {
         return GetValue($this->data['CurrentDoorState']);
-    }
-
-    public function readCharacteristicTargetDoorState()
-    {
-        return GetValue($this->data['TargetDoorState']);
-    }
-
-    public function readCharacteristicObstructionDetected()
-    {
-        return GetValue($this->data['ObstructionDetected']);
     }
 
     public function writeCharacteristicCurrentDoorState($value)
@@ -35,9 +32,33 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
         $this->switchDevice($this->data['CurrentDoorState'], $value);
     }
 
+    public function notifyCharacteristicTargetDoorState()
+    {
+        return [
+            $this->data['TargetDoorState']
+        ];
+    }
+
+    public function readCharacteristicTargetDoorState()
+    {
+        return GetValue($this->data['TargetDoorState']);
+    }
+
     public function writeCharacteristicTargetDoorState($value)
     {
         $this->switchDevice($this->data['TargetDoorState'], $value);
+    }
+
+    public function notifyCharacteristicObstructionDetected()
+    {
+        return [
+            $this->data['ObstructionDetected']
+        ];
+    }
+
+    public function readCharacteristicObstructionDetected()
+    {
+        return GetValue($this->data['ObstructionDetected']);
     }
 
     public function writeCharacteristicObstructionDetected($value)
@@ -146,7 +167,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         $variableObstructionDetected = IPS_GetVariable($data['ObstructionDetected']);
 
         if ($variableCurrentDoorState['VariableType'] != 1 /* Integer */) {
-            return 'CurrentDorstate: Integer required';
+            return 'CurrentDoorState: Integer required';
         }
 
         if ($variableTargetDoorState['VariableType'] != 1 /* Integer */) {

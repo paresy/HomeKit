@@ -6,6 +6,13 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 {
+    public function notifyCharacteristicOn()
+    {
+        return [
+            $this->data['VariableID']
+        ];
+    }
+
     public function readCharacteristicOn()
     {
         return GetValue($this->data['VariableID']);
@@ -14,6 +21,11 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
     public function writeCharacteristicOn($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
+    }
+
+    public function notifyCharacteristicHue()
+    {
+        return GetValue($this->data['VariableID']);
     }
 
     public function readCharacteristicHue()
@@ -26,6 +38,11 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
         $this->switchDevice($this->data['VariableID'], $value);
     }
 
+    public function notifyCharacteristicSaturation()
+    {
+        return GetValue($this->data['VariableID']);
+    }
+
     public function readCharacteristicSaturation()
     {
         return GetValue($this->data['VariableID']);
@@ -34,6 +51,11 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
     public function writeCharacteristicSaturation($value)
     {
         $this->switchDevice($this->data['VariableID'], $value);
+    }
+
+    public function notifyCharacteristicColorTemperature()
+    {
+        return GetValue($this->data['VariableID']);
     }
 
     public function readCharacteristicColorTemperature()
@@ -95,4 +117,4 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
     }
 }
 
-//HomeKitManager::registerAccessory("LightbulbColor");
+HomeKitManager::registerAccessory("LightbulbColor");

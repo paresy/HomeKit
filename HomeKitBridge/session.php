@@ -8,6 +8,7 @@ include_once __DIR__ . '/srp.php';
 class HomeKitSession
 {
     private $debug = null;
+    private $subscribe = null;
     private $pairings = null;
     private $codes = null;
     private $manager = null;
@@ -33,6 +34,9 @@ class HomeKitSession
     private $messageSendKey = '';
     private $messageSendCounter = 0;
 
+    //Event subscriptions
+    private $events = [];
+
     //Required for stage PS M1+M3
     private $salt = '';
     private $setupCode = '';
@@ -50,9 +54,15 @@ class HomeKitSession
         ($this->debug)('HomeKitSession', $message, 0);
     }
 
-    public function __construct(callable $debug, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData, callable $terminateSessions)
+    private function SubscribeVariable(int $variableID)
+    {
+        ($this->subscribe)($variableID);
+    }
+
+    public function __construct(callable $debug, callable $subscribe, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData, callable $terminateSessions)
     {
         $this->debug = $debug;
+        $this->subscribe = $subscribe;
         $this->pairings = $pairings;
         $this->codes = $codes;
         $this->manager = $manager;
@@ -62,36 +72,39 @@ class HomeKitSession
 
         //Decode session data which is JSON encoded
         if ($sessionData != '') {
-            $json = json_decode($sessionData);
+            $json = json_decode($sessionData, true);
 
             $this->empty = false;
-            $this->locked = $json->locked;
+            $this->locked = $json['locked'];
 
             //Copy data
-            $this->data = hex2bin($json->data);
+            $this->data = hex2bin($json['data']);
 
             //Copy identifier
-            $this->identifier = $json->identifier;
+            $this->identifier = $json['identifier'];
+
+            //Copy events
+            $this->events = $json['events'];
 
             //Copy encryption
-            $this->encrypted = $json->encrypted;
-            $this->encryptedData = hex2bin($json->encryptedData);
-            $this->messageRecvKey = hex2bin($json->messageRecvKey);
-            $this->messageRecvCounter = $json->messageRecvCounter;
-            $this->messageSendKey = hex2bin($json->messageSendKey);
-            $this->messageSendCounter = $json->messageSendCounter;
+            $this->encrypted = $json['encrypted'];
+            $this->encryptedData = hex2bin($json['encryptedData']);
+            $this->messageRecvKey = hex2bin($json['messageRecvKey']);
+            $this->messageRecvCounter = $json['messageRecvCounter'];
+            $this->messageSendKey = hex2bin($json['messageSendKey']);
+            $this->messageSendCounter = $json['messageSendCounter'];
 
             //Required for stage PS M1+M3
-            $this->setupCode = $json->setupCode;
-            $this->salt = hex2bin($json->salt);
-            $this->privateValue = hex2bin($json->privateValue);
-            $this->publicValue = hex2bin($json->publicValue);
+            $this->setupCode = $json['setupCode'];
+            $this->salt = hex2bin($json['salt']);
+            $this->privateValue = hex2bin($json['privateValue']);
+            $this->publicValue = hex2bin($json['publicValue']);
 
             //Required for stage PS M5 and PV M1+M3
-            $this->sharedSecret = hex2bin($json->sharedSecret);
+            $this->sharedSecret = hex2bin($json['sharedSecret']);
 
             //Required for stage PV M1+M3
-            $this->sessionKey = hex2bin($json->sessionKey);
+            $this->sessionKey = hex2bin($json['sessionKey']);
         }
     }
 
@@ -101,6 +114,7 @@ class HomeKitSession
             'locked'             => $this->locked,
             'data'               => bin2hex($this->data),
             'identifier'         => $this->identifier,
+            'events'             => $this->events,
             'encrypted'          => $this->encrypted,
             'encryptedData'      => bin2hex($this->encryptedData),
             'messageRecvKey'     => bin2hex($this->messageRecvKey),
@@ -1090,7 +1104,24 @@ class HomeKitSession
                             'iid'    => $characteristic['iid'],
                             'status' => 0
                         ];
-                        $this->sendDebug('Registering Notify: ' . print_r($characteristic, true));
+                        if($characteristic['ev']) {
+                            $this->sendDebug('Registering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
+                            $ids = $this->manager->notifyCharacteristics($characteristic['aid'], $characteristic['iid']);
+                            if(sizeof($ids) > 0) {
+                                foreach($ids as $id) {
+                                    $this->subscribeVariable($id);
+                                }
+                                $this->events[$characteristic['aid']][$characteristic['iid']] = $ids;
+                            }
+                        } else {
+                            if(isset($this->events[$characteristic['aid']]) && isset($this->events[$characteristic['aid']][$characteristic['iid']])) {
+                                unset($this->events[$characteristic['aid']][$characteristic['iid']]);
+                                if(sizeof($this->events[$characteristic['aid']]) == 0) {
+                                    unset($this->events[$characteristic['aid']]);
+                                }
+                            }
+                            $this->sendDebug('Unregistering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
+                        }
                     }
                 } else {
                     $this->sendDebug('Unsupported write characteristic: ' . print_r($characteristic, true));
@@ -1189,6 +1220,19 @@ class HomeKitSession
         ]);
     }
 
+    private function buildEventResponse(string $body): string
+    {
+        //Build the http response
+        return $this->buildHTTP([
+            'status'  => '200 OK',
+            'version' => 'EVENT/1.0',
+            'headers' => [
+                'Content-Type' => 'application/hap+json'
+            ],
+            'body' => $body
+        ]);
+    }
+
     private function getAccessories(array $http): string
     {
         if (!$this->encrypted) {
@@ -1205,5 +1249,41 @@ class HomeKitSession
         ];
 
         return $this->buildEncryptedResponse($this->buildAccessoriesResponse(json_encode($response)));
+    }
+
+    private function sendNotify($aid, $iid, $value) {
+
+        if (!$this->encrypted) {
+            return null;
+        }
+
+        $characteristics = [];
+
+        $characteristics[] = [
+            'aid'   => $aid,
+            'iid'   => $iid,
+            'value' => $value
+        ];
+
+        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
+            'characteristics' => $characteristics
+        ])));
+
+    }
+
+    public function notifyVariable($variableID, $value) {
+
+        foreach ($this->events as $accessoryID => $instances) {
+            foreach ($instances as $instanceID => $ids) {
+                foreach ($ids as $id) {
+                    if ($variableID == $id) {
+                       return $this->sendNotify($accessoryID, $instanceID, $value);
+                    }
+                }
+            }
+        }
+
+        return null;
+
     }
 }

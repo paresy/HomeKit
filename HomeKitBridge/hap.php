@@ -72,6 +72,11 @@ class HAPAccessory
     {
         return $this->getServiceObject($instanceID)->supportsNotifyCharacteristic($instanceID % 100, $this);
     }
+
+    public function notifyCharacteristic(int $instanceID): array
+    {
+        return $this->getServiceObject($instanceID)->notifyCharacteristic($instanceID % 100, $this);
+    }
 }
 
 class HAPService
@@ -130,6 +135,12 @@ class HAPService
         return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::Notify);
     }
 
+
+    public function notifyCharacteristic(int $instanceID, HAPAccessory $accessory): array
+    {
+        return $accessory->{$this->makeNotifyFunctionName($this->getCharacteristicObject($instanceID))}();
+    }
+
     public function doExport(int $baseInstanceID, HAPAccessory $accessory): array
     {
         $instanceID = $baseInstanceID;
@@ -146,7 +157,7 @@ class HAPService
 
             if ($characteristic->hasPermission(HAPCharacteristicPermission::PairedWrite)) {
 
-                //Check if Class properly implements the setter
+                //Check if Class properly implements the setter function
                 if (!method_exists($accessory, $this->makeWriteFunctionName($characteristic))) {
                     throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
@@ -154,13 +165,21 @@ class HAPService
 
             if ($characteristic->hasPermission(HAPCharacteristicPermission::PairedRead)) {
 
-                //Check if Class properly implements the getter
+                //Check if Class properly implements the getter function
                 if (!method_exists($accessory, $this->makeReadFunctionName($characteristic))) {
                     throw new Exception('Missing function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
 
                 //Call the function to get the current value
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
+            }
+
+            if ($characteristic->hasPermission(HAPCharacteristicPermission::Notify)) {
+
+                //Check if Class properly implements the notify function
+                if (!method_exists($accessory, $this->makeNotifyFunctionName($characteristic))) {
+                    throw new Exception('Missing function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                }
             }
 
             //Exporting will also validate the value
@@ -178,21 +197,27 @@ class HAPService
 
             $requireSetter = $characteristic->hasPermission(HAPCharacteristicPermission::PairedWrite);
             $requireGetter = $characteristic->hasPermission(HAPCharacteristicPermission::PairedRead);
+            $requireNotify = $characteristic->hasPermission(HAPCharacteristicPermission::Notify);
 
             $hasSetter = method_exists($accessory, $this->makeWriteFunctionName($characteristic));
             $hasGetter = method_exists($accessory, $this->makeReadFunctionName($characteristic));
+            $hasNotify = method_exists($accessory, $this->makeNotifyFunctionName($characteristic));
+
 
             //Characteristic is not defined. Just continue as it is optional
-            if (!$hasSetter && !$hasGetter) {
+            if (!$hasSetter && !$hasGetter && !$hasNotify) {
                 continue;
             }
 
             //Check for requirements
             if ($requireSetter && !$hasSetter) {
-                throw new Exception('Missing setter function for characteristic ' . get_class($characteristic) . ' in Accessory ' . get_class($accessory));
+                throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireGetter && !$hasGetter) {
-                throw new Exception('Missing getter function for characteristic ' . get_class($characteristic) . ' in Accessory ' . get_class($accessory));
+                throw new Exception('Missing function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+            }
+            if ($requireNotify && !$hasNotify) {
+                throw new Exception('Missing function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
 
             //Call the function to get the current value
@@ -219,6 +244,12 @@ class HAPService
     {
         //Filter HAP from Class Name
         return 'write' . substr(get_class($characteristic), 3);
+    }
+
+    private function makeNotifyFunctionName(HAPCharacteristic $characteristic): string
+    {
+        //Filter HAP from Class Name
+        return 'notify' . substr(get_class($characteristic), 3);
     }
 }
 

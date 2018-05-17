@@ -15,6 +15,13 @@ class HAPAccessorySmokeSensor extends HAPAccessoryBase
         );
     }
 
+    public function notifyCharacteristicSmokeDetected()
+    {
+        return [
+            $this->data['VariableID']
+        ];
+    }
+
     public function readCharacteristicSmokeDetected()
     {
         $targetVariable = IPS_GetVariable($this->data['VariableID']);

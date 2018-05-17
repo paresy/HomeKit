@@ -6,6 +6,13 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
 {
+    public function notifyCharacteristicOn()
+    {
+        return [
+            $this->data['VariableID']
+        ];
+    }
+
     public function readCharacteristicOn()
     {
         $profile = $this->getProfile();
@@ -30,6 +37,13 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
         }
 
         $this->switchDevice($this->data['VariableID'], $value);
+    }
+
+    public function notifyCharacteristicBrightness()
+    {
+        return [
+            $this->data['VariableID']
+        ];
     }
 
     public function readCharacteristicBrightness()
