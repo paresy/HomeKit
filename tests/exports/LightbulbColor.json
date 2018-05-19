@@ -77,6 +77,21 @@
             "value": false
           },
           {
+            "type": "8",
+            "iid": 103,
+            "format": "int",
+            "perms": [
+              "pr",
+              "pw",
+              "ev"
+            ],
+            "value": 0,
+            "minValue": 0,
+            "maxValue": 100,
+            "minStep": 1,
+            "unit": "percentage"
+          },
+          {
             "type": "13",
             "iid": 104,
             "format": "float",
