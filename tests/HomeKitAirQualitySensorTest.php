@@ -6,7 +6,7 @@ include_once __DIR__ . '/HomeKitBaseTest.php';
 
 class HomeKitAirQualitySensorTest extends HomeKitBaseTest
 {
-    public function testAccessoryExport(): void
+    public function testAccessory(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
