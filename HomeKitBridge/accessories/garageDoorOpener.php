@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 {
+    use HelperSwitchDevice;
+
     public function __construct($data)
     {
         parent::__construct(
@@ -27,11 +29,6 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
         return GetValue($this->data['CurrentDoorState']);
     }
 
-    public function writeCharacteristicCurrentDoorState($value)
-    {
-        $this->switchDevice($this->data['CurrentDoorState'], $value);
-    }
-
     public function notifyCharacteristicTargetDoorState()
     {
         return [
@@ -46,7 +43,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function writeCharacteristicTargetDoorState($value)
     {
-        $this->switchDevice($this->data['TargetDoorState'], $value);
+        self::switchDevice($this->data['TargetDoorState'], $value);
     }
 
     public function notifyCharacteristicObstructionDetected()
@@ -59,46 +56,6 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
     public function readCharacteristicObstructionDetected()
     {
         return GetValue($this->data['ObstructionDetected']);
-    }
-
-    public function writeCharacteristicObstructionDetected($value)
-    {
-        $this->switchDevice($this->data['ObstructionDetected'], $value);
-    }
-
-    protected function switchDevice($variableID, $value)
-    {
-        $targetVariable = IPS_GetVariable($variableID);
-
-        if ($targetVariable['VariableCustomAction'] != '') {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if ($profileAction < 10000) {
-            echo 'No action was defined!';
-
-            return;
-        }
-
-        if ($targetVariable['VariableType'] == 0 /* Boolean */) {
-            $value = boolval($value);
-        } elseif ($targetVariable['VariableType'] == 1 /* Integer */) {
-            $value = intval($value);
-        } elseif ($targetVariable['VariableType'] == 2 /* Float */) {
-            $value = floatval($value);
-        } else {
-            echo 'Strings are not supported';
-
-            return;
-        }
-
-        if (IPS_InstanceExists($profileAction)) {
-            IPS_RunScriptText('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($variableID)['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
-        } elseif (IPS_ScriptExists($profileAction)) {
-            IPS_RunScriptEx($profileAction, ['VARIABLE' => $variableID, 'VALUE' => $value, 'SENDER' => 'WebFront']);
-        }
     }
 }
 

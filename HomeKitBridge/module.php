@@ -9,6 +9,7 @@ include_once __DIR__ . '/manager.php';
 include_once __DIR__ . '/session.php';
 include_once __DIR__ . '/hap.php';
 include_once __DIR__ . '/simulate.php';
+include_once __DIR__ . '/helper/autoload.php';
 include_once __DIR__ . '/characteristics/autoload.php';
 include_once __DIR__ . '/services/autoload.php';
 include_once __DIR__ . '/accessories/autoload.php';
