@@ -150,7 +150,8 @@ class HomeKitManager
 
     public function getConfigurationForm(): array
     {
-        $form = [];
+        $content = [];
+        $elements = [];
 
         $sortedAccessories = self::$supportedAccessories;
         uasort($sortedAccessories, function ($a, $b) {
@@ -197,11 +198,10 @@ class HomeKitManager
                 ];
             }
 
-            $form[] = [
+            $content[] = [
                 'type'     => 'List',
                 'name'     => self::propertyPrefix . $accessory,
-                'caption'  => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
-                'rowCount' => 5,
+                'rowCount' => 10,
                 'add'      => true,
                 'delete'   => true,
                 'sort'     => [
@@ -211,9 +211,18 @@ class HomeKitManager
                 'columns' => $columns,
                 'values'  => $values
             ];
+
+            $elements[] = [
+                'type'      => 'ExpansionPanel',
+                'caption'   => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
+                'items'     => $content
+            ];
+
         }
 
-        return $form;
+        return [
+            'elements' => $elements
+        ];
     }
 
     private function getAccessoryObject(int $aid): object
