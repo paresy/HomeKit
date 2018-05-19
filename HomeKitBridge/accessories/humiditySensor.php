@@ -69,6 +69,19 @@ class HAPAccessoryConfigurationHumiditySensor
 
         return 'OK';
     }
+
+    public static function getTranslations()
+    {
+        return [
+            "de" => [
+                "Humidity Sensor"       => "Feuchtigkeitssensor",
+                "VariableID"            => "VariablenID",
+                "Variable missing"      => "Variable fehlt",
+                "Int/Float required"    => "Int/Float benötigt",
+                "OK"                    => "OK"
+            ]
+        ];
+    }
 }
 
 HomeKitManager::registerAccessory('HumiditySensor');

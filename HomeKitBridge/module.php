@@ -107,7 +107,7 @@ class HomeKitBridge extends DNSSDModule
             ],
             [
                 'type'  => 'Label',
-                'label' => 'You can add new items for each accessory type:'
+                'label' => 'You can add new items for each accessory type'
             ]
         ];
 

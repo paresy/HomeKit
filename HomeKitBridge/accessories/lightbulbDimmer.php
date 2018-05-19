@@ -128,6 +128,21 @@ class HAPAccessoryConfigurationLightbulbDimmer extends HAPAccessoryConfiguration
 
         return 'OK';
     }
+
+    public static function getTranslations()
+    {
+        return [
+            "de" => [
+                "Lightbulb (Dimmer)"    => "Lampe (Dimmbar)",
+                "VariableID"            => "VariablenID",
+                "Variable missing"      => "Variable fehlt",
+                "Int/Float required"    => "Int/Float benötigt",
+                "Profile required"      => "Profil benötigt",
+                "Action required"       => "Aktion benötigt",
+                "OK"                    => "OK"
+            ]
+        ];
+    }
 }
 
 HomeKitManager::registerAccessory('LightbulbDimmer');

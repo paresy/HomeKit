@@ -119,6 +119,20 @@ class HAPAccessoryConfigurationSwitch
 
         return 'OK';
     }
+
+    public static function getTranslations()
+    {
+        return [
+            "de" => [
+                "Switch"                => "Zwischenstecker",
+                "VariableID"            => "VariablenID",
+                "Variable missing"      => "Variable fehlt",
+                "Bool required"         => "Bool benötigt",
+                "Action required"       => "Aktion benötigt",
+                "OK"                    => "OK"
+            ]
+        ];
+    }
 }
 
 HomeKitManager::registerAccessory('Switch');

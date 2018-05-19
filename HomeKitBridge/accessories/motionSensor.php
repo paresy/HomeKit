@@ -79,10 +79,23 @@ class HAPAccessoryConfigurationMotionSensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 0 /* Boolean */) {
-            return 'Boolean required';
+            return 'Bool required';
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            "de" => [
+                "Motion Sensor"         => "Bewegungsmelder",
+                "VariableID"            => "VariablenID",
+                "Variable missing"      => "Variable fehlt",
+                "Bool required"         => "Bool benötigt",
+                "OK"                    => "OK"
+            ]
+        ];
     }
 }
 

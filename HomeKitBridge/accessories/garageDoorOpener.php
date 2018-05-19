@@ -190,6 +190,11 @@ class HAPAccessoryConfigurationGarageDoorOpener
 
         return 'OK';
     }
+
+    public static function getTranslations()
+    {
+        return [];
+    }
 }
 
 HomeKitManager::registerAccessory('GarageDoorOpener');
