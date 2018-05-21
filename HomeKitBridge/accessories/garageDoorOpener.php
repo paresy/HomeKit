@@ -26,7 +26,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function readCharacteristicCurrentDoorState()
     {
-        switch(GetValue($this->data['VariableID'])) {
+        switch (GetValue($this->data['VariableID'])) {
             case 0:
                 return HAPCharacteristicCurrentDoorState::Open;
             case 2:
@@ -47,7 +47,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function readCharacteristicTargetDoorState()
     {
-        switch(GetValue($this->data['VariableID'])) {
+        switch (GetValue($this->data['VariableID'])) {
             case 0:
                 return HAPCharacteristicTargetDoorState::Open;
             case 4:
@@ -58,7 +58,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function writeCharacteristicTargetDoorState($value)
     {
-        switch($value) {
+        switch ($value) {
             case HAPCharacteristicTargetDoorState::Open:
                 $value = 0;
                 break;
@@ -138,7 +138,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
 
     public static function doMigrate(&$data)
     {
-        if(!isset($data['VariableID'])) {
+        if (!isset($data['VariableID'])) {
             $data['VariableID'] = $data['TargetDoorState'];
             unset($data['CurrentDoorState']);
             unset($data['TargetDoorState']);
@@ -171,8 +171,8 @@ class HAPAccessoryConfigurationGarageDoorOpener
         }
 
         switch ($profileName) {
-            case "~ShutterMoveStop":
-            case "~ShutterMoveStep":
+            case '~ShutterMoveStop':
+            case '~ShutterMoveStep':
                 break;
             default:
                 return 'Unsupported Profile';
