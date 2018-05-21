@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 {
+    use HelperSwitchDevice;
+
     public function __construct($data)
     {
         parent::__construct(
@@ -18,87 +20,92 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
     public function notifyCharacteristicCurrentDoorState()
     {
         return [
-            $this->data['CurrentDoorState']
+            $this->data['VariableID']
         ];
     }
 
     public function readCharacteristicCurrentDoorState()
     {
-        return GetValue($this->data['CurrentDoorState']);
-    }
-
-    public function writeCharacteristicCurrentDoorState($value)
-    {
-        $this->switchDevice($this->data['CurrentDoorState'], $value);
+        switch (GetValue($this->data['VariableID'])) {
+            case 0:
+                return HAPCharacteristicCurrentDoorState::Open;
+            case 2:
+                return HAPCharacteristicCurrentDoorState::Stopped;
+            case 4:
+                return HAPCharacteristicCurrentDoorState::Closed;
+        }
+        //In doubt we return Stopped
+        return HAPCharacteristicCurrentDoorState::Stopped;
     }
 
     public function notifyCharacteristicTargetDoorState()
     {
         return [
-            $this->data['TargetDoorState']
+            $this->data['VariableID']
         ];
     }
 
     public function readCharacteristicTargetDoorState()
     {
-        return GetValue($this->data['TargetDoorState']);
+        switch (GetValue($this->data['VariableID'])) {
+            case 0:
+                return HAPCharacteristicTargetDoorState::Open;
+            case 4:
+                return HAPCharacteristicTargetDoorState::Closed;
+        }
+        return HAPCharacteristicTargetDoorState::Closed;
     }
 
     public function writeCharacteristicTargetDoorState($value)
     {
-        $this->switchDevice($this->data['TargetDoorState'], $value);
-    }
+        switch ($value) {
+            case HAPCharacteristicTargetDoorState::Open:
+                $value = 0;
+                break;
+            case HAPCharacteristicTargetDoorState::Closed:
+                $value = 4;
+                break;
+        }
 
-    public function notifyCharacteristicObstructionDetected()
-    {
-        return [
-            $this->data['ObstructionDetected']
-        ];
-    }
+        if (!IPS_VariableExists($this->data['VariableID'])) {
+            return;
+        }
 
-    public function readCharacteristicObstructionDetected()
-    {
-        return GetValue($this->data['ObstructionDetected']);
-    }
+        $targetVariable = IPS_GetVariable($this->data['VariableID']);
 
-    public function writeCharacteristicObstructionDetected($value)
-    {
-        $this->switchDevice($this->data['ObstructionDetected'], $value);
-    }
-
-    protected function switchDevice($variableID, $value)
-    {
-        $targetVariable = IPS_GetVariable($variableID);
-
-        if ($targetVariable['VariableCustomAction'] != '') {
+        if ($targetVariable['VariableCustomAction'] != 0) {
             $profileAction = $targetVariable['VariableCustomAction'];
         } else {
             $profileAction = $targetVariable['VariableAction'];
         }
 
         if ($profileAction < 10000) {
-            echo 'No action was defined!';
-
             return;
         }
 
-        if ($targetVariable['VariableType'] == 0 /* Boolean */) {
-            $value = boolval($value);
-        } elseif ($targetVariable['VariableType'] == 1 /* Integer */) {
+        if ($targetVariable['VariableType'] == 1 /* Integer */) {
             $value = intval($value);
-        } elseif ($targetVariable['VariableType'] == 2 /* Float */) {
-            $value = floatval($value);
         } else {
-            echo 'Strings are not supported';
-
             return;
         }
 
         if (IPS_InstanceExists($profileAction)) {
-            IPS_RunScriptText('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($variableID)['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
+            IPS_RunScriptText('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($this->data['VariableID'])['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
         } elseif (IPS_ScriptExists($profileAction)) {
-            IPS_RunScriptEx($profileAction, ['VARIABLE' => $variableID, 'VALUE' => $value, 'SENDER' => 'WebFront']);
+            IPS_RunScriptEx($profileAction, ['VARIABLE' => $this->data['VariableID'], 'VALUE' => $value, 'SENDER' => 'VoiceControl']);
+        } else {
+            return;
         }
+    }
+
+    public function notifyCharacteristicObstructionDetected()
+    {
+        return [];
+    }
+
+    public function readCharacteristicObstructionDetected()
+    {
+        return false;
     }
 }
 
@@ -118,74 +125,67 @@ class HAPAccessoryConfigurationGarageDoorOpener
     {
         return [
             [
-                'label' => 'CurrentDoorState',
-                'name'  => 'CurrentDoorState',
+                'label' => 'VariableID',
+                'name'  => 'VariableID',
                 'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
-                ],
-            ],
-            [
-                'label' => 'TargetDoorState',
-                'name'  => 'TargetDoorState',
-                'width' => '150px',
-                'add'   => 0,
-                'edit'  => [
-                    'type' => 'SelectVariable'
-                ],
-            ],
-            [
-                'label' => 'ObstructionDetected',
-                'name'  => 'ObstructionDetected',
-                'width' => '150px',
-                'add'   => 0,
-                'edit'  => [
-                    'type' => 'SelectVariable'
-                ],
+                ]
             ]
-
         ];
+    }
+
+    public static function doMigrate(&$data)
+    {
+        if (!isset($data['VariableID'])) {
+            $data['VariableID'] = $data['TargetDoorState'];
+            unset($data['CurrentDoorState']);
+            unset($data['TargetDoorState']);
+            unset($data['ObstructionDetected']);
+            return true;
+        }
+        return false;
     }
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['CurrentDoorState'])) {
-            return 'CurrentDoorState missing';
+        if (!IPS_VariableExists($data['VariableID'])) {
+            return 'Variable missing';
         }
 
-        if (!IPS_VariableExists($data['TargetDoorState'])) {
-            return 'TargetDoorState missing';
+        $targetVariable = IPS_GetVariable($data['VariableID']);
+
+        if ($targetVariable['VariableType'] != 1 /* Integer */) {
+            return 'Int required';
         }
 
-        if (!IPS_VariableExists($data['ObstructionDetected'])) {
-            return 'ObstructionDetected missing';
-        }
-
-        $variableCurrentDoorState = IPS_GetVariable($data['CurrentDoorState']);
-        $variableTargetDoorState = IPS_GetVariable($data['TargetDoorState']);
-        $variableObstructionDetected = IPS_GetVariable($data['ObstructionDetected']);
-
-        if ($variableCurrentDoorState['VariableType'] != 1 /* Integer */) {
-            return 'CurrentDoorState: Integer required';
-        }
-
-        if ($variableTargetDoorState['VariableType'] != 1 /* Integer */) {
-            return 'TargetDoorState: Integer required';
-        }
-
-        if ($variableObstructionDetected['VariableType'] != 0 /* Boolean */) {
-            return 'ObstructionDetected: Bool required';
-        }
-
-        if ($variableTargetDoorState['VariableCustomAction'] != '') {
-            $profileAction = $variableTargetDoorState['VariableCustomAction'];
+        if ($targetVariable['VariableCustomProfile'] != '') {
+            $profileName = $targetVariable['VariableCustomProfile'];
         } else {
-            $profileAction = $variableTargetDoorState['VariableAction'];
+            $profileName = $targetVariable['VariableProfile'];
+        }
+
+        if (!IPS_VariableProfileExists($profileName)) {
+            return 'Profile required';
+        }
+
+        switch ($profileName) {
+            case '~ShutterMoveStop':
+            case '~ShutterMoveStep':
+                break;
+            default:
+                return 'Unsupported Profile';
+        }
+
+        if ($targetVariable['VariableCustomAction'] != '') {
+            $profileAction = $targetVariable['VariableCustomAction'];
+        } else {
+            $profileAction = $targetVariable['VariableAction'];
         }
 
         if (!($profileAction > 10000)) {
-            return 'TargetDoorState: Action required';
+            return 'Action required';
         }
 
         return 'OK';

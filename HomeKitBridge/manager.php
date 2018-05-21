@@ -106,16 +106,24 @@ class HomeKitManager
             $highestID = $ids[0];
         }
 
-        //Update all properties and ids which are currently zero
+        //Update all properties
         $wasChanged = false;
         foreach (self::$supportedAccessories as $accessory) {
             $wasUpdated = false;
             $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as &$data) {
+            foreach ($datas as $name => &$data) {
+                //ids which are currently zero need an id
                 if ($data['ID'] == 0) {
                     $data['ID'] = ++$highestID;
                     $wasChanged = true;
                     $wasUpdated = true;
+                }
+                //check for migration
+                if (method_exists(self::configurationClassPrefix . $accessory, 'doMigrate')) {
+                    if (call_user_func_array(self::configurationClassPrefix . $accessory . '::doMigrate', [&$data])) {
+                        $wasChanged = true;
+                        $wasUpdated = true;
+                    }
                 }
             }
             if ($wasUpdated) {
