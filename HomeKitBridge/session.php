@@ -1280,13 +1280,12 @@ class HomeKitSession
             }
         }
 
-        if(sizeof($characteristics) == 0) {
+        if (count($characteristics) == 0) {
             return null;
         }
 
         return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
             'characteristics' => $characteristics
         ])));
-
     }
 }

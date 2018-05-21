@@ -119,8 +119,8 @@ class HomeKitManager
                     $wasUpdated = true;
                 }
                 //check for migration
-                if(method_exists(self::configurationClassPrefix . $accessory, "doMigrate")) {
-                    if(call_user_func_array(self::configurationClassPrefix . $accessory . "::doMigrate", array(&$data))) {
+                if (method_exists(self::configurationClassPrefix . $accessory, 'doMigrate')) {
+                    if (call_user_func_array(self::configurationClassPrefix . $accessory . '::doMigrate', [&$data])) {
                         $wasChanged = true;
                         $wasUpdated = true;
                     }

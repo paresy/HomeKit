@@ -17,7 +17,7 @@ class HomeKitGarageDoorOpenerTest extends HomeKitBaseTest
             IPS_CreateVariableProfile('~ShutterMoveStop', 1 /* Integer */);
         }
 
-        IPS_SetVariableCustomProfile($VariableID, "~ShutterMoveStop");
+        IPS_SetVariableCustomProfile($VariableID, '~ShutterMoveStop');
         IPS_SetVariableCustomAction($VariableID, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryGarageDoorOpener', json_encode([
@@ -51,7 +51,7 @@ class HomeKitGarageDoorOpenerTest extends HomeKitBaseTest
             IPS_CreateVariableProfile('~ShutterMoveStop', 1 /* Integer */);
         }
 
-        IPS_SetVariableCustomProfile($TargetDoorStateID, "~ShutterMoveStop");
+        IPS_SetVariableCustomProfile($TargetDoorStateID, '~ShutterMoveStop');
         IPS_SetVariableCustomAction($TargetDoorStateID, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryGarageDoorOpener', json_encode([
