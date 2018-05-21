@@ -346,7 +346,7 @@ class HomeKitBridge extends DNSSDModule
         foreach ($this->GetBufferList() as $name) {
             //check for a colon, which indicates an ip / port combination
             //filter different buffers we use like e.g. SetupCode
-            if(strpos($name, ":") !== false) {
+            if (strpos($name, ':') !== false) {
                 list($clientIP, $clientPort) = explode(':', $name);
 
                 //Get Session for ClientIP/ClientPort
