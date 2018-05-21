@@ -747,7 +747,7 @@ class HomeKitSession
         }
 
         $iOSDeviceLTPK = $this->pairings->getPairingPublicKey($tlvIdentifier->getIdentifier());
-        if ($iOSDeviceLTPK === null) {
+        if ($iOSDeviceLTPK === '') {
             $this->SendDebug('Identifier is invalid');
             $response .= TLVBuilder::State(TLVState::M4);
             $response .= TLVBuilder::Error(TLVError::Authentication);
