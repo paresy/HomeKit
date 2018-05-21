@@ -344,24 +344,28 @@ class HomeKitBridge extends DNSSDModule
     {
         $this->SendDebug('Notify Event', 'VariableID ' . $VariableID . ' = ' . var_export($Value, true), 0);
         foreach ($this->GetBufferList() as $name) {
-            list($clientIP, $clientPort) = explode(':', $name);
+            //check for a colon, which indicates an ip / port combination
+            //filter different buffers we use like e.g. SetupCode
+            if(strpos($name, ":") !== false) {
+                list($clientIP, $clientPort) = explode(':', $name);
 
-            //Get Session for ClientIP/ClientPort
-            $session = $this->getSession($clientIP, intval($clientPort));
+                //Get Session for ClientIP/ClientPort
+                $session = $this->getSession($clientIP, intval($clientPort));
 
-            //Check for valid events and build response
-            $response = $session->notifyVariable($VariableID, $Value);
+                //Check for valid events and build response
+                $response = $session->notifyVariable($VariableID, $Value);
 
-            //Only if we have a valid response
-            if ($response !== null) {
-                $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Transmit: ' . $response, 0);
+                //Only if we have a valid response
+                if ($response !== null) {
+                    $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Transmit: ' . $response, 0);
 
-                //Send response
-                $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort)]));
+                    //Send response
+                    $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort)]));
+                }
+
+                //Save session for ClientIP/ClientPort
+                $this->setSession($clientIP, intval($clientPort), $session);
             }
-
-            //Save session for ClientIP/ClientPort
-            $this->setSession($clientIP, intval($clientPort), $session);
         }
     }
 }
