@@ -747,7 +747,7 @@ class HomeKitSession
         }
 
         $iOSDeviceLTPK = $this->pairings->getPairingPublicKey($tlvIdentifier->getIdentifier());
-        if ($iOSDeviceLTPK === null) {
+        if ($iOSDeviceLTPK === '') {
             $this->SendDebug('Identifier is invalid');
             $response .= TLVBuilder::State(TLVState::M4);
             $response .= TLVBuilder::Error(TLVError::Authentication);
@@ -1253,35 +1253,40 @@ class HomeKitSession
 
     private function sendNotify($aid, $iid, $value)
     {
+        //we cannot use value directly as it might get post processed.
+        //leave $value accessable if we decide to rewrite this somehow in the future
+        return [
+            'aid'   => $aid,
+            'iid'   => $iid,
+            'value' => $this->manager->readCharacteristics($aid, $iid) /*$value*/
+        ];
+    }
+
+    public function notifyVariable($variableID, $value)
+    {
         if (!$this->encrypted) {
             return null;
         }
 
         $characteristics = [];
 
-        $characteristics[] = [
-            'aid'   => $aid,
-            'iid'   => $iid,
-            'value' => $value
-        ];
-
-        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
-            'characteristics' => $characteristics
-        ])));
-    }
-
-    public function notifyVariable($variableID, $value)
-    {
         foreach ($this->events as $accessoryID => $instances) {
             foreach ($instances as $instanceID => $ids) {
                 foreach ($ids as $id) {
                     if ($variableID == $id) {
-                        return $this->sendNotify($accessoryID, $instanceID, $value);
+                        $characteristics[] = $this->sendNotify($accessoryID, $instanceID, $value);
                     }
                 }
             }
         }
 
-        return null;
+        if(sizeof($characteristics) == 0) {
+            return null;
+        }
+
+        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
+            'characteristics' => $characteristics
+        ])));
+
     }
 }
