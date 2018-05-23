@@ -1,3 +1,6 @@
 [submodule "tests/stubs"]
 	path = tests/stubs
 	url = https://github.com/paresy/SymconStubs
+[submodule "HomeKitBridge/helper"]
+	path = HomeKitBridge/helper
+	url = https://github.com/symcon/SymconHelper

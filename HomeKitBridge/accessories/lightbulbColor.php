@@ -6,6 +6,8 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 {
+    use HelperColorDevice;
+
     public function notifyCharacteristicOn()
     {
         return [
@@ -15,17 +17,36 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function readCharacteristicOn()
     {
-        return GetValue($this->data['VariableID']);
+        return self::getColorValue($this->data['VariableID']) > 0;
     }
 
     public function writeCharacteristicOn($value)
     {
-        $this->switchDevice($this->data['VariableID'], $value);
+        self::colorDevice($this->data['VariableID'], 0xFFFFFF);
+    }
+
+    public function notifyCharacteristicBrightness()
+    {
+        return [
+            $this->data['VariableID']
+        ];
+    }
+
+    public function readCharacteristicBrightness()
+    {
+        return self::getColorBrightness($this->data['VariableID']);
+    }
+
+    public function writeCharacteristicBrightness($value)
+    {
+        self::setColorBrightness($this->data['VariableID'], $value);
     }
 
     public function notifyCharacteristicHue()
     {
-        return GetValue($this->data['VariableID']);
+        return [
+            $this->data['VariableID']
+        ];
     }
 
     public function readCharacteristicHue()
@@ -40,7 +61,9 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function notifyCharacteristicSaturation()
     {
-        return GetValue($this->data['VariableID']);
+        return [
+            $this->data['VariableID']
+        ];
     }
 
     public function readCharacteristicSaturation()
@@ -55,7 +78,9 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function notifyCharacteristicColorTemperature()
     {
-        return GetValue($this->data['VariableID']);
+        return [
+            $this->data['VariableID']
+        ];
     }
 
     public function readCharacteristicColorTemperature()
@@ -71,6 +96,8 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
 class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationLightbulbSwitch
 {
+    use HelperColorDevice;
+
     public static function getPosition()
     {
         return 3;
@@ -83,37 +110,7 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['VariableID'])) {
-            return 'Variable missing';
-        }
-
-        $targetVariable = IPS_GetVariable($data['VariableID']);
-
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Int required';
-        }
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        if ($profileName != '~HexColor') {
-            return 'HexColor required';
-        }
-
-        if ($targetVariable['VariableCustomAction'] != '') {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if (!($profileAction > 10000)) {
-            return 'Action required';
-        }
-
-        return 'OK';
+        return self::getColorCompatibility($data['VariableID']);
     }
 
     public static function getTranslations()

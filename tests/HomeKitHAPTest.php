@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/../HomeKitBridge/hap.php';
 include_once __DIR__ . '/../HomeKitBridge/manager.php';
+include_once __DIR__ . '/../HomeKitBridge/helper/autoload.php';
 include_once __DIR__ . '/../HomeKitBridge/characteristics/autoload.php';
 include_once __DIR__ . '/../HomeKitBridge/services/autoload.php';
 include_once __DIR__ . '/../HomeKitBridge/accessories/autoload.php';
