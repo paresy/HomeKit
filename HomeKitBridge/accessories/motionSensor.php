@@ -88,12 +88,12 @@ class HAPAccessoryConfigurationMotionSensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Motion Sensor"         => "Bewegungsmelder",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Bool required"         => "Bool benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Motion Sensor'         => 'Bewegungsmelder',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Bool required'         => 'Bool benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }

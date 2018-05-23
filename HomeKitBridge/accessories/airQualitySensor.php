@@ -73,16 +73,15 @@ class HAPAccessoryConfigurationAirQualitySensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Air Quality Sensor"    => "Luftgütesensor",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Int/Float required"    => "Int/Float benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Air Quality Sensor'    => 'Luftgütesensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int/Float required'    => 'Int/Float benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }
-
 }
 
 HomeKitManager::registerAccessory('AirQualitySensor');
