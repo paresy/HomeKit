@@ -88,12 +88,12 @@ class HAPAccessoryConfigurationLeakSensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Leak Sensor"           => "Leckagesensor",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Int required"          => "Int benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Leak Sensor'           => 'Leckagesensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int required'          => 'Int benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }

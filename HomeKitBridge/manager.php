@@ -158,14 +158,13 @@ class HomeKitManager
 
     protected function mergeTranslations($arr1, $arr2): array
     {
-        foreach($arr2 as $key => $value)
-        {
-            if(array_key_exists($key, $arr1)) {
-                if(is_array($value)) {
+        foreach ($arr2 as $key => $value) {
+            if (array_key_exists($key, $arr1)) {
+                if (is_array($value)) {
                     $arr1[$key] = $this->mergeTranslations($arr1[$key], $arr2[$key]);
                 } else {
-                    if($arr1[$key] != $value) {
-                        throw new Exception("Different value " . $value . " for key " . $key . " was found!");
+                    if ($arr1[$key] != $value) {
+                        throw new Exception('Different value ' . $value . ' for key ' . $key . ' was found!');
                     }
                 }
             } else {
@@ -247,12 +246,11 @@ class HomeKitManager
             ];
 
             $translations = $this->mergeTranslations($translations, call_user_func(self::configurationClassPrefix . $accessory . '::getTranslations'));
-
         }
 
         return [
             'elements'     => $elements,
-            "translations" => $translations
+            'translations' => $translations
         ];
     }
 

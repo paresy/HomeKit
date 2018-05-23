@@ -72,13 +72,13 @@ class HAPAccessoryConfigurationLightbulbSwitch
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Lightbulb (Switch)"    => "Lampe (Schaltbar)",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Bool required"         => "Bool benötigt",
-                "Action required"       => "Aktion benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Lightbulb (Switch)'    => 'Lampe (Schaltbar)',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Bool required'         => 'Bool benötigt',
+                'Action required'       => 'Aktion benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }

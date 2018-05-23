@@ -116,14 +116,14 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Lightbulb (Color)"     => "Lampe (Farbig)",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Int required"          => "Int benötigt",
-                "HexColor required"     => "HexColor benötigt",
-                "Action required"       => "Aktion benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Lightbulb (Color)'     => 'Lampe (Farbig)',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int required'          => 'Int benötigt',
+                'HexColor required'     => 'HexColor benötigt',
+                'Action required'       => 'Aktion benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }

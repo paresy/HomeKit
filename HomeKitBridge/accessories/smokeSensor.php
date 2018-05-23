@@ -92,12 +92,12 @@ class HAPAccessoryConfigurationSmokeSensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Smoke Sensor"         => "Rauchmelder",
-                "VariableID"           => "VariablenID",
-                "Variable missing"     => "Variable fehlt",
-                "Bool required"        => "Bool benötigt",
-                "OK"                   => "OK"
+            'de' => [
+                'Smoke Sensor'         => 'Rauchmelder',
+                'VariableID'           => 'VariablenID',
+                'Variable missing'     => 'Variable fehlt',
+                'Bool required'        => 'Bool benötigt',
+                'OK'                   => 'OK'
             ]
         ];
     }

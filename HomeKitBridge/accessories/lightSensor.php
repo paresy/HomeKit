@@ -73,12 +73,12 @@ class HAPAccessoryConfigurationLightSensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Light Sensor"          => "Helligkeitssensor",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Int/Float required"    => "Int/Float benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Light Sensor'          => 'Helligkeitssensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int/Float required'    => 'Int/Float benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }

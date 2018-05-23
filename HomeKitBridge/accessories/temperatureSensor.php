@@ -73,12 +73,12 @@ class HAPAccessoryConfigurationTemperatureSensor
     public static function getTranslations()
     {
         return [
-            "de" => [
-                "Temperature Sensor"    => "Temperatursensor",
-                "VariableID"            => "VariablenID",
-                "Variable missing"      => "Variable fehlt",
-                "Int/Float required"    => "Int/Float benötigt",
-                "OK"                    => "OK"
+            'de' => [
+                'Temperature Sensor'    => 'Temperatursensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int/Float required'    => 'Int/Float benötigt',
+                'OK'                    => 'OK'
             ]
         ];
     }
