@@ -46,7 +46,7 @@ class HAPAccessoryConfigurationLightSensor
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'

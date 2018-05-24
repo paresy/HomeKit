@@ -209,7 +209,7 @@ class HomeKitManager
                 [
                     'label' => 'Status',
                     'name'  => 'Status',
-                    'width' => '100px',
+                    'width' => '150px',
                     'add'   => '-'
                 ]
             ];
