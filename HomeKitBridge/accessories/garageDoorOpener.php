@@ -193,7 +193,17 @@ class HAPAccessoryConfigurationGarageDoorOpener
 
     public static function getTranslations()
     {
-        return [];
+        return [
+            'de' => [
+                'Garage Door Opener'    => 'Garagentor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int required'          => 'Int benötigt',
+                'Profile required'      => 'Profil benötigt',
+                'Unsupported Profile'   => 'Falsches Profil',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 
