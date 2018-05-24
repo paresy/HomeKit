@@ -225,7 +225,7 @@ class HomeKitManager
                 ];
             }
 
-            $content[] = [
+            $content = [
                 'type'     => 'List',
                 'name'     => self::propertyPrefix . $accessory,
                 'rowCount' => 10,
@@ -242,7 +242,9 @@ class HomeKitManager
             $elements[] = [
                 'type'      => 'ExpansionPanel',
                 'caption'   => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
-                'items'     => $content
+                'items'     => [
+                    $content
+                ]
             ];
 
             $translations = $this->mergeTranslations($translations, call_user_func(self::configurationClassPrefix . $accessory . '::getTranslations'));
