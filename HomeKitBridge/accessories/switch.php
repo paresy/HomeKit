@@ -55,7 +55,7 @@ class HAPAccessoryConfigurationSwitch
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -67,6 +67,20 @@ class HAPAccessoryConfigurationSwitch
     public static function getStatus($data)
     {
         return self::getSwitchCompatibility($data['VariableID']);
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Switch'                => 'Zwischenstecker',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Bool required'         => 'Bool benötigt',
+                'Action required'       => 'Aktion benötigt',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 

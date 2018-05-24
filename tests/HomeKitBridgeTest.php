@@ -14,7 +14,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $this->assertEquals(IPS_GetInstanceListByModuleID($this->serverModuleID)[0], IPS_GetInstance($bridgeID)['ConnectionID']);
     }
 
-    public function testConfigurationForm(): void
+    public function testConfigurationForParent(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
         $form = json_decode(IPS_GetConfigurationForParent($bridgeID), true);
@@ -22,6 +22,12 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $this->assertEquals([
             'Port' => IPS_GetProperty($bridgeID, 'BridgePort')
         ], $form);
+    }
+
+    public function testConfigurationForm(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+        $this->assertNotEquals(null, json_decode(IPS_GetConfigurationForm($bridgeID), true));
     }
 
     public function testAccessories(): void

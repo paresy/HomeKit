@@ -127,7 +127,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -189,6 +189,21 @@ class HAPAccessoryConfigurationGarageDoorOpener
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Garage Door Opener'    => 'Garagentor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int required'          => 'Int benötigt',
+                'Profile required'      => 'Profil benötigt',
+                'Unsupported Profile'   => 'Falsches Profil',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 

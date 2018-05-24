@@ -61,7 +61,7 @@ class HAPAccessoryConfigurationLeakSensor
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -79,10 +79,23 @@ class HAPAccessoryConfigurationLeakSensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Integer required';
+            return 'Int required';
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Leak Sensor'           => 'Leckagesensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int required'          => 'Int benötigt',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 

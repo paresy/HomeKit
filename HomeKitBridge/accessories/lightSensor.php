@@ -46,7 +46,7 @@ class HAPAccessoryConfigurationLightSensor
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -68,6 +68,19 @@ class HAPAccessoryConfigurationLightSensor
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Light Sensor'          => 'Helligkeitssensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int/Float required'    => 'Int/Float benötigt',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 

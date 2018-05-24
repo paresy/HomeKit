@@ -46,7 +46,7 @@ class HAPAccessoryConfigurationAirQualitySensor
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -68,6 +68,19 @@ class HAPAccessoryConfigurationAirQualitySensor
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Air Quality Sensor'    => 'Luftgütesensor',
+                'VariableID'            => 'VariablenID',
+                'Variable missing'      => 'Variable fehlt',
+                'Int/Float required'    => 'Int/Float benötigt',
+                'OK'                    => 'OK'
+            ]
+        ];
     }
 }
 

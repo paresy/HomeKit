@@ -65,7 +65,7 @@ class HAPAccessoryConfigurationSmokeSensor
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
-                'width' => '150px',
+                'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -83,10 +83,23 @@ class HAPAccessoryConfigurationSmokeSensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 0 /* Boolean */) {
-            return 'Boolean required';
+            return 'Bool required';
         }
 
         return 'OK';
+    }
+
+    public static function getTranslations()
+    {
+        return [
+            'de' => [
+                'Smoke Sensor'         => 'Rauchmelder',
+                'VariableID'           => 'VariablenID',
+                'Variable missing'     => 'Variable fehlt',
+                'Bool required'        => 'Bool benötigt',
+                'OK'                   => 'OK'
+            ]
+        ];
     }
 }
 

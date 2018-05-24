@@ -86,45 +86,95 @@ class HomeKitBridge extends DNSSDModule
     {
         $pairing = [
             [
+                'type'  => 'RowLayout',
+                'items' => [
+                    [
+                        'type'    => 'Button',
+                        'label'   => 'Request setup code!',
+                        'onClick' => 'echo HK_RestartPairing($id);'
+                    ],
+                    [
+                        'type'  => 'Label',
+                        'label' => 'Press the button to start the pairing process. Code is valid for at most 5 minutes.'
+                    ]
+                ]
+            ]
+        ];
+
+        $label = [
+            [
                 'type'  => 'Label',
-                'label' => 'Press the button to start the pairing process. Code is valid for at most 5 minutes.'
+                'label' => ''
             ],
             [
-                'type'    => 'Button',
-                'label'   => 'Start Pairing!',
-                'onClick' => 'echo HK_RestartPairing($id);'
-            ],
-            [
                 'type'  => 'Label',
-                'label' => 'You can add new items for each accessory type:'
+                'label' => 'You can add new items for each accessory type'
             ]
         ];
 
         $dnssd = [
             [
-                'type'  => 'Label',
-                'label' => 'These options are for experts only! Do not touch!'
-            ],
-            [
-                'type'    => 'ValidationTextBox',
-                'caption' => 'Name',
-                'name'    => 'BridgeName'
-            ],
-            [
-                'type'    => 'ValidationTextBox',
-                'caption' => 'ID',
-                'name'    => 'BridgeID'
-            ],
-            [
-                'type'    => 'NumberSpinner',
-                'caption' => 'Port',
-                'name'    => 'BridgePort'
+                'type'      => 'PopupButton',
+                'caption'   => 'Expert options',
+                'popup'     => [
+                    'caption'   => 'Expert options',
+                    'items'     => [
+                        [
+                            'type'  => 'Label',
+                            'label' => 'These options are for experts only! Do not touch!'
+                        ],
+                        [
+                            'type'  => 'Label',
+                            'label' => 'After changing the name please delete the old entry in the DNS-SD control'
+                        ],
+                        [
+                            'type'    => 'ValidationTextBox',
+                            'caption' => 'Name',
+                            'name'    => 'BridgeName'
+                        ],
+                        [
+                            'type'    => 'ValidationTextBox',
+                            'caption' => 'ID',
+                            'name'    => 'BridgeID'
+                        ],
+                        [
+                            'type'    => 'NumberSpinner',
+                            'caption' => 'Port',
+                            'name'    => 'BridgePort'
+                        ]
+                    ]
+                ]
             ]
         ];
 
-        $accessories = $this->manager->getConfigurationForm();
+        $translations = [
+            'de' => [
+                'Name'                                                                                => 'Name',
+                'ID'                                                                                  => 'ID',
+                'Port'                                                                                => 'Port',
+                'Name is required to consist only of letters and numbers!'                            => 'Name darf nur aus Buchstaben und Zahlen bestehen!',
+                'ID is not a valid MAC style address!'                                                => 'ID muss wie eine MAC Adresse aussehen!',
+                'OK!'                                                                                 => 'OK!',
+                'Press the button to start the pairing process. Code is valid for at most 5 minutes.' => 'Hier drücken, um das Verknüpfen zu Starten. Der Code ist für maximal 5 Minuten gültig.',
+                'Request setup code!'                                                                 => 'Code anfordern!',
+                'You can add new items for each accessory type'                                       => 'Pro Gerätetyp können Einträge hinzugefügt werden',
+                'These options are for experts only! Do not touch!'                                   => 'Diese Einstellungen sind nur für Experten. Nicht anfassen!',
+                'Expert options'                                                                      => 'Expertenoptionen',
+                'After changing the name please delete the old entry in the DNS-SD control'           => 'Nach einer Namensänderung muss der alte Eintrag im DNS-SD Control manuell gelöscht werden',
+                'Our parent instance (ServerSocket) is not active!'                                   => 'Die übergeordnete Instanz (ServerSocket) ist nicht aktiv!'
+            ]
+        ];
 
-        return json_encode(['elements' => array_merge($pairing, $accessories, $dnssd)]);
+        $formFront = [
+            'elements'     => array_merge($pairing, $label),
+            'translations' => $translations
+        ];
+
+        $formBack = [
+            'elements' => $dnssd
+        ];
+
+        return json_encode(array_merge_recursive($formFront, $this->manager->getConfigurationForm(), $formBack));
     }
 
     public function ForwardData($JSONString)

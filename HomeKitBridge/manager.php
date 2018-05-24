@@ -156,9 +156,29 @@ class HomeKitManager
         }
     }
 
+    protected function mergeTranslations($arr1, $arr2): array
+    {
+        foreach ($arr2 as $key => $value) {
+            if (array_key_exists($key, $arr1)) {
+                if (is_array($value)) {
+                    $arr1[$key] = $this->mergeTranslations($arr1[$key], $arr2[$key]);
+                } else {
+                    if ($arr1[$key] != $value) {
+                        throw new Exception('Different value ' . $value . ' for key ' . $key . ' was found!');
+                    }
+                }
+            } else {
+                $arr1[$key] = $value;
+            }
+        }
+        return $arr1;
+    }
+
     public function getConfigurationForm(): array
     {
-        $form = [];
+        $content = [];
+        $elements = [];
+        $translations = [];
 
         $sortedAccessories = self::$supportedAccessories;
         uasort($sortedAccessories, function ($a, $b) {
@@ -189,7 +209,7 @@ class HomeKitManager
                 [
                     'label' => 'Status',
                     'name'  => 'Status',
-                    'width' => '100px',
+                    'width' => '150px',
                     'add'   => '-'
                 ]
             ];
@@ -205,11 +225,10 @@ class HomeKitManager
                 ];
             }
 
-            $form[] = [
+            $content = [
                 'type'     => 'List',
                 'name'     => self::propertyPrefix . $accessory,
-                'caption'  => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
-                'rowCount' => 5,
+                'rowCount' => 10,
                 'add'      => true,
                 'delete'   => true,
                 'sort'     => [
@@ -219,9 +238,22 @@ class HomeKitManager
                 'columns' => $columns,
                 'values'  => $values
             ];
+
+            $elements[] = [
+                'type'      => 'ExpansionPanel',
+                'caption'   => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
+                'items'     => [
+                    $content
+                ]
+            ];
+
+            $translations = $this->mergeTranslations($translations, call_user_func(self::configurationClassPrefix . $accessory . '::getTranslations'));
         }
 
-        return $form;
+        return [
+            'elements'     => $elements,
+            'translations' => $translations
+        ];
     }
 
     private function getAccessoryObject(int $aid): object
