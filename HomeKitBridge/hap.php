@@ -228,17 +228,17 @@ class HAPService
             //Check for requirements
             if ($requireSetter && !$hasSetter) {
                 throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
-            } else if(!$requireSetter && $hasSetter) {
+            } elseif(!$requireSetter && $hasSetter) {
                 throw new Exception('Unsupported function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireGetter && !$hasGetter) {
                 throw new Exception('Missing function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
-            } else if (!$requireGetter && $hasGetter) {
+            } elseif (!$requireGetter && $hasGetter) {
                 throw new Exception('Unsupported function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireNotify && !$hasNotify) {
                 throw new Exception('Missing function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
-            } else if (!$requireNotify && $hasNotify) {
+            } elseif (!$requireNotify && $hasNotify) {
                 throw new Exception('Unsupported function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
 
