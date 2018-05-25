@@ -160,6 +160,12 @@ class HAPService
                 if (!method_exists($accessory, $this->makeWriteFunctionName($characteristic))) {
                     throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
+            } else {
+
+                //Check if Class properly ignores the setter function
+                if (method_exists($accessory, $this->makeWriteFunctionName($characteristic))) {
+                    throw new Exception('Unsupported function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                }
             }
 
             if ($characteristic->hasPermission(HAPCharacteristicPermission::PairedRead)) {
@@ -171,6 +177,12 @@ class HAPService
 
                 //Call the function to get the current value
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
+            } else {
+
+                //Check if Class properly ignores the getter function
+                if (method_exists($accessory, $this->makeReadFunctionName($characteristic))) {
+                    throw new Exception('Unsupported function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                }
             }
 
             if ($characteristic->hasPermission(HAPCharacteristicPermission::Notify)) {
@@ -178,6 +190,12 @@ class HAPService
                 //Check if Class properly implements the notify function
                 if (!method_exists($accessory, $this->makeNotifyFunctionName($characteristic))) {
                     throw new Exception('Missing function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+                }
+            } else {
+
+                //Check if Class properly ignores the notify function
+                if (method_exists($accessory, $this->makeNotifyFunctionName($characteristic))) {
+                    throw new Exception('Unsupported function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
                 }
             }
 
@@ -210,12 +228,18 @@ class HAPService
             //Check for requirements
             if ($requireSetter && !$hasSetter) {
                 throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+            } else if(!$requireSetter && $hasSetter) {
+                throw new Exception('Unsupported function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireGetter && !$hasGetter) {
                 throw new Exception('Missing function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+            } else if (!$requireGetter && $hasGetter) {
+                throw new Exception('Unsupported function ' . $this->makeReadFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireNotify && !$hasNotify) {
                 throw new Exception('Missing function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
+            } else if (!$requireNotify && $hasNotify) {
+                throw new Exception('Unsupported function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
 
             //Call the function to get the current value
