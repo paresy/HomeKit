@@ -228,7 +228,7 @@ class HAPService
             //Check for requirements
             if ($requireSetter && !$hasSetter) {
                 throw new Exception('Missing function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
-            } elseif(!$requireSetter && $hasSetter) {
+            } elseif (!$requireSetter && $hasSetter) {
                 throw new Exception('Unsupported function ' . $this->makeWriteFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
             if ($requireGetter && !$hasGetter) {
