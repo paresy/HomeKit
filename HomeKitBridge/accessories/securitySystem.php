@@ -54,7 +54,7 @@ class HAPAccessoryConfigurationSecuritySystem
 	
     public static function getPosition()
     {
-        return 99;
+        return 92;
     }
 
     public static function getCaption()
@@ -77,17 +77,6 @@ class HAPAccessoryConfigurationSecuritySystem
         ];
     }
 
-    public static function doMigrate(&$data)
-    {
-        if (!isset($data['VariableID'])) {
-            $data['VariableID'] = $data['SecuritySystemTargetState'];
-            unset($data['SecuritySystemCurrentState']);
-            unset($data['SecuritySystemTargetState']);
-            return true;
-        }
-        return false;
-    }
-
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {
@@ -100,7 +89,15 @@ class HAPAccessoryConfigurationSecuritySystem
             return 'Int required';
         }
 
-
+	if ($targetVariable['VariableCustomProfile'] != '') {
+            $profileName = $targetVariable['VariableCustomProfile'];
+        } else {
+            $profileName = $targetVariable['VariableProfile'];
+        }
+        if (!IPS_VariableProfileExists($profileName)) {
+            return 'Profile required';
+        }
+	    
         if ($targetVariable['VariableCustomAction'] != '') {
             $profileAction = $targetVariable['VariableCustomAction'];
         } else {
@@ -123,7 +120,7 @@ class HAPAccessoryConfigurationSecuritySystem
                 'Variable missing'      => 'Variable fehlt',
                 'Int required'          => 'Int benötigt',
                 'Profile required'      => 'Profil benötigt',
-                'Unsupported Profile'   => 'Falsches Profil',
+		'Action required'       => 'Aktionsscript benötigt', 
                 'OK'                    => 'OK'
             ]
         ];
