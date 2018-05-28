@@ -50,11 +50,11 @@ class HAPAccessoryLockMechanism extends HAPAccessoryBase
 
 class HAPAccessoryConfigurationLockMechanism
 {
-	use HelperSetDevice;
+    use HelperSetDevice;
 	
     public static function getPosition()
     {
-        return 110;
+        return 91;
     }
 
     public static function getCaption()
@@ -99,7 +99,15 @@ class HAPAccessoryConfigurationLockMechanism
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'Int required';
         }
-
+	    
+	if ($targetVariable['VariableCustomProfile'] != '') {
+            $profileName = $targetVariable['VariableCustomProfile'];
+        } else {
+            $profileName = $targetVariable['VariableProfile'];
+        }
+        if (!IPS_VariableProfileExists($profileName)) {
+            return 'Profile required';
+        }
 
         if ($targetVariable['VariableCustomAction'] != '') {
             $profileAction = $targetVariable['VariableCustomAction'];
@@ -123,7 +131,7 @@ class HAPAccessoryConfigurationLockMechanism
                 'Variable missing'      => 'Variable fehlt',
                 'Int required'          => 'Int benötigt',
                 'Profile required'      => 'Profil benötigt',
-                'Unsupported Profile'   => 'Falsches Profil',
+		'Action required'	=> 'Aktionsscript benötigt'
                 'OK'                    => 'OK'
             ]
         ];
