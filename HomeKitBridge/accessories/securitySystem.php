@@ -120,7 +120,6 @@ class HAPAccessoryConfigurationSecuritySystem
                 'Variable missing'      => 'Variable fehlt',
                 'Int required'          => 'Int benötigt',
                 'Profile required'      => 'Profil benötigt',
-		'Action required'       => 'Aktionsscript benötigt', 
                 'OK'                    => 'OK'
             ]
         ];
