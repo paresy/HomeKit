@@ -38,7 +38,7 @@ class HAPAccessoryConfigurationContactSensor
 {
     public static function getPosition()
     {
-        return 111;
+        return 90;
     }
 
     public static function getCaption()
@@ -49,16 +49,16 @@ class HAPAccessoryConfigurationContactSensor
     public static function getColumns()
     {
         return [
-            [
+                [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
                 'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
-                ]
-            ]
-        ];
+                        ]
+                 ]
+                ];
     }
 
     public static function getStatus($data)
@@ -68,10 +68,6 @@ class HAPAccessoryConfigurationContactSensor
         }
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
-
-//        if ($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
-//            return 'Int/Float required';
-//        }
 
         return 'OK';
     }
@@ -83,7 +79,6 @@ class HAPAccessoryConfigurationContactSensor
                 'Contact Sensor'    => 'Fensterkontakt',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int/Float required'    => 'Int/Float benötigt',
                 'OK'                    => 'OK'
             ]
         ];
