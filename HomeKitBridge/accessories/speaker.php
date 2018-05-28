@@ -56,7 +56,7 @@ class HAPAccessoryConfigurationSpeaker
 
     public static function getPosition()
     {
-        return 112;
+        return 93;
     }
 
     public static function getCaption()
@@ -92,7 +92,7 @@ class HAPAccessoryConfigurationSpeaker
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'Bool required'         => 'Bool benötigt',
-                'Action required'       => 'Aktion benötigt',
+                'Action required'       => 'Aktionsscript benötigt',
                 'OK'                    => 'OK'
             ]
         ];
