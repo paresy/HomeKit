@@ -92,7 +92,6 @@ class HAPAccessoryConfigurationSpeaker
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'Bool required'         => 'Bool benötigt',
-                'Action required'       => 'Aktionsscript benötigt',
                 'OK'                    => 'OK'
             ]
         ];
