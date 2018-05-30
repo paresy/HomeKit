@@ -77,7 +77,7 @@ class HomeKitManager
         return $accessories;
     }
 
-    public function updateAccessories(): void
+    public function updateAccessories(): bool
     {
         $ids = [];
 
@@ -154,6 +154,8 @@ class HomeKitManager
             //Save. This will start a recursion. We need to be careful, that the recursion stops after this.
             IPS_ApplyChanges($this->instanceID);
         }
+
+        return $wasChanged;
     }
 
     protected function mergeTranslations($arr1, $arr2): array

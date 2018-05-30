@@ -301,7 +301,12 @@ class HomeKitBridge extends DNSSDModule
         parent::ApplyChanges();
 
         // We need to check for IDs that have the value zero and assign a proper ID
-        $this->manager->updateAccessories();
+        if($this->manager->updateAccessories()) {
+
+            // If we had changes we need to clear subscriptions which might be invalid.
+            $this->clearSessionSubscriptions();
+        }
+
     }
 
     public function RestartPairing()
@@ -413,6 +418,25 @@ class HomeKitBridge extends DNSSDModule
                     //Send response
                     $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort)]));
                 }
+
+                //Save session for ClientIP/ClientPort
+                $this->setSession($clientIP, intval($clientPort), $session);
+            }
+        }
+    }
+
+    private function clearSessionSubscriptions() {
+        foreach ($this->GetBufferList() as $name) {
+            //check for a colon, which indicates an ip / port combination
+            //filter different buffers we use like e.g. SetupCode
+            if (strpos($name, ':') !== false) {
+                list($clientIP, $clientPort) = explode(':', $name);
+
+                //Get Session for ClientIP/ClientPort
+                $session = $this->getSession($clientIP, intval($clientPort));
+
+                //Just clear it. Client will resubscribe
+                $session->clearSubscriptions();
 
                 //Save session for ClientIP/ClientPort
                 $this->setSession($clientIP, intval($clientPort), $session);
