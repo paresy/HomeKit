@@ -84,5 +84,4 @@ class HAPAccessoryConfigurationContactSensor
         ];
     }
 }
-
 HomeKitManager::registerAccessory('ContactSensor');
