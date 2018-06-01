@@ -49,16 +49,16 @@ class HAPAccessoryConfigurationContactSensor
     public static function getColumns()
     {
         return [
-                [
+            [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
                 'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
-                        ]
-                 ]
-                ];
+                ]
+            ]
+        ];
     }
 
     public static function getStatus($data)
@@ -67,8 +67,6 @@ class HAPAccessoryConfigurationContactSensor
             return 'Variable missing';
         }
 
-        $targetVariable = IPS_GetVariable($data['VariableID']);
-
         return 'OK';
     }
 
@@ -76,7 +74,7 @@ class HAPAccessoryConfigurationContactSensor
     {
         return [
             'de' => [
-                'Contact Sensor'    => 'Fensterkontakt',
+                'Contact Sensor'        => 'Fensterkontakt',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'OK'                    => 'OK'
@@ -84,4 +82,5 @@ class HAPAccessoryConfigurationContactSensor
         ];
     }
 }
+
 HomeKitManager::registerAccessory('ContactSensor');
