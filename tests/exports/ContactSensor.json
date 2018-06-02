@@ -62,18 +62,21 @@
         ]
       },
       {
-        "type": "85",
+        "type": "80",
         "iid": 101,
         "characteristics": [
           {
-            "type": "22",
+            "type": "6A",
             "iid": 102,
-            "format": "bool",
+            "format": "uint8",
             "perms": [
               "pr",
               "ev"
             ],
-            "value": false
+            "value": "1.0"
+	    "minValue": "0"
+            "maxValue": "1"
+	    "minStep": "1"
           },
           {
             "type": "23",
