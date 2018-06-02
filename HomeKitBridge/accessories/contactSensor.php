@@ -30,6 +30,7 @@ class HAPAccessoryContactSensor extends HAPAccessoryBase
             case 1:
                 return HAPCharacteristicContactSensorState::ContactDetected;
         }
+		
         return HAPCharacteristicContactSensorState::ContactDetected;
     }
 }
@@ -66,6 +67,7 @@ class HAPAccessoryConfigurationContactSensor
         if (!IPS_VariableExists($data['VariableID'])) {
             return 'Variable missing';
         }
+		
         return 'OK';
     }
 	
