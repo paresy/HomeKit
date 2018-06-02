@@ -14,14 +14,14 @@ class HAPAccessoryContactSensor extends HAPAccessoryBase
             ]
         );
     }
-	
+    
     public function notifyCharacteristicContactSensorState()
     {
         return [
             $this->data['VariableID']
         ];
     }
-	
+    
     public function readCharacteristicContactSensorState()
     {
         switch (GetValue($this->data['VariableID'])) {
@@ -30,7 +30,7 @@ class HAPAccessoryContactSensor extends HAPAccessoryBase
             case 1:
                 return HAPCharacteristicContactSensorState::ContactDetected;
         }
-		
+        
         return HAPCharacteristicContactSensorState::ContactDetected;
     }
 }
@@ -41,12 +41,12 @@ class HAPAccessoryConfigurationContactSensor
     {
         return 90;
     }
-	
+    
     public static function getCaption()
     {
         return 'Contact Sensor';
     }
-	
+    
     public static function getColumns()
     {
         return [
@@ -61,16 +61,16 @@ class HAPAccessoryConfigurationContactSensor
             ]
         ];
     }
-	
+    
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {
             return 'Variable missing';
         }
-		
+        
         return 'OK';
     }
-	
+    
     public static function getTranslations()
     {
         return [
