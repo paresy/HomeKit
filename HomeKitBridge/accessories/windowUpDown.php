@@ -82,7 +82,7 @@ class HAPAccessoryConfigurationWindowUpDown
 {
     public static function getPosition()
     {
-        return 90;
+        return 100;
     }
 
     public static function getCaption()
@@ -152,7 +152,7 @@ class HAPAccessoryConfigurationWindowUpDown
     {
         return [
             'de' => [
-                'Window (Up/Down)'                => 'Rolladen/Jalousie (Hoch/Runter)',
+                'Window (Up/Down)'      => 'Rolladen/Jalousie (Hoch/Runter)',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'Int required'          => 'Int benötigt',
