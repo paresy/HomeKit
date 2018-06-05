@@ -55,7 +55,6 @@ class HAPAccessoryWindowPosition extends HAPAccessoryBase
     {
         return HAPCharacteristicPositionState::Stopped;
     }
-
 }
 
 class HAPAccessoryConfigurationWindowPosition

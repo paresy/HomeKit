@@ -31,7 +31,7 @@ class HAPAccessoryWindowUpDown extends HAPAccessoryBase
 
     public function writeCharacteristicTargetPosition($value)
     {
-        if($value > 0) {
+        if ($value > 0) {
             $this->setDevice($this->data['VariableID'], 0 /* Open */);
         } else {
             $this->setDevice($this->data['VariableID'], 4 /* Close */);
@@ -47,14 +47,14 @@ class HAPAccessoryWindowUpDown extends HAPAccessoryBase
 
     public function readCharacteristicCurrentPosition()
     {
-        switch(GetValue($this->data['VariableID'])) {
+        switch (GetValue($this->data['VariableID'])) {
             case 0: /* Open */
                 return 100;
             case 2: /* Stop */
                 return 50;
             case 4: /* Close */
                 return 0;
-        };
+        }
 
         return 50; /* Undefined. Return something... */
     }
@@ -71,11 +71,10 @@ class HAPAccessoryWindowUpDown extends HAPAccessoryBase
 
     public function writeCharacteristicHoldPosition($value)
     {
-        if($value) {
+        if ($value) {
             $this->setDevice($this->data['VariableID'], 2 /* Stop */);
         }
     }
-
 }
 
 class HAPAccessoryConfigurationWindowUpDown

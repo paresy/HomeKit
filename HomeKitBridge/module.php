@@ -301,12 +301,11 @@ class HomeKitBridge extends DNSSDModule
         parent::ApplyChanges();
 
         // We need to check for IDs that have the value zero and assign a proper ID
-        if($this->manager->updateAccessories()) {
+        if ($this->manager->updateAccessories()) {
 
             // If we had changes we need to clear subscriptions which might be invalid.
             $this->clearSessionSubscriptions();
         }
-
     }
 
     public function RestartPairing()
@@ -425,7 +424,8 @@ class HomeKitBridge extends DNSSDModule
         }
     }
 
-    private function clearSessionSubscriptions() {
+    private function clearSessionSubscriptions()
+    {
         foreach ($this->GetBufferList() as $name) {
             //check for a colon, which indicates an ip / port combination
             //filter different buffers we use like e.g. SetupCode

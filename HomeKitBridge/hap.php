@@ -242,7 +242,7 @@ class HAPService
                 throw new Exception('Unsupported function ' . $this->makeNotifyFunctionName($characteristic) . ' in Accessory ' . get_class($accessory));
             }
 
-            if($hasGetter) {
+            if ($hasGetter) {
                 //Call the function to get the current value
                 $value = $accessory->{$this->makeReadFunctionName($characteristic)}();
             }

@@ -1289,8 +1289,8 @@ class HomeKitSession
         ])));
     }
 
-    public function clearSubscriptions() {
+    public function clearSubscriptions()
+    {
         $this->events = [];
     }
-
 }
