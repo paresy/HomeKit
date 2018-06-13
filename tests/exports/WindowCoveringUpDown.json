@@ -1,0 +1,131 @@
+[
+  {
+    "aid": 3,
+    "services": [
+      {
+        "type": "3E",
+        "iid": 1,
+        "characteristics": [
+          {
+            "type": "14",
+            "iid": 2,
+            "format": "bool",
+            "perms": [
+              "pw"
+            ]
+          },
+          {
+            "type": "20",
+            "iid": 3,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "IP-Symcon Community"
+          },
+          {
+            "type": "21",
+            "iid": 4,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "WindowCoveringUpDown"
+          },
+          {
+            "type": "23",
+            "iid": 5,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
+          },
+          {
+            "type": "30",
+            "iid": 6,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "db699d5a"
+          },
+          {
+            "type": "52",
+            "iid": 7,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "5.0"
+          }
+        ]
+      },
+      {
+        "type": "8C",
+        "iid": 101,
+        "characteristics": [
+          {
+            "type": "7C",
+            "iid": 102,
+            "format": "uint8",
+            "perms": [
+              "pr",
+              "pw",
+              "ev"
+            ],
+            "value": 100,
+            "minValue": 0,
+            "maxValue": 100,
+            "minStep": 1,
+            "unit": "percentage"
+          },
+          {
+            "type": "6D",
+            "iid": 103,
+            "format": "uint8",
+            "perms": [
+              "pr",
+              "ev"
+            ],
+            "value": 100,
+            "minValue": 0,
+            "maxValue": 100,
+            "minStep": 1,
+            "unit": "percentage"
+          },
+          {
+            "type": "72",
+            "iid": 104,
+            "format": "uint8",
+            "perms": [
+              "pr",
+              "ev"
+            ],
+            "value": 2,
+            "minValue": 0,
+            "maxValue": 2,
+            "minStep": 1
+          },
+          {
+            "type": "23",
+            "iid": 105,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
+          },
+          {
+            "type": "6F",
+            "iid": 106,
+            "format": "bool",
+            "perms": [
+              "pw"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

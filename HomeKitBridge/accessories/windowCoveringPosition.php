@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessoryWindowPosition extends HAPAccessoryBase
+class HAPAccessoryWindowCoveringPosition extends HAPAccessoryBase
 {
     use HelperDimDevice;
 
@@ -12,7 +12,7 @@ class HAPAccessoryWindowPosition extends HAPAccessoryBase
             $data,
             [
                 new HAPServiceAccessoryInformation(),
-                new HAPServiceWindow()
+                new HAPServiceWindowCovering()
             ]
         );
     }
@@ -57,7 +57,7 @@ class HAPAccessoryWindowPosition extends HAPAccessoryBase
     }
 }
 
-class HAPAccessoryConfigurationWindowPosition
+class HAPAccessoryConfigurationWindowCoveringPosition
 {
     use HelperDimDevice;
 
@@ -68,7 +68,7 @@ class HAPAccessoryConfigurationWindowPosition
 
     public static function getCaption()
     {
-        return 'Window (Position)';
+        return 'Window Covering (Position)';
     }
 
     public static function getColumns()
@@ -95,7 +95,7 @@ class HAPAccessoryConfigurationWindowPosition
     {
         return [
             'de' => [
-                'Window (Position)'     => 'Fenster (Position)',
+                'Window Covering (Position)'     => 'Rolladen/Jalousie (Position)',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'Int/Float required'    => 'Int/Float benötigt',
@@ -107,4 +107,4 @@ class HAPAccessoryConfigurationWindowPosition
     }
 }
 
-HomeKitManager::registerAccessory('WindowPosition');
+HomeKitManager::registerAccessory('WindowCoveringPosition');
