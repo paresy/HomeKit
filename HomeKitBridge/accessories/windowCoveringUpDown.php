@@ -81,7 +81,7 @@ class HAPAccessoryConfigurationWindowCoveringUpDown
 {
     public static function getPosition()
     {
-        return 100;
+        return 120;
     }
 
     public static function getCaption()
