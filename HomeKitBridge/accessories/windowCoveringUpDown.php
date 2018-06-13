@@ -151,7 +151,7 @@ class HAPAccessoryConfigurationWindowCoveringUpDown
     {
         return [
             'de' => [
-                'Window Covering (Up/Down)'      => 'Rolladen/Jalousie (Hoch/Runter)',
+                'Window Covering (Up/Down)'      => 'Rollladen/Jalousie (Hoch/Runter)',
                 'VariableID'                     => 'VariablenID',
                 'Variable missing'               => 'Variable fehlt',
                 'Int required'                   => 'Int benötigt',
