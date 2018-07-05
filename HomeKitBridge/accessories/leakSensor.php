@@ -39,7 +39,11 @@ class HAPAccessoryLeakSensor extends HAPAccessoryBase
             $value = !$value;
         }
 
-        return $value;
+        if($value) {
+            return HAPCharacteristicLeakDetected::LeakDetected;
+        } else {
+            return HAPCharacteristicLeakDetected::LeakNotDetected;
+        }
     }
 }
 
@@ -78,8 +82,8 @@ class HAPAccessoryConfigurationLeakSensor
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Int required';
+        if ($targetVariable['VariableType'] != 0 /* Boolean */) {
+            return 'Bool required';
         }
 
         return 'OK';
@@ -92,7 +96,7 @@ class HAPAccessoryConfigurationLeakSensor
                 'Leak Sensor'           => 'Leckagesensor',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int required'          => 'Int benötigt',
+                'Bool required'         => 'Bool benötigt',
                 'OK'                    => 'OK'
             ]
         ];

@@ -10,7 +10,7 @@ class HomeKitLeakSensorTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $vid = IPS_CreateVariable(1 /* Integer */);
+        $vid = IPS_CreateVariable(0 /* Boolean */);
 
         IPS_SetProperty($bridgeID, 'AccessoryLeakSensor', json_encode([
             [
