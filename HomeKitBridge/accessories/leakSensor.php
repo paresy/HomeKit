@@ -39,7 +39,7 @@ class HAPAccessoryLeakSensor extends HAPAccessoryBase
             $value = !$value;
         }
 
-        if($value) {
+        if ($value) {
             return HAPCharacteristicLeakDetected::LeakDetected;
         } else {
             return HAPCharacteristicLeakDetected::LeakNotDetected;
