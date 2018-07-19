@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 class HAPAccessoryContactSensor extends HAPAccessoryBase
 {
     public function __construct($data)
