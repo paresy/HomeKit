@@ -50,7 +50,7 @@ class HAPAccessoryConfigurationContactSensor
     {
         return 110;
     }
-    
+
     public static function getCaption()
     {
         return 'Contact Sensor';
