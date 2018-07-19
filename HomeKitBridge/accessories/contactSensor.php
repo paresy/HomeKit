@@ -16,7 +16,7 @@ class HAPAccessoryContactSensor extends HAPAccessoryBase
     public function notifyCharacteristicContactSensorState()
     {
         return [
-            $this->data["VariableID"]
+            $this->data['VariableID']
         ];
     }
 
