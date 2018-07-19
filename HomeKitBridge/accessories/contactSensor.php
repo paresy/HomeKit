@@ -49,10 +49,12 @@ class HAPAccessoryConfigurationContactSensor
     {
         return 110;
     }
+    
     public static function getCaption()
     {
         return 'Contact Sensor';
     }
+
     public static function getColumns()
     {
         return [
@@ -67,6 +69,7 @@ class HAPAccessoryConfigurationContactSensor
             ]
         ];
     }
+
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {
