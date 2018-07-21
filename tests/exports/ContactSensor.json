@@ -1,0 +1,94 @@
+[
+  {
+    "aid": 3,
+    "services": [
+      {
+        "type": "3E",
+        "iid": 1,
+        "characteristics": [
+          {
+            "type": "14",
+            "iid": 2,
+            "format": "bool",
+            "perms": [
+              "pw"
+            ]
+          },
+          {
+            "type": "20",
+            "iid": 3,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "IP-Symcon Community"
+          },
+          {
+            "type": "21",
+            "iid": 4,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "ContactSensor"
+          },
+          {
+            "type": "23",
+            "iid": 5,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
+          },
+          {
+            "type": "30",
+            "iid": 6,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "db699d5a"
+          },
+          {
+            "type": "52",
+            "iid": 7,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "5.0"
+          }
+        ]
+      },
+      {
+        "type": "80",
+        "iid": 101,
+        "characteristics": [
+          {
+            "type": "6A",
+            "iid": 102,
+            "format": "uint8",
+            "perms": [
+              "pr",
+              "ev"
+            ],
+            "value": 0,
+            "minValue": 0,
+            "maxValue": 1,
+            "minStep": 1
+          },
+          {
+            "type": "23",
+            "iid": 103,
+            "format": "string",
+            "perms": [
+              "pr"
+            ],
+            "value": "Test"
+          }
+        ]
+      }
+    ]
+  }
+]
