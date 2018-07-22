@@ -90,7 +90,7 @@ class HAPAccessoryConfigurationContactSensor
     {
         return [
             'de' => [
-                'Contact Sensor'       => 'Fensterkontakt',
+                'Contact Sensor'       => 'Kontaktsensor',
                 'VariableID'           => 'VariablenID',
                 'Variable missing'     => 'Variable fehlt',
                 'Bool required'        => 'Bool benötigt',
