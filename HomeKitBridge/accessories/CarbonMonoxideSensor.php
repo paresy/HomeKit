@@ -40,9 +40,9 @@ class HAPAccessoryCarbonMonoxideSensor extends HAPAccessoryBase
         }
 
         if ($value) {
-            return HAPCharacteristicCarbonDioxideDetected::Abnormal;
+            return HAPCharacteristicCarbonMonoxideDetected::Abnormal;
         } else {
-            return HAPCharacteristicCarbonDioxideDetected::Normal;
+            return HAPCharacteristicCarbonMonoxideDetected::Normal;
         }
     }
 }
