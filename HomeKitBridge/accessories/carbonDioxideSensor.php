@@ -93,7 +93,7 @@ class HAPAccessoryConfigurationCarbonDioxideSensor
     {
         return [
             'de' => [
-                'Carbon Dioxide Sensor'    => 'Kohlendioxid Sensor',
+                'Carbon Dioxide Sensor'     => 'Kohlendioxid Sensor',
                 'VariableID'                => 'VariablenID',
                 'Variable missing'          => 'Variable fehlt',
                 'Bool required'             => 'Bool benötigt',
@@ -102,5 +102,4 @@ class HAPAccessoryConfigurationCarbonDioxideSensor
         ];
     }
 }
-
 HomeKitManager::registerAccessory('CarbonDioxideSensor');
