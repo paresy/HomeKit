@@ -39,7 +39,6 @@ class HAPAccessorySpeaker extends HAPAccessoryBase
 
     public function readCharacteristicVolume()
     {
-        var_dump($this->data);
          return GetValue($this->data['VolumeID']);
     }
 
@@ -95,7 +94,6 @@ class HAPAccessoryConfigurationSpeaker
 
     public static function getStatus($data)
     {
-        var_dump($data);
         $return = self::getSwitchCompatibility($data['MuteID']);
 
         /* Variable ist optional */
