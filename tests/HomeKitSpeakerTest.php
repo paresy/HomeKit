@@ -29,12 +29,12 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
             [
                 'ID'         => 2,
                 'Name'       => 'TestMute',
-                'MuteID' => $mid
+                'MuteID'     => $mid
             ],
             [
                 'ID'         => 3,
                 'Name'       => 'TestVolume',
-                'VolumeID' => $vid
+                'VolumeID'   => $vid
             ]
         ]));
         IPS_ApplyChanges($bridgeID);
@@ -60,12 +60,12 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
             [
                 'ID'         => 2,
                 'Name'       => 'TestMute',
-                'MuteID' => $mid /* The profile/action is missing */
+                'MuteID'     => $mid /* The profile/action is missing */
             ],
             [
                 'ID'         => 3,
                 'Name'       => 'TestVolume',
-                'VolumeID' => $vid /* The profile/action is missing */
+                'VolumeID'   => $vid /* The profile/action is missing */
             ]
         ]));
         IPS_ApplyChanges($bridgeID);
