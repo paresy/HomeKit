@@ -39,11 +39,7 @@ class HAPAccessorySpeaker extends HAPAccessoryBase
 
     public function readCharacteristicVolume()
     {
-        if (isset($this->data['VolumeID'])) {
-            return $this->data['VolumeID'];
-        } else {
-            // Rückgabewerte bei optinalen?
-        }
+        return GetValue($this->data['VolumeID']);
     }
 
     public function writeCharacteristicMute($value)
@@ -98,11 +94,12 @@ class HAPAccessoryConfigurationSpeaker
 
     public static function getStatus($data)
     {
+
         $return = self::getSwitchCompatibility($data['MuteID']);
 
         /* Variable ist optional */
-        if (array_key_exists('VolumeID', $data)) {
-            $return .= ' ' . self::getDimCompatibility($data['VolumeID']);
+        if($data['VolumeID'] > 0) {
+            $return .= " ".self::getDimCompatibility($data['VolumeID']);
         }
         return $return;
     }
