@@ -95,12 +95,12 @@ class HAPAccessoryConfigurationSpeaker
     public static function getStatus($data)
     {
         $return = self::getSwitchCompatibility($data['MuteID']);
-        if ($return <> 'OK') {
+        if ($return != 'OK') {
             return $return;
         }
 
         /* Variable ist optional */
-        if($data['VolumeID'] > 0) {
+        if ($data['VolumeID'] > 0) {
             $return = self::getDimCompatibility($data['VolumeID']);
         }
 
