@@ -28,12 +28,8 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
         IPS_SetProperty($bridgeID, 'AccessorySpeaker', json_encode([
             [
                 'ID'         => 2,
-                'Name'       => 'TestMute',
-                'MuteID'     => $mid
-            ],
-            [
-                'ID'         => 3,
-                'Name'       => 'TestVolume',
+                'Name'       => 'Test Speaker',
+                'MuteID'     => $mid,
                 'VolumeID'   => $vid
             ]
         ]));
@@ -59,14 +55,10 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
         IPS_SetProperty($bridgeID, 'AccessorySpeaker', json_encode([
             [
                 'ID'         => 2,
-                'Name'       => 'TestMute',
-                'MuteID'     => $mid /* The profile/action is missing */
-            ],
-            [
-                'ID'         => 3,
-                'Name'       => 'TestVolume',
+                'Name'       => 'Test Speaker',
+                'MuteID'     => $mid, /* The profile/action is missing */
                 'VolumeID'   => $vid /* The profile/action is missing */
-            ]
+            ],
         ]));
         IPS_ApplyChanges($bridgeID);
 

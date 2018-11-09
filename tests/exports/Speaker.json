@@ -1,6 +1,6 @@
 [
   {
-    "aid":1,
+    "aid":2,
     "services":[
       {
         "type":"3E",
@@ -30,7 +30,7 @@
             "perms":[
               "pr"
             ],
-            "value":"Bridge"
+            "value":"Speaker"
           },
           {
             "type":"23",
@@ -39,7 +39,7 @@
             "perms":[
               "pr"
             ],
-            "value":"Dev"
+            "value":"Test Speaker"
           },
           {
             "type":"30",
@@ -48,7 +48,7 @@
             "perms":[
               "pr"
             ],
-            "value":"72e06145"
+            "value":"db699d5a"
           },
           {
             "type":"52",
@@ -58,6 +58,47 @@
               "pr"
             ],
             "value":"5.0"
+          }
+        ]
+      },
+      {
+        "type":"113",
+        "iid":101,
+        "characteristics":[
+          {
+            "type":"11A",
+            "iid":102,
+            "format":"bool",
+            "perms":[
+              "pw",
+              "pr",
+              "ev"
+            ],
+            "value":false
+          },
+          {
+            "type":"23",
+            "iid":103,
+            "format":"string",
+            "perms":[
+              "pr"
+            ],
+            "value":"Test Speaker"
+          },
+          {
+            "type":"119",
+            "iid":104,
+            "format":"uint8",
+            "perms":[
+              "pr",
+              "pw",
+              "ev"
+            ],
+            "value":0,
+            "minValue":0,
+            "maxValue":100,
+            "minStep":1,
+            "unit":"percentage"
           }
         ]
       }
