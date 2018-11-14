@@ -96,11 +96,11 @@ class HAPAccessoryConfigurationSpeaker
     {
         $return = self::getSwitchCompatibility($data['MuteID']);
         if ($return != 'OK') {
-            return 'MuteID '.$return;
+            return 'MuteID ' . $return;
         }
         $return = self::getDimCompatibility($data['VolumeID']);
         if ($return != 'OK') {
-            return 'VolumeID '.$return;
+            return 'VolumeID ' . $return;
         }
         return $return;
     }
