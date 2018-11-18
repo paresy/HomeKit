@@ -22,10 +22,11 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function writeCharacteristicOn($value)
     {
-        if($value)
+        if ($value) {
             $this->writeCharacteristicBrightness(100);
-        else
+        } else {
             $this->writeCharacteristicBrightness(0);
+        }
     }
 
     public function notifyCharacteristicBrightness()
@@ -124,8 +125,7 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
         }
 
         return true;
-    }    
-    
+    }
 }
 
 class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationLightbulbSwitch
