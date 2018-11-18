@@ -129,20 +129,6 @@
             "maxValue": 100,
             "minStep": 1,
             "unit": "percentage"
-          },
-          {
-            "type": "CE",
-            "iid": 107,
-            "format": "uint32",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 50,
-            "minValue": 50,
-            "maxValue": 400,
-            "minStep": 1
           }
         ]
       }
