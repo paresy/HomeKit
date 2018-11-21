@@ -19,14 +19,13 @@ class HomeKitThermostatTest extends HomeKitBaseTest
 
         IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
             [
-                'ID'         => 2,
-                'Name'       => 'Test Thermostat',
-                'CurrentHeatingCoolingStateID' => $chid,
+                'ID'                            => 2,
+                'Name'                          => 'Test Thermostat',
+                'CurrentHeatingCoolingStateID'  => $chid,
                 'TargetHeatingCoolingStateID'   => $thid,
-                'CurrentTemperatureID'  => $ctid,
+                'CurrentTemperatureID'          => $ctid,
             ]
         ]));
-
 
         IPS_ApplyChanges($bridgeID);
 
@@ -38,22 +37,19 @@ class HomeKitThermostatTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         echo json_encode($bridgeInterface->DebugAccessories());
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
-
     }
-
 
     public function testAccessoryBroken(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-
         IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
             [
-                'ID'         => 2,
-                'Name'       => 'Test Thermostat',
+                'ID'                               => 2,
+                'Name'                             => 'Test Thermostat',
                 'CurrentHeatingCoolingStateID'     => 9999,  /* This is always an invalid variableID */
-                'TargetHeatingCoolingStateID'   => 9999,  /* This is always an invalid variableID */
-                'CurrentTemperatureID' => 9999  /* This is always an invalid variableID */
+                'TargetHeatingCoolingStateID'      => 9999,  /* This is always an invalid variableID */
+                'CurrentTemperatureID'             => 9999  /* This is always an invalid variableID */
             ],
         ]));
         IPS_ApplyChanges($bridgeID);

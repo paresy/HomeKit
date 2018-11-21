@@ -139,7 +139,7 @@ class HAPAccessoryConfigurationThermostat
 
         $targetVariable = IPS_GetVariable($data['TargetHeatingCoolingStateID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */ ) {
+        if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'TargetHeatingCoolingStateID: Int required';
         }
 
@@ -155,13 +155,13 @@ class HAPAccessoryConfigurationThermostat
 
         $targetVariable = IPS_GetVariable($data['CurrentHeatingCoolingStateID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */ ) {
+        if ($targetVariable['VariableType'] != 1 /* Integer */) {
             return 'CurrentHeatingCoolingStateID: Int required';
         }
 
         $targetVariable = IPS_GetVariable($data['CurrentTemperatureID']);
 
-        if ($targetVariable['VariableType'] != 2 /* Float */ ) {
+        if ($targetVariable['VariableType'] != 2 /* Float */) {
             return 'CurrentTemperatureID: Float required';
         }
 
@@ -172,17 +172,17 @@ class HAPAccessoryConfigurationThermostat
     {
         return [
             'de' => [
-                'Thermostat'               => 'Thermostat',
-                'CurrentHeatingCoolingStateID'                => 'Aktueller Heizungsstatus (ID)',
-                'TargetHeatingCoolingStateID'              => 'Ziel Heizungsstatus (ID)',
-                'CurrentTemperatureID'      => 'Aktuelle Temperatur (ID) ',
+                'Thermostat'                                            => 'Thermostat',
+                'CurrentHeatingCoolingStateID'                          => 'Aktueller Heizungsstatus (ID)',
+                'TargetHeatingCoolingStateID'                           => 'Ziel Heizungsstatus (ID)',
+                'CurrentTemperatureID'                                  => 'Aktuelle Temperatur (ID) ',
                 'Variable CurrentHeatingCoolingStateID missing'         => 'Variable CurrentHeatingCoolingStateID fehlt',
-                'Variable CurrentTemperatureID missing'       => 'Variable CurrentTemperatureID fehlt',
-                'TargetHeatingCoolingStateID: Int required' => 'TargetHeatingCoolingStateID: Int benötigt',
-                'TargetHeatingCoolingStateID: Action required' => 'TargetHeatingCoolingStateID: Aktion benötigt',
-                'CurrentHeatingCoolingStateID: Int required' => 'CurrentHeatingCoolingStateID: Int benötigt',
-                'CurrentTemperatureID: Float required' => 'CurrentTemperatureID: Float benötigt',
-                'OK'                    => 'OK'
+                'Variable CurrentTemperatureID missing'                 => 'Variable CurrentTemperatureID fehlt',
+                'TargetHeatingCoolingStateID: Int required'             => 'TargetHeatingCoolingStateID: Int benötigt',
+                'TargetHeatingCoolingStateID: Action required'          => 'TargetHeatingCoolingStateID: Aktion benötigt',
+                'CurrentHeatingCoolingStateID: Int required'            => 'CurrentHeatingCoolingStateID: Int benötigt',
+                'CurrentTemperatureID: Float required'                  => 'CurrentTemperatureID: Float benötigt',
+                'OK'                                                    => 'OK'
             ]
         ];
     }
