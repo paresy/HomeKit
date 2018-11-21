@@ -10,7 +10,7 @@ class HomeKitThermostatTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $chid = IPS_CreateVariable(0 /* Integer */); //CurrentHeatingCoolingStateID
+        $chid = IPS_CreateVariable(1 /* Integer */); //CurrentHeatingCoolingStateID
 
         $thid = IPS_CreateVariable(1 /* Integer */); //TargetHeatingCoolingStateID
         IPS_SetVariableCustomAction($thid, 10001); //Any valid ID will do
@@ -40,6 +40,7 @@ class HomeKitThermostatTest extends HomeKitBaseTest
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
 
     }
+
 
     public function testAccessoryBroken(): void
     {

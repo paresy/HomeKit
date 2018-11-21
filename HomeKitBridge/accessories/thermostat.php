@@ -143,6 +143,16 @@ class HAPAccessoryConfigurationThermostat
             return 'TargetHeatingCoolingStateID: Int required';
         }
 
+        if ($targetVariable['VariableCustomAction'] != '') {
+            $profileAction = $targetVariable['VariableCustomAction'];
+        } else {
+            $profileAction = $targetVariable['VariableAction'];
+        }
+
+        if (!($profileAction > 10000)) {
+            return 'TargetHeatingCoolingStateID: Action required';
+        }
+
         $targetVariable = IPS_GetVariable($data['CurrentHeatingCoolingStateID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */ ) {
@@ -169,6 +179,7 @@ class HAPAccessoryConfigurationThermostat
                 'Variable CurrentHeatingCoolingStateID missing'         => 'Variable CurrentHeatingCoolingStateID fehlt',
                 'Variable CurrentTemperatureID missing'       => 'Variable CurrentTemperatureID fehlt',
                 'TargetHeatingCoolingStateID: Int required' => 'TargetHeatingCoolingStateID: Int benötigt',
+                'TargetHeatingCoolingStateID: Action required' => 'TargetHeatingCoolingStateID: Aktion benötigt',
                 'CurrentHeatingCoolingStateID: Int required' => 'CurrentHeatingCoolingStateID: Int benötigt',
                 'CurrentTemperatureID: Float required' => 'CurrentTemperatureID: Float benötigt',
                 'OK'                    => 'OK'
