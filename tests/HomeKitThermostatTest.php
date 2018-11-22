@@ -12,10 +12,15 @@ class HomeKitThermostatTest extends HomeKitBaseTest
 
         $chid = IPS_CreateVariable(1 /* Integer */); //CurrentHeatingCoolingStateID
 
+
         $thid = IPS_CreateVariable(1 /* Integer */); //TargetHeatingCoolingStateID
         IPS_SetVariableCustomAction($thid, 10001); //Any valid ID will do
 
         $ctid = IPS_CreateVariable(2 /* Float */); //CurrentTemperatureID
+
+        $ttid = IPS_CreateVariable(2 /* Float */); //TargetTemperatureID
+        IPS_SetVariableCustomAction($ttid, 10001); //Any valid ID will do
+
 
         IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
             [
@@ -24,6 +29,7 @@ class HomeKitThermostatTest extends HomeKitBaseTest
                 'CurrentHeatingCoolingStateID'  => $chid,
                 'TargetHeatingCoolingStateID'   => $thid,
                 'CurrentTemperatureID'          => $ctid,
+                'TargetTemperatureID'           => $ttid
             ]
         ]));
 
@@ -49,7 +55,8 @@ class HomeKitThermostatTest extends HomeKitBaseTest
                 'Name'                             => 'Test Thermostat',
                 'CurrentHeatingCoolingStateID'     => 9999,  /* This is always an invalid variableID */
                 'TargetHeatingCoolingStateID'      => 9999,  /* This is always an invalid variableID */
-                'CurrentTemperatureID'             => 9999  /* This is always an invalid variableID */
+                'CurrentTemperatureID'             => 9999,  /* This is always an invalid variableID */
+                'TargetTemperatureID'              => 9999  /* This is always an invalid variableID */
             ],
         ]));
         IPS_ApplyChanges($bridgeID);

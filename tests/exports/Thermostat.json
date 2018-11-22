@@ -100,15 +100,30 @@
               "pr",
               "ev"
             ],
-            "value":0,
+            "value":100,
             "minValue":0,
             "maxValue":100,
             "minStep":0.1,
             "unit":"celsius"
           },
           {
-            "type":"36",
+            "type":"35",
             "iid":105,
+            "format":"float",
+            "perms":[
+              "pr",
+              "pw",
+              "ev"
+            ],
+            "value":10,
+            "minValue":10,
+            "maxValue":38,
+            "minStep":0.1,
+            "unit":"celsius"
+          },
+          {
+            "type":"36",
+            "iid":106,
             "format":"uint8",
             "perms":[
               "pr",
@@ -122,7 +137,7 @@
           },
           {
             "type":"23",
-            "iid":109,
+            "iid":110,
             "format":"string",
             "perms":[
               "pr"
