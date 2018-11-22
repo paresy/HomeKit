@@ -12,7 +12,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
 
         $chid = IPS_CreateVariable(1 /* Integer */); //CurrentHeatingCoolingStateID
 
-
         $thid = IPS_CreateVariable(1 /* Integer */); //TargetHeatingCoolingStateID
         IPS_SetVariableCustomAction($thid, 10001); //Any valid ID will do
 
@@ -20,7 +19,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
 
         $ttid = IPS_CreateVariable(2 /* Float */); //TargetTemperatureID
         IPS_SetVariableCustomAction($ttid, 10001); //Any valid ID will do
-
 
         IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
             [
