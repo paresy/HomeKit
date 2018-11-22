@@ -50,14 +50,13 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function readCharacteristicCurrentHeatingCoolingState()
     {
-        If(GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Off) {
+        if (GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Off) {
             return HAPCharacteristicCurrentHeatingCoolingState::Off;
         }
 
-        If(GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
+        if (GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
             return HAPCharacteristicCurrentHeatingCoolingState::Heat;
-        }
-        elseif (GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Cool) {
+        } elseif (GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Cool) {
             return HAPCharacteristicCurrentHeatingCoolingState::Cool;
         }
         return HAPCharacteristicCurrentHeatingCoolingState::Off;
@@ -122,7 +121,6 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function writeCharacteristicTemperatureDisplayUnits($value)
     {
-
     }
 }
 
