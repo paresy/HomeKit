@@ -19,7 +19,11 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function notifyCharacteristicCurrentHeatingCoolingState()
     {
-        return [];
+        return [
+            $this->data['TargetHeatingCoolingStateID'],
+            $this->data['TargetTemperatureID'],
+            $this->data['CurrentTemperatureID']
+        ];
     }
 
     public function notifyCharacteristicTargetHeatingCoolingState()
@@ -173,10 +177,6 @@ class HAPAccessoryConfigurationThermostat
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['CurrentHeatingCoolingStateID'])) {
-            return 'Variable CurrentHeatingCoolingStateID missing';
-        }
-
         if (!IPS_VariableExists($data['TargetHeatingCoolingStateID'])) {
             return 'Variable TargetHeatingCoolingStateID missing';
         }
@@ -199,12 +199,6 @@ class HAPAccessoryConfigurationThermostat
 
         if (!($profileAction > 10000)) {
             return 'TargetHeatingCoolingStateID: Action required';
-        }
-
-        $targetVariable = IPS_GetVariable($data['CurrentHeatingCoolingStateID']);
-
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'CurrentHeatingCoolingStateID: Int required';
         }
 
         $targetVariable = IPS_GetVariable($data['CurrentTemperatureID']);
@@ -240,12 +234,10 @@ class HAPAccessoryConfigurationThermostat
                 'CurrentHeatingCoolingStateID'                          => 'Aktueller Heizungsstatus (ID)',
                 'TargetHeatingCoolingStateID'                           => 'Ziel Heizungsstatus (ID)',
                 'CurrentTemperatureID'                                  => 'Aktuelle Temperatur (ID) ',
-                'Variable CurrentHeatingCoolingStateID missing'         => 'Variable CurrentHeatingCoolingStateID fehlt',
                 'Variable CurrentTemperatureID missing'                 => 'Variable CurrentTemperatureID fehlt',
                 'TargetHeatingCoolingStateID: Int required'             => 'TargetHeatingCoolingStateID: Int benötigt',
                 'TargetHeatingCoolingStateID: Action required'          => 'TargetHeatingCoolingStateID: Aktion benötigt',
                 'TargetTemperatureID: Action required'                  => 'TargetTemperatureID: Aktion benötigt',
-                'CurrentHeatingCoolingStateID: Int required'            => 'CurrentHeatingCoolingStateID: Int benötigt',
                 'CurrentTemperatureID: Float required'                  => 'CurrentTemperatureID: Float benötigt',
                 'TargetTemperatureID: Float required'                   => 'TargetTemperatureID: Float benötigt',
                 'OK'                                                    => 'OK'
