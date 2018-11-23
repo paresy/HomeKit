@@ -54,14 +54,24 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function readCharacteristicCurrentHeatingCoolingState()
     {
-        if (GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Off) {
-            return HAPCharacteristicCurrentHeatingCoolingState::Off;
-        }
-
-        if (GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
-            return HAPCharacteristicCurrentHeatingCoolingState::Heat;
-        } elseif (GetValue(($this->data['TargetHeatingCoolingStateID'])) == HAPCharacteristicTargetHeatingCoolingState::Cool) {
-            return HAPCharacteristicCurrentHeatingCoolingState::Cool;
+        switch(GetValue(($this->data['TargetHeatingCoolingStateID']))) {
+            case HAPCharacteristicTargetHeatingCoolingState::Auto:
+                if(GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
+                    return HAPCharacteristicCurrentHeatingCoolingState::Heat;
+                }
+                elseif (GetValue(($this->data['CurrentTemperatureID'])) > GetValue($this->data['TargetTemperatureID'])) {
+                    return HAPCharacteristicCurrentHeatingCoolingState::Cool;
+                }
+                break;
+            case HAPCharacteristicTargetHeatingCoolingState::Heat:
+                if (GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
+                    return HAPCharacteristicCurrentHeatingCoolingState::Heat;
+                }
+                break;
+            case HAPCharacteristicTargetHeatingCoolingState::Cool:
+                if (GetValue(($this->data['CurrentTemperatureID'])) > GetValue($this->data['TargetTemperatureID'])) {
+                    return HAPCharacteristicCurrentHeatingCoolingState::Cool;
+                }
         }
         return HAPCharacteristicCurrentHeatingCoolingState::Off;
     }
@@ -88,32 +98,7 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function writeCharacteristicTargetHeatingCoolingState($value)
     {
-        //Gibt noch kein Helper für setDevice ohne Profil
-        $variableID = $this->data['TargetHeatingCoolingStateID'];
-        if (!IPS_VariableExists($variableID)) {
-            return false;
-        }
-        $targetVariable = IPS_GetVariable($variableID);
-
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if ($profileAction < 10000) {
-            return false;
-        }
-
-        if (IPS_InstanceExists($profileAction)) {
-            IPS_RunScriptText('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($variableID)['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
-        } elseif (IPS_ScriptExists($profileAction)) {
-            IPS_RunScriptEx($profileAction, ['VARIABLE' => $variableID, 'VALUE' => $value, 'SENDER' => 'VoiceControl']);
-        } else {
-            return false;
-        }
-
-        return true;
+        self::setDevice($this->data['TargetHeatingCoolingStateID'], $value);
     }
 
     public function writeCharacteristicTargetTemperature($value)
