@@ -103,8 +103,6 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function writeCharacteristicTargetTemperature($value)
     {
-        //Hier wird TargetTemperature von HomeKit in IPS geschrieben
-        //IPS_LogMessage("Test", $value);
         self::setDevice($this->data['TargetTemperatureID'], floatval($value));
     }
 
