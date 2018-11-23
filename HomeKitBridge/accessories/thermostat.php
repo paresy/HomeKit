@@ -54,12 +54,11 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function readCharacteristicCurrentHeatingCoolingState()
     {
-        switch(GetValue(($this->data['TargetHeatingCoolingStateID']))) {
+        switch (GetValue(($this->data['TargetHeatingCoolingStateID']))) {
             case HAPCharacteristicTargetHeatingCoolingState::Auto:
-                if(GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
+                if (GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
                     return HAPCharacteristicCurrentHeatingCoolingState::Heat;
-                }
-                elseif (GetValue(($this->data['CurrentTemperatureID'])) > GetValue($this->data['TargetTemperatureID'])) {
+                } elseif (GetValue(($this->data['CurrentTemperatureID'])) > GetValue($this->data['TargetTemperatureID'])) {
                     return HAPCharacteristicCurrentHeatingCoolingState::Cool;
                 }
                 break;
