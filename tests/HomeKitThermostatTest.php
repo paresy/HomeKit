@@ -10,8 +10,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $chid = IPS_CreateVariable(1 /* Integer */); //CurrentHeatingCoolingStateID
-
         $thid = IPS_CreateVariable(1 /* Integer */); //TargetHeatingCoolingStateID
         IPS_SetVariableCustomAction($thid, 10001); //Any valid ID will do
 
@@ -24,7 +22,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
             [
                 'ID'                            => 2,
                 'Name'                          => 'Test Thermostat',
-                'CurrentHeatingCoolingStateID'  => $chid,
                 'TargetHeatingCoolingStateID'   => $thid,
                 'CurrentTemperatureID'          => $ctid,
                 'TargetTemperatureID'           => $ttid
@@ -51,7 +48,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
             [
                 'ID'                               => 2,
                 'Name'                             => 'Test Thermostat',
-                'CurrentHeatingCoolingStateID'     => 9999,  /* This is always an invalid variableID */
                 'TargetHeatingCoolingStateID'      => 9999,  /* This is always an invalid variableID */
                 'CurrentTemperatureID'             => 9999,  /* This is always an invalid variableID */
                 'TargetTemperatureID'              => 9999  /* This is always an invalid variableID */

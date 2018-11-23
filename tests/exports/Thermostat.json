@@ -100,7 +100,7 @@
               "pr",
               "ev"
             ],
-            "value":100,
+            "value":0,
             "minValue":0,
             "maxValue":100,
             "minStep":0.1,
