@@ -81,14 +81,14 @@ class HAPAccessoryConfigurationSpeaker
                 ]
             ],
             [
-            'label' => 'VolumeID',
-            'name'  => 'VolumeID',
-            'width' => '250px',
-            'add'   => 0,
-            'edit'  => [
-                'type' => 'SelectVariable'
+                'label' => 'VolumeID',
+                'name'  => 'VolumeID',
+                'width' => '250px',
+                'add'   => 0,
+                'edit'  => [
+                    'type' => 'SelectVariable'
+                ]
             ]
-        ]
         ];
     }
 
