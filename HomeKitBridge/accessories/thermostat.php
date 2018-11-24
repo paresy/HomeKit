@@ -130,7 +130,7 @@ class HAPAccessoryConfigurationThermostat
             [
                 'label' => 'TargetHeatingCoolingStateID',
                 'name'  => 'TargetHeatingCoolingStateID',
-                'width' => '250px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -139,7 +139,7 @@ class HAPAccessoryConfigurationThermostat
             [
                 'label' => 'CurrentTemperatureID',
                 'name'  => 'CurrentTemperatureID',
-                'width' => '250px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
@@ -148,7 +148,7 @@ class HAPAccessoryConfigurationThermostat
             [
                 'label' => 'TargetTemperatureID',
                 'name'  => 'TargetTemperatureID',
-                'width' => '250px',
+                'width' => '150px',
                 'add'   => 0,
                 'edit'  => [
                     'type' => 'SelectVariable'
