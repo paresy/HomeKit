@@ -173,7 +173,7 @@ class HAPAccessoryConfigurationThermostat
             return 'TargetHeatingCoolingStateID: Int required';
         }
 
-        if ($targetVariable['VariableCustomAction'] != '') {
+        if ($targetVariable['VariableCustomAction'] != 0) {
             $profileAction = $targetVariable['VariableCustomAction'];
         } else {
             $profileAction = $targetVariable['VariableAction'];
@@ -191,11 +191,11 @@ class HAPAccessoryConfigurationThermostat
 
         $targetVariable = IPS_GetVariable($data['TargetTemperatureID']);
 
-        if ($targetVariable['VariableType'] != 2 /* Integer */) {
+        if ($targetVariable['VariableType'] != 2 /* Float */) {
             return 'TargetTemperatureID: Float required';
         }
 
-        if ($targetVariable['VariableCustomAction'] != '') {
+        if ($targetVariable['VariableCustomAction'] != 0) {
             $profileAction = $targetVariable['VariableCustomAction'];
         } else {
             $profileAction = $targetVariable['VariableAction'];
