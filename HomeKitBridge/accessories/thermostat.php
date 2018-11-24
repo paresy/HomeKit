@@ -213,9 +213,9 @@ class HAPAccessoryConfigurationThermostat
         return [
             'de' => [
                 'Thermostat'                                            => 'Thermostat',
-                'CurrentHeatingCoolingStateID'                          => 'Aktueller Heizungsstatus (ID)',
-                'TargetHeatingCoolingStateID'                           => 'Ziel Heizungsstatus (ID)',
-                'CurrentTemperatureID'                                  => 'Aktuelle Temperatur (ID) ',
+                'CurrentHeatingCoolingStateID'                          => 'CurrentHeatingCoolingStateID',
+                'TargetHeatingCoolingStateID'                           => 'TargetHeatingCoolingStateID',
+                'CurrentTemperatureID'                                  => 'CurrentTemperatureID',
                 'Variable CurrentTemperatureID missing'                 => 'Variable CurrentTemperatureID fehlt',
                 'TargetHeatingCoolingStateID: Int required'             => 'TargetHeatingCoolingStateID: Int benötigt',
                 'TargetHeatingCoolingStateID: Action required'          => 'TargetHeatingCoolingStateID: Aktion benötigt',
