@@ -1,10 +1,10 @@
 <!-- Screenshots mit 1300px Breite erstellt -->
 
-###Beschreibung
+### Beschreibung
 
 Das Apple HomeKit-Modul ermöglicht die Steuerung von Geräten durch Apple Siri. Dies beinhaltet insbesondere die Sprachsteuerung über HomePods, iPads und iPhones.
 
-###Einbindung in IP-Symcon
+### Einbindung in IP-Symcon
 
 _Um HomeKit über das Internet außerhalb des eigenen WLANs verwenden zu können ist ein dauerhaft eingeschalteter HomePod oder AppleTV notwendig. Theoretisch kann auch ein dauerhaft eingeschaltetes iPad dazu verwendet werden - dies scheint jedoch aktuell eher zu Problemen zu führen und wird nicht empfohlen._
 
@@ -121,8 +121,8 @@ Dieser wird kurz mit "Symcon hinzufügt" bestätigt.
 [add-bridge-5]: ../imgs/add-bridge-5.png
 [add-bridge-6]: ../imgs/add-bridge-6.jpg
 [add-bridge-7]: ../imgs/add-bridge-7.jpg
-[add-bridge-7]: ../imgs/add-bridge-8.jpg
-[add-bridge-7]: ../imgs/add-bridge-9.jpg
+[add-bridge-8]: ../imgs/add-bridge-8.jpg
+[add-bridge-9]: ../imgs/add-bridge-9.jpg
 [add-device-1]: ../imgs/add-device-1.png
 [add-device-2]: ../imgs/add-device-2.png
 [add-instance-1]: ../imgs/add-instance-1.png
