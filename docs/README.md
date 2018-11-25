@@ -25,15 +25,15 @@ Zur Installation im [Module Control][modulecontrol] den Hinzufügen-Button unten
 
 Als nächstes eine [Instanz][instanzen] vom Apple HomeKit-Modul erstellen. Zuerst den Objektbaum öffnen. Hier den Hinzufügen-Button unten rechts betätigen und [Instanz][instanzen] auswählen.
 
-![Instanz hinzufügen][add-instance-1]
+![Instanz hinzufügen][add-instance]
 
 In der Modulliste das Gerät "HomeKit Bridge" vom Hersteller "Apple" auswählen. Der Ort sollte nicht verändert werden, der Name kann beliebig gewählt werden. Abschließend mit "OK" bestätigen.
 
-![Instanz konfigurieren][add-instance-2]
+![Instanz erstellen][create-instance-1]
 
 Im folgenden Dialog muss der Schalter auf Aktiv umgestellt und ebenfalls mit "OK" bestätigt werden.
 
-![Instanz erstellen][create-instance]
+![Instanz konfigurieren][create-instance-2]
 
 Nach der Erstellung der Apple HomeKit-Instanz öffnet sich diese automatisch und kann eingerichtet werden.
 
