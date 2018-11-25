@@ -125,12 +125,12 @@ Dieser wird kurz mit "Symcon hinzufügt" bestätigt.
 [add-bridge-9]: ../imgs/add-bridge-9.jpg
 [add-device-1]: ../imgs/add-device-1.png
 [add-device-2]: ../imgs/add-device-2.png
-[add-instance-1]: ../imgs/add-instance-1.png
-[add-instance-2]: ../imgs/add-instance-2.png
+[add-instance]: ../imgs/add-instance.png
 [apply-changes]: ../imgs/apply-changes.png
 [check]: ../imgs/check.png
-[create-instance]: ../imgs/create-instance.png
-[module]: ../imgs/homekit-module.png
+[create-instance-1]: ../imgs/create-instance-1.png
+[create-instance-2]: ../imgs/create-instance-2.png
+[module]: ../imgs/module.png
 
 [modulecontrol]: https://www.symcon.de/service/dokumentation/modulreferenz/module-control/
 [instanzen]: https://www.symcon.de/service/dokumentation/konzepte/instanzen/
