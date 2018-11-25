@@ -14,15 +14,15 @@ class HomeKitDocsTest extends TestCase
                 $filePath = __DIR__ . '/' . $className . '.php';
                 $this->assertTrue(file_exists($filePath), $className . '.php is missing!');
                 include_once $filePath;
-                
+
                 //Load some more information
                 $hapConfigClassName = 'HAPAccessoryConfiguration' . ucfirst(basename($filename, '.php'));
-                $translations = call_user_func_array($hapConfigClassName . "::getTranslations", []);
-                $caption = call_user_func_array($hapConfigClassName . "::getCaption", []);
-                $this->assertTrue(isset($translations["de"]), 'German translation for ' . $className . ' is missing!');
-                $this->assertTrue(isset($translations["de"][$caption]), 'German string translation for ' . $className . ' is missing!');
-                $captionDE = $translations["de"][$caption];
-                
+                $translations = call_user_func_array($hapConfigClassName . '::getTranslations', []);
+                $caption = call_user_func_array($hapConfigClassName . '::getCaption', []);
+                $this->assertTrue(isset($translations['de']), 'German translation for ' . $className . ' is missing!');
+                $this->assertTrue(isset($translations['de'][$caption]), 'German string translation for ' . $className . ' is missing!');
+                $captionDE = $translations['de'][$caption];
+
                 //Check existence in README
                 $doc = file_get_contents(__DIR__ . '/../docs/README.md');
                 $this->assertTrue(strpos($doc, $captionDE) !== false, 'Documentation for ' . $className . ' is missing!');
