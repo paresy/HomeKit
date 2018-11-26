@@ -69,6 +69,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Temperatursensor][temperatursensor]
 * [Thermostat][thermostat]
 * [Zwischenstecker][zwischenstecker]
+* [Expertenoptionen][expertenoptionen]
 
 Nachdem alle Geräte eingerichtet sind, werden diese mit einem Klick auf "Änderungen übernehmen" bestätigt.
 
@@ -162,3 +163,4 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [temperatursensor]: types/temperatursensor.md
 [thermostat]: types/thermostat.md
 [zwischenstecker]: types/zwischenstecker.md
+[expertenoptionen]: types/expertenoptionen.md
