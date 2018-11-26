@@ -100,17 +100,23 @@ Die Abfrage "Nicht zertifiziertes Gerät" muss mit "Trotzdem hinzufügen" bestä
 
 ![Bridge bestätigen][add-bridge-4]
 
-... Code anfordern! ... -> Eintippen in der Home-App.
+Der notwendige Code kann in der Konfiguration der HomeKit-Bridge Instanz angefordert werden. Der dann angezeigte Code kann in der Home-App eingegeben werden.
 
 ![Code eingeben][add-bridge-5]
 
-Dieser wird kurz mit "Symcon hinzufügt" bestätigt.
+Nach der Eingabe wird die Verbindung hergestellt und kurz mit "Symcon hinzufügt" bestätigt.
   
 ![Bridge hinzugefügt][add-bridge-6]
 
+Mit "Weiter" bestätigen.
+
 ![Geräte bestätigen][add-bridge-7]
 
+Mit "Fertig" die Einrichtung abschließen.
+
 ![Hinzufügen abgeschlosse][add-bridge-8]
+
+In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorzugte Geräte" sein. Der Rest wird standardmäßig im Standardraum 
 
 ![Geräteübersicht][add-bridge-9]
 
@@ -135,9 +141,24 @@ Dieser wird kurz mit "Symcon hinzufügt" bestätigt.
 [modulecontrol]: https://www.symcon.de/service/dokumentation/modulreferenz/module-control/
 [instanzen]: https://www.symcon.de/service/dokumentation/konzepte/instanzen/
 
-[licht-schalbar]: types/licht-schaltbar/
-[licht-dimmbar]: types/licht-dimmbar/
-[licht-farbig]: types/licht-farbig/
-[lautsprecher]: types/lautsprecher/
-[temperatursensor]: types/temperatursensor/
-[thermostat]: types/thermostat/
+[lampe-schaltbar]: types/lampe-schaltbar.md
+[lampe-dimmbar]: types/lampe-dimmbar.md
+[lampe-farbig]: types/lampe-farbig.md
+[bewegungsmelder]: types/bewegungsmelder.md
+[fenster-position]: types/fenster-position.md
+[fenster-hochrunter]: types/fenster-hochrunter.md
+[feuchtigkeitssensor]: types/feuchtigkeitssensor.md
+[garagentor]: types/garagentor.md
+[helligkeitssensor]: types/helligkeitssensor.md
+[kontaktsensor]: types/kontaktsensor.md
+[kohlendioxid-sensor]: types/kohlendioxid-sensor.md
+[kohlenmonoxid-sensor]: types/kohlenmonoxid-sensor.md
+[lautsprecher]: types/lautsprecher.md
+[leckagesensor]: types/leckagesensor.md
+[luftguetesensor]: types/luftguetesensor.md
+[rauchmelder]: types/rauchmelder.md
+[rollladen-jalousie-position]: types/rollladen-jalousie-position.md
+[rollladen-jalousie-hochrunter]: types/rollladen-jalousie-hochrunter.md
+[temperatursensor]: types/temperatursensor.md
+[thermostat]: types/thermostat.md
+[zwischenstecker]: types/zwischenstecker.md
