@@ -116,7 +116,7 @@ class HAPAccessoryConfigurationThermostat
 
     public static function getPosition()
     {
-        return 260;
+        return 10;
     }
 
     public static function getCaption()

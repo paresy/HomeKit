@@ -81,7 +81,7 @@ class HAPAccessoryConfigurationWindowUpDown
 {
     public static function getPosition()
     {
-        return 100;
+        return 10;
     }
 
     public static function getCaption()

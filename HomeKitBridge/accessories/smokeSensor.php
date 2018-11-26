@@ -51,7 +51,7 @@ class HAPAccessoryConfigurationSmokeSensor
 {
     public static function getPosition()
     {
-        return 50;
+        return 10;
     }
 
     public static function getCaption()

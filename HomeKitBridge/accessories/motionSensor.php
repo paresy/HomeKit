@@ -47,7 +47,7 @@ class HAPAccessoryConfigurationMotionSensor
 {
     public static function getPosition()
     {
-        return 30;
+        return 10;
     }
 
     public static function getCaption()

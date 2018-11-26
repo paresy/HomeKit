@@ -60,7 +60,7 @@ class HAPAccessoryConfigurationSpeaker
 
     public static function getPosition()
     {
-        return 250;
+        return 10;
     }
 
     public static function getCaption()

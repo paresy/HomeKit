@@ -32,7 +32,7 @@ class HAPAccessoryConfigurationLightSensor
 {
     public static function getPosition()
     {
-        return 60;
+        return 10;
     }
 
     public static function getCaption()

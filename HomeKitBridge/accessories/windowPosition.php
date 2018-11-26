@@ -63,7 +63,7 @@ class HAPAccessoryConfigurationWindowPosition
 
     public static function getPosition()
     {
-        return 90;
+        return 10;
     }
 
     public static function getCaption()
