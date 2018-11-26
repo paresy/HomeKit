@@ -49,7 +49,7 @@ class HAPAccessoryConfigurationContactSensor
 {
     public static function getPosition()
     {
-        return 110;
+        return 10;
     }
 
     public static function getCaption()

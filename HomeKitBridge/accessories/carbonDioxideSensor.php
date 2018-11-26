@@ -51,7 +51,7 @@ class HAPAccessoryConfigurationCarbonDioxideSensor
 {
     public static function getPosition()
     {
-        return 150;
+        return 10;
     }
 
     public static function getCaption()

@@ -32,7 +32,7 @@ class HAPAccessoryConfigurationAirQualitySensor
 {
     public static function getPosition()
     {
-        return 70;
+        return 10;
     }
 
     public static function getCaption()

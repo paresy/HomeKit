@@ -32,7 +32,7 @@ class HAPAccessoryConfigurationHumiditySensor
 {
     public static function getPosition()
     {
-        return 20;
+        return 10;
     }
 
     public static function getCaption()

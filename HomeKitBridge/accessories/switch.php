@@ -41,7 +41,7 @@ class HAPAccessoryConfigurationSwitch
 
     public static function getPosition()
     {
-        return 40;
+        return 10;
     }
 
     public static function getCaption()

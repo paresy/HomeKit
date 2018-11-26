@@ -51,7 +51,7 @@ class HAPAccessoryConfigurationLeakSensor
 {
     public static function getPosition()
     {
-        return 70;
+        return 10;
     }
 
     public static function getCaption()

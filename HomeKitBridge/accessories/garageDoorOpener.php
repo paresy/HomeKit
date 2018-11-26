@@ -113,7 +113,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
 {
     public static function getPosition()
     {
-        return 80;
+        return 10;
     }
 
     public static function getCaption()
