@@ -1,6 +1,6 @@
 [
   {
-    "aid": 2,
+    "aid": 3,
     "services": [
       {
         "type": "3E",
@@ -30,7 +30,7 @@
             "perms": [
               "pr"
             ],
-            "value": "LightbulbColor"
+            "value": "WindowCoveringUpDown"
           },
           {
             "type": "23",
@@ -62,49 +62,50 @@
         ]
       },
       {
-        "type": "43",
+        "type": "8C",
         "iid": 101,
         "characteristics": [
           {
-            "type": "25",
+            "type": "7C",
             "iid": 102,
-            "format": "bool",
+            "format": "uint8",
             "perms": [
               "pr",
               "pw",
               "ev"
             ],
-            "value": false
-          },
-          {
-            "type": "8",
-            "iid": 103,
-            "format": "int",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 0,
+            "value": 100,
             "minValue": 0,
             "maxValue": 100,
             "minStep": 1,
             "unit": "percentage"
           },
           {
-            "type": "13",
-            "iid": 104,
-            "format": "float",
+            "type": "6D",
+            "iid": 103,
+            "format": "uint8",
             "perms": [
               "pr",
-              "pw",
               "ev"
             ],
-            "value": 0,
+            "value": 100,
             "minValue": 0,
-            "maxValue": 360,
+            "maxValue": 100,
             "minStep": 1,
-            "unit": "arcdegrees"
+            "unit": "percentage"
+          },
+          {
+            "type": "72",
+            "iid": 104,
+            "format": "uint8",
+            "perms": [
+              "pr",
+              "ev"
+            ],
+            "value": 2,
+            "minValue": 0,
+            "maxValue": 2,
+            "minStep": 1
           },
           {
             "type": "23",
@@ -116,19 +117,12 @@
             "value": "Test"
           },
           {
-            "type": "2F",
+            "type": "6F",
             "iid": 106,
-            "format": "float",
+            "format": "bool",
             "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 0,
-            "minValue": 0,
-            "maxValue": 100,
-            "minStep": 1,
-            "unit": "percentage"
+              "pw"
+            ]
           }
         ]
       }

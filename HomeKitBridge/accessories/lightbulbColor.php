@@ -17,12 +17,16 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function readCharacteristicOn()
     {
-        return self::getColorValue($this->data['VariableID']) > 0;
+        return $this->readCharacteristicBrightness() > 0;
     }
 
     public function writeCharacteristicOn($value)
     {
-        self::colorDevice($this->data['VariableID'], 0xFFFFFF);
+        if ($value) {
+            $this->writeCharacteristicBrightness(100);
+        } else {
+            $this->writeCharacteristicBrightness(0);
+        }
     }
 
     public function notifyCharacteristicBrightness()
@@ -34,12 +38,15 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function readCharacteristicBrightness()
     {
-        return self::getColorBrightness($this->data['VariableID']);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        return $hsb['brightness'] * 100;
     }
 
     public function writeCharacteristicBrightness($value)
     {
-        self::setColorBrightness($this->data['VariableID'], $value);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        $hsb['brightness'] = $value / 100;
+        $this->colorDeviceWait($this->data['VariableID'], self::hsbToRGB($hsb));
     }
 
     public function notifyCharacteristicHue()
@@ -51,12 +58,15 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function readCharacteristicHue()
     {
-        return GetValue($this->data['VariableID']);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        return $hsb['hue'];
     }
 
     public function writeCharacteristicHue($value)
     {
-        $this->switchDevice($this->data['VariableID'], $value);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        $hsb['hue'] = $value;
+        $this->colorDeviceWait($this->data['VariableID'], self::hsbToRGB($hsb));
     }
 
     public function notifyCharacteristicSaturation()
@@ -68,29 +78,53 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
 
     public function readCharacteristicSaturation()
     {
-        return GetValue($this->data['VariableID']);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        return $hsb['saturation'] * 100;
     }
 
     public function writeCharacteristicSaturation($value)
     {
-        $this->switchDevice($this->data['VariableID'], $value);
+        $hsb = self::rgbToHSB(GetValue($this->data['VariableID']));
+        $hsb['saturation'] = $value / 100;
+        $this->colorDeviceWait($this->data['VariableID'], self::hsbToRGB($hsb));
     }
 
-    public function notifyCharacteristicColorTemperature()
+    //We need to use the sync function, because each part (Hue, Sat, Bri) will be set independently and GetValue will have wrong values (async)
+    private static function colorDeviceWait($variableID, $value)
     {
-        return [
-            $this->data['VariableID']
-        ];
-    }
+        if (!IPS_VariableExists($variableID)) {
+            return false;
+        }
 
-    public function readCharacteristicColorTemperature()
-    {
-        return GetValue($this->data['VariableID']);
-    }
+        $targetVariable = IPS_GetVariable($variableID);
 
-    public function writeCharacteristicColorTemperature($value)
-    {
-        $this->switchDevice($this->data['VariableID'], $value);
+        if ($targetVariable['VariableCustomAction'] != 0) {
+            $profileAction = $targetVariable['VariableCustomAction'];
+        } else {
+            $profileAction = $targetVariable['VariableAction'];
+        }
+
+        if ($profileAction < 10000) {
+            return false;
+        }
+
+        if ($targetVariable['VariableType'] != 1 /* Integer */) {
+            return false;
+        }
+
+        if (($value < 0) || ($value > 0xFFFFFF)) {
+            return false;
+        }
+
+        if (IPS_InstanceExists($profileAction)) {
+            IPS_RunScriptTextWait('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($variableID)['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
+        } elseif (IPS_ScriptExists($profileAction)) {
+            IPS_RunScriptWaitEx($profileAction, ['VARIABLE' => $variableID, 'VALUE' => $value, 'SENDER' => 'VoiceControl']);
+        } else {
+            return false;
+        }
+
+        return true;
     }
 }
 

@@ -77,7 +77,7 @@ class HomeKitManager
         return $accessories;
     }
 
-    public function updateAccessories(): void
+    public function updateAccessories(): bool
     {
         $ids = [];
 
@@ -154,6 +154,8 @@ class HomeKitManager
             //Save. This will start a recursion. We need to be careful, that the recursion stops after this.
             IPS_ApplyChanges($this->instanceID);
         }
+
+        return $wasChanged;
     }
 
     protected function mergeTranslations($arr1, $arr2): array
@@ -185,7 +187,18 @@ class HomeKitManager
             $posA = call_user_func(self::configurationClassPrefix . $a . '::getPosition');
             $posB = call_user_func(self::configurationClassPrefix . $b . '::getPosition');
 
-            return ($posA < $posB) ? -1 : 1;
+            if ($posA != $posB) {
+                return ($posA < $posB) ? -1 : 1;
+            }
+
+            $posA = call_user_func(self::configurationClassPrefix . $a . '::getCaption');
+            $posB = call_user_func(self::configurationClassPrefix . $b . '::getCaption');
+
+            //This is not very nice, but our largest user-base is german
+            $dePosA = call_user_func(self::configurationClassPrefix . $a . '::getTranslations')['de'][$posA];
+            $dePosB = call_user_func(self::configurationClassPrefix . $b . '::getTranslations')['de'][$posB];
+
+            return strcmp($dePosA, $dePosB);
         });
 
         foreach ($sortedAccessories as $accessory) {

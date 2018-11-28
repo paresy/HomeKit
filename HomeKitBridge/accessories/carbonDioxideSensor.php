@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessorySmokeSensor extends HAPAccessoryBase
+class HAPAccessoryCarbonDioxideSensor extends HAPAccessoryBase
 {
     public function __construct($data)
     {
@@ -10,19 +10,19 @@ class HAPAccessorySmokeSensor extends HAPAccessoryBase
             $data,
             [
                 new HAPServiceAccessoryInformation(),
-                new HAPServiceSmokeSensor()
+                new HAPServiceCarbonDioxideSensor()
             ]
         );
     }
 
-    public function notifyCharacteristicSmokeDetected()
+    public function notifyCharacteristicCarbonDioxideDetected()
     {
         return [
             $this->data['VariableID']
         ];
     }
 
-    public function readCharacteristicSmokeDetected()
+    public function readCharacteristicCarbonDioxideDetected()
     {
         $targetVariable = IPS_GetVariable($this->data['VariableID']);
 
@@ -40,14 +40,14 @@ class HAPAccessorySmokeSensor extends HAPAccessoryBase
         }
 
         if ($value) {
-            return HAPCharacteristicSmokeDetected::SmokeDetected;
+            return HAPCharacteristicCarbonDioxideDetected::Abnormal;
         } else {
-            return HAPCharacteristicSmokeDetected::SmokeNotDetected;
+            return HAPCharacteristicCarbonDioxideDetected::Normal;
         }
     }
 }
 
-class HAPAccessoryConfigurationSmokeSensor
+class HAPAccessoryConfigurationCarbonDioxideSensor
 {
     public static function getPosition()
     {
@@ -56,7 +56,7 @@ class HAPAccessoryConfigurationSmokeSensor
 
     public static function getCaption()
     {
-        return 'Smoke Sensor';
+        return 'Carbon Dioxide Sensor';
     }
 
     public static function getColumns()
@@ -93,14 +93,13 @@ class HAPAccessoryConfigurationSmokeSensor
     {
         return [
             'de' => [
-                'Smoke Sensor'         => 'Rauchmelder',
-                'VariableID'           => 'VariablenID',
-                'Variable missing'     => 'Variable fehlt',
-                'Bool required'        => 'Bool benötigt',
-                'OK'                   => 'OK'
+                'Carbon Dioxide Sensor'     => 'Kohlendioxid Sensor',
+                'VariableID'                => 'VariablenID',
+                'Variable missing'          => 'Variable fehlt',
+                'Bool required'             => 'Bool benötigt',
+                'OK'                        => 'OK'
             ]
         ];
     }
 }
-
-HomeKitManager::registerAccessory('SmokeSensor');
+HomeKitManager::registerAccessory('CarbonDioxideSensor');

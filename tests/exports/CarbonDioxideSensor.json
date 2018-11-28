@@ -1,6 +1,6 @@
 [
   {
-    "aid": 2,
+    "aid": 3,
     "services": [
       {
         "type": "3E",
@@ -30,7 +30,7 @@
             "perms": [
               "pr"
             ],
-            "value": "LightbulbColor"
+            "value": "CarbonDioxideSensor"
           },
           {
             "type": "23",
@@ -62,73 +62,30 @@
         ]
       },
       {
-        "type": "43",
+        "type": "97",
         "iid": 101,
         "characteristics": [
           {
-            "type": "25",
+            "type": "92",
             "iid": 102,
-            "format": "bool",
+            "format": "uint8",
             "perms": [
               "pr",
-              "pw",
               "ev"
             ],
-            "value": false
-          },
-          {
-            "type": "8",
-            "iid": 103,
-            "format": "int",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 0,
+            "value": 0.0,
             "minValue": 0,
-            "maxValue": 100,
-            "minStep": 1,
-            "unit": "percentage"
-          },
-          {
-            "type": "13",
-            "iid": 104,
-            "format": "float",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 0,
-            "minValue": 0,
-            "maxValue": 360,
-            "minStep": 1,
-            "unit": "arcdegrees"
+            "maxValue": 1,
+            "minStep": 1
           },
           {
             "type": "23",
-            "iid": 105,
+            "iid": 103,
             "format": "string",
             "perms": [
               "pr"
             ],
             "value": "Test"
-          },
-          {
-            "type": "2F",
-            "iid": 106,
-            "format": "float",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": 0,
-            "minValue": 0,
-            "maxValue": 100,
-            "minStep": 1,
-            "unit": "percentage"
           }
         ]
       }

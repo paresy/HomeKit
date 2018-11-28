@@ -1288,4 +1288,9 @@ class HomeKitSession
             'characteristics' => $characteristics
         ])));
     }
+
+    public function clearSubscriptions()
+    {
+        $this->events = [];
+    }
 }

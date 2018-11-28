@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 include_once __DIR__ . '/HomeKitBaseTest.php';
 
-class HomeKitLeakSensorTest extends HomeKitBaseTest
+class HomeKitCarbonMonoxideSensorTest extends HomeKitBaseTest
 {
     public function testAccessory(): void
     {
@@ -12,7 +12,7 @@ class HomeKitLeakSensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(0 /* Boolean */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLeakSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'AccessoryCarbonMonoxideSensor', json_encode([
             [
                 'ID'         => 3,
                 'Name'       => 'Test',
@@ -24,7 +24,7 @@ class HomeKitLeakSensorTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
-        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/LeakSensor.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/CarbonMonoxideSensor.json'), true);
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
@@ -34,7 +34,7 @@ class HomeKitLeakSensorTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLeakSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'AccessoryCarbonMonoxideSensor', json_encode([
             [
                 'ID'         => 3,
                 'Name'       => 'Test',

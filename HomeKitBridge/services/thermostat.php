@@ -13,6 +13,7 @@ class HAPServiceThermostat extends HAPService
                 new HAPCharacteristicCurrentHeatingCoolingState(),
                 new HAPCharacteristicTargetHeatingCoolingState(),
                 new HAPCharacteristicCurrentTemperature(),
+                new HAPCharacteristicTargetTemperature(),
                 new HAPCharacteristicTemperatureDisplayUnits()
             ],
             [

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class HAPAccessorySmokeSensor extends HAPAccessoryBase
+class HAPAccessoryContactSensor extends HAPAccessoryBase
 {
     public function __construct($data)
     {
@@ -10,19 +10,19 @@ class HAPAccessorySmokeSensor extends HAPAccessoryBase
             $data,
             [
                 new HAPServiceAccessoryInformation(),
-                new HAPServiceSmokeSensor()
+                new HAPServiceContactSensor()
             ]
         );
     }
 
-    public function notifyCharacteristicSmokeDetected()
+    public function notifyCharacteristicContactSensorState()
     {
         return [
             $this->data['VariableID']
         ];
     }
 
-    public function readCharacteristicSmokeDetected()
+    public function readCharacteristicContactSensorState()
     {
         $targetVariable = IPS_GetVariable($this->data['VariableID']);
 
@@ -38,16 +38,14 @@ class HAPAccessorySmokeSensor extends HAPAccessoryBase
         if (strpos($profileName, '.Reversed') !== false) {
             $value = !$value;
         }
-
         if ($value) {
-            return HAPCharacteristicSmokeDetected::SmokeDetected;
+            return HAPCharacteristicContactSensorState::ContactNotDetected;
         } else {
-            return HAPCharacteristicSmokeDetected::SmokeNotDetected;
+            return HAPCharacteristicContactSensorState::ContactDetected;
         }
     }
 }
-
-class HAPAccessoryConfigurationSmokeSensor
+class HAPAccessoryConfigurationContactSensor
 {
     public static function getPosition()
     {
@@ -56,7 +54,7 @@ class HAPAccessoryConfigurationSmokeSensor
 
     public static function getCaption()
     {
-        return 'Smoke Sensor';
+        return 'Contact Sensor';
     }
 
     public static function getColumns()
@@ -77,7 +75,7 @@ class HAPAccessoryConfigurationSmokeSensor
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {
-            return 'Variable missing';
+            return 'VariableID missing';
         }
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
@@ -85,7 +83,6 @@ class HAPAccessoryConfigurationSmokeSensor
         if ($targetVariable['VariableType'] != 0 /* Boolean */) {
             return 'Bool required';
         }
-
         return 'OK';
     }
 
@@ -93,7 +90,7 @@ class HAPAccessoryConfigurationSmokeSensor
     {
         return [
             'de' => [
-                'Smoke Sensor'         => 'Rauchmelder',
+                'Contact Sensor'       => 'Kontaktsensor',
                 'VariableID'           => 'VariablenID',
                 'Variable missing'     => 'Variable fehlt',
                 'Bool required'        => 'Bool benötigt',
@@ -102,5 +99,4 @@ class HAPAccessoryConfigurationSmokeSensor
         ];
     }
 }
-
-HomeKitManager::registerAccessory('SmokeSensor');
+HomeKitManager::registerAccessory('ContactSensor');

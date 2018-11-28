@@ -15,20 +15,6 @@ before_install:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
-  #Install sodium Extension from source/pecl until Travis-CI starts bundling it
-  - cd ..
-  - git clone git://github.com/jedisct1/libsodium.git
-  - cd libsodium
-  - git checkout 1.0.13
-  - ./autogen.sh
-  - ./configure
-  - echo "Installing libsodium..."
-  - sudo make install
-  - cd ..
-  - echo "Installing ext/sodium..."
-  - pecl install libsodium
-  - cd HomeKit
-
 script:
   - phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml --coverage-clover clover.xml
 

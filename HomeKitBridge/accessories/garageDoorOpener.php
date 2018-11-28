@@ -113,7 +113,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
 {
     public static function getPosition()
     {
-        return 80;
+        return 10;
     }
 
     public static function getCaption()
@@ -178,7 +178,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
                 return 'Unsupported Profile';
         }
 
-        if ($targetVariable['VariableCustomAction'] != '') {
+        if ($targetVariable['VariableCustomAction'] != 0) {
             $profileAction = $targetVariable['VariableCustomAction'];
         } else {
             $profileAction = $targetVariable['VariableAction'];
