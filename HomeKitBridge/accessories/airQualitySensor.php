@@ -63,8 +63,8 @@ class HAPAccessoryConfigurationAirQualitySensor
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
-            return 'Int/Float required';
+        if ($targetVariable['VariableType'] != 1 /* Integer */) {
+            return 'Int required';
         }
 
         return 'OK';
@@ -77,7 +77,7 @@ class HAPAccessoryConfigurationAirQualitySensor
                 'Air Quality Sensor'    => 'Luftgütesensor',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int/Float required'    => 'Int/Float benötigt',
+                'Int required'          => 'Int benötigt',
                 'OK'                    => 'OK'
             ]
         ];
