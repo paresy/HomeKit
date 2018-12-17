@@ -12,5 +12,5 @@ _Dieses Repository enthält keine von Apple zertifizierte Bridge. Außerdem wird
 
 Folgende Module beinhaltet das Symcon HomeKit Repository:
 
-- __HomeKit Bridge__ ([Dokumentation](HomeKitBridge))  
+- __HomeKit Bridge__ ([Dokumentation](docs))  
     Die Bridge kümmert sich um das Pairing und die Kommunikation zu den HomeKit Geräten
