@@ -1,4 +1,5 @@
 .DS_Store
 .idea/
-libs/composer.*
-libs/phpunit.*
+.phpunit.*
+libs/composer*.*
+libs/phpunit*.*

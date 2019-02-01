@@ -14,7 +14,7 @@ class HomeKitBaseTest extends TestCase
     protected $bridgeModuleID = '{7FC71134-CFD0-4909-819C-B794FE067FBC}';
     protected $serverModuleID = '{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}';
 
-    public function setUp()
+    public function setUp(): void
     {
         //Reset
         IPS\Kernel::reset();
