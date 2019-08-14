@@ -1,16 +1,18 @@
-name: Tests
+name: Run Tests
 
 on: [push]
 
 jobs:
 
-  build:
+  test:
  
     runs-on: ubuntu-latest
  
     steps:
+    - uses: actions/checkout@master
+    
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
 
     - name: Run Tests
-      run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml --coverage-clover clover.xml
+      run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml
