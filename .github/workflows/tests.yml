@@ -10,7 +10,12 @@ jobs:
  
     steps:
     - uses: actions/checkout@master
-    
+
+    - name: Fetch missing submodules
+      run: |
+        git submodule init
+        git submodule update
+
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
 
