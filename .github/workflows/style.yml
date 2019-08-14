@@ -11,6 +11,9 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
+    - name: Only fetch Style PHP submodule
+      run: git submodule update --init -- .style
+
     - name: Install latest PHP-CS-Fixer
       run: wget https://cs.symfony.com/download/php-cs-fixer-v2.phar
 
