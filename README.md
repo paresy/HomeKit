@@ -1,7 +1,6 @@
 # HomeKit für IP-Symcon 5.x
 
 <a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.x-blue.svg?style=flat-square"/></a>
-<a href="https://styleci.io/repos/100034267/"><img src="https://styleci.io/repos/100034267/shield" alt="StyleCI"></a>
 [![Actions Status](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/badge/paresy/HomeKit?style=flat-square)](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/results/paresy/HomeKit)
 <br/>
 
