@@ -260,6 +260,7 @@ class HomeKitSession
 
                         return '';
                 }
+                break;
             default:
                 $this->SendDebug('Unsupported method ' . $http['method']);
 
