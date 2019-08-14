@@ -183,7 +183,8 @@ class HomeKitManager
         $translations = [];
 
         $sortedAccessories = self::$supportedAccessories;
-        uasort($sortedAccessories, function ($a, $b) {
+        uasort($sortedAccessories, function ($a, $b)
+        {
             $posA = call_user_func(self::configurationClassPrefix . $a . '::getPosition');
             $posB = call_user_func(self::configurationClassPrefix . $b . '::getPosition');
 

@@ -65,7 +65,8 @@ class DNSSDModule extends IPSModule
     {
 
         //Lets expand the array our more complicated persistence format
-        $expandRecords = function ($TXTRecords) {
+        $expandRecords = function ($TXTRecords)
+        {
             $result = [];
             foreach ($TXTRecords as $TXTRecord) {
                 $result[] = ['Value' => $TXTRecord];

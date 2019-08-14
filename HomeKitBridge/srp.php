@@ -52,7 +52,8 @@ class SRP6aBase
         $this->I_bin = $I;
         $this->p_bin = $p;
 
-        $this->H = function ($v) {
+        $this->H = function ($v)
+        {
             return hash('sha512', $v, true);
         };
 

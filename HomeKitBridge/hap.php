@@ -335,7 +335,8 @@ class HAPCharacteristic
 
     public function validate($value)
     {
-        $validateNumericBoundaries = function ($value) {
+        $validateNumericBoundaries = function ($value)
+        {
             $minValue = $this->getMinValue();
             if ($minValue !== null) {
                 if ($minValue > $value) {
@@ -359,7 +360,8 @@ class HAPCharacteristic
             return $value;
         };
 
-        $validateStringBoundaries = function ($value) {
+        $validateStringBoundaries = function ($value)
+        {
             $maxLen = $this->getMaxLen();
             if ($maxLen === null) {
                 $maxLen = 64;

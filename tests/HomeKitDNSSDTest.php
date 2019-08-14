@@ -58,7 +58,5 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
         $this->assertEquals([
             $expectedServiceProperty
         ], json_decode(IPS_GetProperty($dnssdID, 'Services'), true));
-
-        //
     }
 }
