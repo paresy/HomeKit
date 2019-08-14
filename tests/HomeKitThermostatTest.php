@@ -36,7 +36,6 @@ class HomeKitThermostatTest extends HomeKitBaseTest
         $accessory = json_decode(file_get_contents(__DIR__ . '/exports/Thermostat.json'), true);
 
         //Check if the generated content matches our test file
-        echo json_encode($bridgeInterface->DebugAccessories());
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
     }
 
