@@ -6,6 +6,7 @@
 	"aliases": [
 		"HomeKit Bridge"
 	],
+	"url": "https://github.com/paresy/HomeKit/tree/master/docs",
 	"parentRequirements": ["{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}"],
 	"childRequirements": ["{9A20D848-B6B6-43A8-8F1C-551FD3B77002}"],
 	"implemented": ["{60BC2886-7EDE-4A41-840A-688E4D7771D9}", "{7A1272A4-CBDB-46EF-BFC6-DCF4A53D2FC7}"],
