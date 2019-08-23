@@ -26,7 +26,6 @@ class HAPAccessoryStatelessProgrammableSwitch extends HAPAccessoryBase
     {
         return GetValue($this->data['VariableID']);
     }
-
 }
 
 class HAPAccessoryConfigurationStatelessProgrammableSwitch
