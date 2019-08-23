@@ -1,6 +1,6 @@
 # HomeKit für IP-Symcon 5.x
 
-[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.2-blue.svg)](https://www.symcon.de)
+[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.x-blue.svg)](https://www.symcon.de)
 [![Check Style](https://github.com/paresy/HomeKit/workflows/Check%20Style/badge.svg)](https://github.com/paresy/HomeKit/actions)
 [![Run Tests](https://github.com/paresy/HomeKit/workflows/Run%20Tests/badge.svg)](https://github.com/paresy/HomeKit/actions)
 
