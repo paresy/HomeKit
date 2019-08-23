@@ -39,7 +39,7 @@
             "perms": [
               "pr"
             ],
-            "value": "Taster Test"
+            "value": "Test"
           },
           {
             "type": "30",
@@ -57,7 +57,7 @@
             "perms": [
               "pr"
             ],
-            "value": "5.3"
+            "value": "5.0"
           }
         ]
       },
