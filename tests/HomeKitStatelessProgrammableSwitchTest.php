@@ -38,7 +38,7 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
 
         SetValue($vid, -5);
 
-        IPS_SetProperty($bridgeID, 'AccessoryTemperatureSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'AccessoryStatelessProgrammableSwitch', json_encode([
             [
                 'ID'         => 3,
                 'Name'       => 'Test',
