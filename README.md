@@ -1,8 +1,8 @@
 # HomeKit für IP-Symcon 5.x
 
-<a href="https://www.symcon.de"><img src="https://img.shields.io/badge/IP--Symcon-5.x-blue.svg?style=flat-square"/></a>
-[![Actions Status](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/badge/paresy/HomeKit?style=flat-square)](https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/results/paresy/HomeKit)
-<br/>
+[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.2-blue.svg)](https://www.symcon.de)
+[![Check Style](https://github.com/paresy/HomeKit/workflows/Check%20Style/badge.svg)](https://github.com/paresy/HomeKit/actions)
+[![Run Tests](https://github.com/paresy/HomeKit/workflows/Run%20Tests/badge.svg)](https://github.com/paresy/HomeKit/actions)
 
 _Dieses Repository enthält keine von Apple zertifizierte Bridge. Außerdem wird es ausschließlich von der IP-Symcon Community (<a href="https://www.symcon.de/forum/members/1-paresy">paresy</a>, <a href="https://www.symcon.de/forum/members/10751-KaiS">KaiS</a>) gepflegt und nicht von der Symcon GmbH angeboten._
 
