@@ -24,7 +24,7 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
-        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/AccessoryStatelessProgrammableSwitch.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/StatelessProgrammableSwitch.json'), true);
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
@@ -50,7 +50,7 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
-        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/AccessoryStatelessProgrammableSwitch.json'), true);
+        $accessory = json_decode(file_get_contents(__DIR__ . '/exports/StatelessProgrammableSwitch.json'), true);
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());
