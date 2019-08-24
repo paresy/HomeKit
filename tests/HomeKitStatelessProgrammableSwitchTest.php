@@ -34,9 +34,9 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $vid = IPS_CreateVariable(2 /* Float */);
+        $vid = IPS_CreateVariable(1 /* Integer */);
 
-        SetValue($vid, -5);
+        SetValue($vid, 'Test');
 
         IPS_SetProperty($bridgeID, 'AccessoryStatelessProgrammableSwitch', json_encode([
             [
