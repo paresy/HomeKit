@@ -7,4 +7,4 @@ Geräte vom Typ Zustandsloser programmierbarer Schalter (Taster) reagieren auf T
 Name       | Beschreibung
 ---------- | ---------------
 Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ INteger, die den Status des Taster in HomeKit wiederspiegelt.
+Variable   | Eine Variable vom Typ Integer, die den Status des Tasters in HomeKit wiederspiegelt.
