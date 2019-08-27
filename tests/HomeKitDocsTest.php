@@ -25,7 +25,12 @@ class HomeKitDocsTest extends TestCase
 
                 //Check existence in README
                 $doc = file_get_contents(__DIR__ . '/../docs/README.md');
-                $this->assertTrue(strpos($doc, $captionDE) !== false, 'Documentation for ' . $className . ' is missing!');
+                $linkName = strtolower(str_replace([" ", "(", ")", "/", "ä", "ö", "ü"], ["-", "", "", "-", "ae", "oe", "ue"], $captionDE));
+                $this->assertTrue(strpos($doc, "[" . $captionDE . "][" . $linkName . "]") !== false, 'Documentation link for ' . $caption . ' is missing!');
+                $this->assertTrue(strpos($doc, "[" . $linkName . "]: types/" . $linkName . ".md") !== false, 'Documentation link-ref for ' . $caption . ' is missing!');
+
+                //Check existence in types folder
+                $this->assertTrue(file_exists(__DIR__ . '/../docs/types/' . $linkName . '.md'), 'Documentation for ' . $caption . ' is missing!');
             }
         }
     }
