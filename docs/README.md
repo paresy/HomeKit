@@ -165,3 +165,4 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [thermostat]: types/thermostat.md
 [zwischenstecker]: types/zwischenstecker.md
 [expertenoptionen]: types/expertenoptionen.md
+[zustandsloser-programmierbarer-schalter]: types/zustandsloser-programmierbarer-schalter.md
