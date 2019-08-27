@@ -13,4 +13,4 @@ Variable   | Eine schaltbare Variable vom Typ Integer, über welche die Garage g
 
 Aktion               | Beschreibung                              | Möglicher Satz zum Aktivieren
 -------------------- | ----------------------------------------- | -----------------------------
-Garage Öffnen oder Schließen | Schaltet die Variable auf True oder False | "Hey Siri, öffne Garage _<Name\>_."
+Garage Öffnen oder Schließen | Schaltet die Variable auf hoch (0) oder runter (4) | "Hey Siri, öffne Garage _<Name\>_."

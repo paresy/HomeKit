@@ -53,7 +53,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Lampe (Farbig)][lampe-farbig]
 * [Bewegungsmelder][bewegungsmelder]
 * [Fenster (Position)][fenster-position]
-* [Fenster (Hoch/Runter)][fenster-hochrunter]
+* [Fenster (Hoch/Runter)][fenster-hoch-runter]
 * [Feuchtigkeitssensor][feuchtigkeitssensor]
 * [Garagentor][garagentor]
 * [Helligkeitssensor][helligkeitssensor]
@@ -65,7 +65,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Luftgütesensor][luftguetesensor]
 * [Rauchmelder][rauchmelder]
 * [Rollladen/Jalousie (Position)][rollladen-jalousie-position]
-* [Rollladen/Jalousie (Hoch/Runter)][rollladen-jalousie-hochrunter]
+* [Rollladen/Jalousie (Hoch/Runter)][rollladen-jalousie-hoch-runter]
 * [Temperatursensor][temperatursensor]
 * [Thermostat][thermostat]
 * [Zwischenstecker][zwischenstecker]
@@ -148,7 +148,7 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [lampe-farbig]: types/lampe-farbig.md
 [bewegungsmelder]: types/bewegungsmelder.md
 [fenster-position]: types/fenster-position.md
-[fenster-hochrunter]: types/fenster-hochrunter.md
+[fenster-hoch-runter]: types/fenster-hoch-runter.md
 [feuchtigkeitssensor]: types/feuchtigkeitssensor.md
 [garagentor]: types/garagentor.md
 [helligkeitssensor]: types/helligkeitssensor.md
@@ -160,7 +160,7 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [luftguetesensor]: types/luftguetesensor.md
 [rauchmelder]: types/rauchmelder.md
 [rollladen-jalousie-position]: types/rollladen-jalousie-position.md
-[rollladen-jalousie-hochrunter]: types/rollladen-jalousie-hochrunter.md
+[rollladen-jalousie-hoch-runter]: types/rollladen-jalousie-hoch-runter.md
 [temperatursensor]: types/temperatursensor.md
 [thermostat]: types/thermostat.md
 [zwischenstecker]: types/zwischenstecker.md
