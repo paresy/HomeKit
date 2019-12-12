@@ -40,12 +40,15 @@ class TLVTest extends TestCase
 
     public function testPublicKey(): void
     {
-        $publicKey = TLVBuilder::PublicKey('TestPublicKey');
+        //We want at least 256 chars to properly test split TLVs
+        $key = random_bytes(1000);
+
+        $publicKey = TLVBuilder::PublicKey($key);
         $tlv = new TLVParser($publicKey);
         $tlvPublicKey = $tlv->getByType(TLVType::PublicKey);
 
         $this->assertEquals($tlvPublicKey->getType(), TLVType::PublicKey);
-        $this->assertEquals($tlvPublicKey->getPublicKey(), 'TestPublicKey');
+        $this->assertEquals($tlvPublicKey->getPublicKey(), $key);
     }
 
     public function testProof(): void
@@ -87,6 +90,54 @@ class TLVTest extends TestCase
         $this->assertEquals($tlvError->getType(), TLVType::Error);
         $this->assertEquals($tlvError->getError(), TLVError::NA);
         $this->assertEquals($tlvError, 'N/A Error');
+
+        $error = TLVBuilder::Error(TLVError::Unknown);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), TLVError::Unknown);
+        $this->assertEquals($tlvError, 'Unknown Error');
+
+        $error = TLVBuilder::Error(TLVError::Authentication);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), TLVError::Authentication);
+        $this->assertEquals($tlvError, 'Authentication Error');
+
+        $error = TLVBuilder::Error(TLVError::Backoff);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), TLVError::Backoff);
+        $this->assertEquals($tlvError, 'Backoff Error');
+
+        $error = TLVBuilder::Error(TLVError::MaxPeers);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), TLVError::MaxPeers);
+        $this->assertEquals($tlvError, 'MaxPeers Error');
+
+        $error = TLVBuilder::Error(TLVError::MaxTries);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), TLVError::MaxTries);
+        $this->assertEquals($tlvError, 'MaxTries Error');
+
+        $error = TLVBuilder::Error(100 /* Undefined */);
+        $tlv = new TLVParser($error);
+        $tlvError = $tlv->getByType(TLVType::Error);
+
+        $this->assertEquals($tlvError->getType(), TLVType::Error);
+        $this->assertEquals($tlvError->getError(), 100 /* Undefined */);
+        $this->assertEquals($tlvError, 'Undefined Error');
     }
 
     public function testRetryDelay(): void
@@ -128,6 +179,22 @@ class TLVTest extends TestCase
         $this->assertEquals($tlvPermissions->getType(), TLVType::Permissions);
         $this->assertEquals($tlvPermissions->getPermissions(), TLVPermissions::Admin);
         $this->assertEquals($tlvPermissions, 'Admin');
+
+        $permissions = TLVBuilder::Permissions(TLVPermissions::RegularUser);
+        $tlv = new TLVParser($permissions);
+        $tlvPermissions = $tlv->getByType(TLVType::Permissions);
+
+        $this->assertEquals($tlvPermissions->getType(), TLVType::Permissions);
+        $this->assertEquals($tlvPermissions->getPermissions(), TLVPermissions::RegularUser);
+        $this->assertEquals($tlvPermissions, 'Regular User');
+
+        $permissions = TLVBuilder::Permissions(100 /* Undefined */);
+        $tlv = new TLVParser($permissions);
+        $tlvPermissions = $tlv->getByType(TLVType::Permissions);
+
+        $this->assertEquals($tlvPermissions->getType(), TLVType::Permissions);
+        $this->assertEquals($tlvPermissions->getPermissions(), 100 /* Undefined */);
+        $this->assertEquals($tlvPermissions, 'Undefined');
     }
 
     public function testSeperator(): void
@@ -137,5 +204,21 @@ class TLVTest extends TestCase
         $tlvSeperator = $tlv->getByType(TLVType::Separator);
 
         $this->assertEquals($tlvSeperator->getType(), TLVType::Separator);
+    }
+
+    public function testInvalid(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Unsupported TLV');
+
+        new TLVParser(chr(0xAA) . chr(0) . chr(0) . chr(0));
+    }
+
+    public function testEmpty(): void
+    {
+        $tlv = new TLVParser('');
+        $tlvSeperator = $tlv->getByType(TLVType::Separator);
+
+        $this->assertEquals($tlvSeperator, null);
     }
 }
