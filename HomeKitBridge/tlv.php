@@ -215,7 +215,7 @@ class TLV8_Permissions extends TLV8
             case TLVPermissions::Admin:
                 return 'Admin';
             default:
-                throw new Exception('Invalid permission');
+                return "Undefined";
         }
     }
 }
@@ -265,7 +265,7 @@ class TLVParser
             case TLVType::Separator:
                 return new TLV8_Separator($data);
             default:
-                return new TLV8($data);
+                throw new Exception("Unsupported TLV");
         }
     }
 
