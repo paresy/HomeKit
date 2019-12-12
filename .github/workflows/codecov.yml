@@ -1,4 +1,4 @@
-name: Run Codecov
+name: Upload Codecov
 
 on: [push, pull_request]
 
