@@ -334,7 +334,7 @@ class TLVBuilder
         return self::Base(TLVType::Error, chr($error));
     }
 
-    public static function RetryDelay(string $retryDelay): string
+    public static function RetryDelay(int $retryDelay): string
     {
         return self::Base(TLVType::RetryDelay, pack('N', $retryDelay));
     }
