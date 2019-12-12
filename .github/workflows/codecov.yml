@@ -1,0 +1,42 @@
+name: Run Codecov
+
+on: [push, pull_request]
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Checkout submodules
+      run: |
+        git submodule init
+        git submodule update
+
+    - name: Install pcov
+      run: |
+        cd ~ && git clone --depth=1 https://github.com/krakjoe/pcov.git
+        cd pcov && phpize
+        ./configure --enable-pcov
+        make
+        sudo make install
+
+    - name: Show PHP Info
+      run: php -i
+
+    - name: Enable pcov
+      run: echo 'extension=pcov.so' | sudo tee /etc/php/7.3/cli/conf.d/20-pcov.ini
+
+    - name: Install latest PHPUnit
+      run: wget https://phar.phpunit.de/phpunit.phar
+
+    - name: Run Codecov
+      run: php phpunit.phar --coverage-clover=coverage.xml tests --configuration tests/phpunit.xml
+
+    - uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
