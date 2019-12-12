@@ -28,7 +28,7 @@ jobs:
       run: php -i
 
     - name: Enable pcov
-      run: echo 'extension=pcov.so' | sudo tee /etc/php/7.3/cli/conf.d/20-pcov.ini
+      run: echo 'extension=pcov.so' | sudo tee $(php -i | grep -i 'Scan this dir for additional .ini files' | cut -d" " -f9)/20-pcov.ini
 
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
