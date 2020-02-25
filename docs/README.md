@@ -55,7 +55,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Fenster (Position)][fenster-position]
 * [Fenster (Hoch/Runter)][fenster-hoch-runter]
 * [Feuchtigkeitssensor][feuchtigkeitssensor]
-* [Lüfter"][luefter]
+* [Lüfter][luefter]
 * [Garagentor][garagentor]
 * [Helligkeitssensor][helligkeitssensor]
 * [Kontaktsensor][kontaktsensor]
