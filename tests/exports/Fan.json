@@ -77,15 +77,15 @@
             "value": false
           },
           {
-            "type": "8",
+            "type": "29",
             "iid": 104,
-            "format": "int",
+            "format": "float",
             "perms": [
               "pr",
               "pw",
               "ev"
             ],
-            "value": 0,
+            "value": 0.0,
             "minValue": 0,
             "maxValue": 100,
             "minStep": 1,
