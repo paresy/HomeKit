@@ -55,6 +55,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Fenster (Position)][fenster-position]
 * [Fenster (Hoch/Runter)][fenster-hoch-runter]
 * [Feuchtigkeitssensor][feuchtigkeitssensor]
+* [Lüfter"][luefter]
 * [Garagentor][garagentor]
 * [Helligkeitssensor][helligkeitssensor]
 * [Kontaktsensor][kontaktsensor]
@@ -150,6 +151,7 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [fenster-position]: types/fenster-position.md
 [fenster-hoch-runter]: types/fenster-hoch-runter.md
 [feuchtigkeitssensor]: types/feuchtigkeitssensor.md
+[luefter]: types/luefter.md
 [garagentor]: types/garagentor.md
 [helligkeitssensor]: types/helligkeitssensor.md
 [kontaktsensor]: types/kontaktsensor.md
