@@ -1,6 +1,6 @@
 ### Beschreibung
 
-Geräte vom Typ Lüfter (Regulierbar) beschreiben Lampen, welche gedimmt werden können.
+Geräte vom Typ Lüfter (Regulierbar) beschreiben Lüfter, welche reguliert werden können.
 
 ### Parameter
 
