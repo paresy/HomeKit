@@ -100,7 +100,7 @@ class HAPAccessoryConfigurationFan
     {
         return [
             'de' => [
-                'Fan'			=> 'Lüfter',
+                'Fan'                   => 'Lüfter',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
                 'Int/Float required'    => 'Int/Float benötigt',
