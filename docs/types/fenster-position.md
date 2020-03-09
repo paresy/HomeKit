@@ -13,6 +13,6 @@ Variable   | Eine schaltbare Variable vom Typ Integer oder Float, über welche d
 
 Aktion               | Beschreibung                                   | Möglicher Satz zum Aktivieren
 -------------------- | ---------------------------------------------- | -----------------------------
-Öffnen               | Schaltet die Variable auf 100%                 | "Hey Siri, öffne _<Name\>_ an."
-Schließen            | Schaltet die Variable auf 0%                   | "Hey Siri, öffne _<Name\>_ an."
-Positionieren        | Schaltet die Variable auf den angegebenen Wert | "Hey Siri, fahre _<Name\>_ auf 40%."
+Öffnen               | Schaltet die Variable auf 0%                   | "Hey Siri, öffne _<Name\>_."
+Schließen            | Schaltet die Variable auf 100%                 | "Hey Siri, schließe _<Name\>_."
+Positionieren        | Schaltet die Variable auf den angegebenen Wert. Dabei wird der Wert invertiert, sodass der eigentliche Wert von 100 abgezogen wird | "Hey Siri, fahre _<Name\>_ auf 40%."
