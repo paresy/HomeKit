@@ -5,16 +5,13 @@ on: [push, pull_request]
 jobs:
 
   test:
-
+ 
     runs-on: ubuntu-latest
-
+ 
     steps:
     - uses: actions/checkout@master
-
-    - name: Checkout submodules
-      run: |
-        git submodule init
-        git submodule update
+      with:
+        submodules: true
 
     - name: Install latest PHPUnit
       run: wget https://phar.phpunit.de/phpunit.phar
