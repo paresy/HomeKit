@@ -63,22 +63,13 @@ class DNSSDModule extends IPSModule
 
     private function RegisterService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
     {
-
-        //Lets expand the array our more complicated persistence format
-        $expandRecords = function ($TXTRecords)
-        {
-            $result = [];
-            foreach ($TXTRecords as $TXTRecord) {
-                $result[] = ['Value' => $TXTRecord];
-            }
-            return $result;
-        };
-
         $ids = IPS_GetInstanceListByModuleID('{780B2D48-916C-4D59-AD35-5A429B2355A5}');
-        if (count($ids) > 0) {
+        if (!empty($ids)) {
             $services = json_decode(IPS_GetProperty($ids[0], 'Services'), true);
             $found = false;
             $changes = false;
+
+            $expandedRecords = $this->ExpandRecords($TXTRecords);
             foreach ($services as $index => $service) {
                 if ($service['Name'] == $Name) {
                     if (!empty($RegType) && $service['RegType'] != $RegType) {
@@ -101,8 +92,8 @@ class DNSSDModule extends IPSModule
                         $changes = true;
                     }
 
-                    if (!empty($expandedRecords) && $service['TXTRecords'] != $expandRecords($TXTRecords)) {
-                        $services[$index]['TXTRecords'] = $expandRecords($TXTRecords);
+                    if (!empty($expandedRecords) && $service['TXTRecords'] != $expandedRecords) {
+                        $services[$index]['TXTRecords'] = $expandedRecords;
                         $changes = true;
                     }
 
@@ -110,6 +101,7 @@ class DNSSDModule extends IPSModule
                     break;
                 }
             }
+
             if (!$found) {
                 $services[] = [
                     'Name'       => $Name,
@@ -117,14 +109,26 @@ class DNSSDModule extends IPSModule
                     'Domain'     => $Domain,
                     'Host'       => $Host,
                     'Port'       => $Port,
-                    'TXTRecords' => $expandRecords($TXTRecords)
+                    'TXTRecords' => $expandedRecords
                 ];
                 $changes = true;
             }
+
             if ($changes) {
                 IPS_SetProperty($ids[0], 'Services', json_encode($services));
                 IPS_ApplyChanges($ids[0]);
             }
         }
+    }
+
+    private function ExpandRecords(array $TXTRecords)
+    {
+        //Lets expand the array our more complicated persistence format
+
+        $result = [];
+        foreach ($TXTRecords as $TXTRecord) {
+            $result[] = ['Value' => $TXTRecord];
+        }
+        return $result;
     }
 }
