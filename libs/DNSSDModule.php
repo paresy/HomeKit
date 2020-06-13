@@ -81,26 +81,31 @@ class DNSSDModule extends IPSModule
             $changes = false;
             foreach ($services as $index => $service) {
                 if ($service['Name'] == $Name) {
-                    if ($service['RegType'] != $RegType) {
+                    if (!empty($RegType) && $service['RegType'] != $RegType) {
                         $services[$index]['RegType'] = $RegType;
                         $changes = true;
                     }
-                    if ($service['Domain'] != $Domain) {
+
+                    if (!empty($Domain) && $service['Domain'] != $Domain) {
                         $services[$index]['Domain'] = $Domain;
                         $changes = true;
                     }
-                    if ($service['Host'] != $Host) {
+
+                    if (!empty($Host) && $service['Host'] != $Host) {
                         $services[$index]['Host'] = $Host;
                         $changes = true;
                     }
-                    if ($service['Port'] != $Port) {
+
+                    if (!empty($Port) && $service['Port'] != $Port) {
                         $services[$index]['Port'] = $Port;
                         $changes = true;
                     }
-                    if ($service['TXTRecords'] != $expandRecords($TXTRecords)) {
+
+                    if (!empty($expandedRecords) && $service['TXTRecords'] != $expandRecords($TXTRecords)) {
                         $services[$index]['TXTRecords'] = $expandRecords($TXTRecords);
                         $changes = true;
                     }
+
                     $found = true;
                     break;
                 }
