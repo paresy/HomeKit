@@ -60,7 +60,7 @@ class HAPAccessoryConfigurationLightbulbExpert extends HAPAccessoryConfiguration
 
     public static function getPosition()
     {
-        return 290;
+        return 4;
     }
 
     public static function getCaption()
