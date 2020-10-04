@@ -51,6 +51,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Lampe (Schaltbar)][lampe-schaltbar]
 * [Lampe (Dimmbar)][lampe-dimmbar]
 * [Lampe (Farbig)][lampe-farbig]
+* [Lampe (Experte)][lampe-expert]
 * [Bewegungsmelder][bewegungsmelder]
 * [Fenster (Position)][fenster-position]
 * [Fenster (Hoch/Runter)][fenster-hoch-runter]
