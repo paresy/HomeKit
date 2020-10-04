@@ -146,6 +146,7 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 
 [lampe-schaltbar]: types/lampe-schaltbar.md
 [lampe-dimmbar]: types/lampe-dimmbar.md
+[lampe-expert]: types/lampe-expert.md
 [lampe-farbig]: types/lampe-farbig.md
 [bewegungsmelder]: types/bewegungsmelder.md
 [fenster-position]: types/fenster-position.md
