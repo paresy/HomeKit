@@ -1,6 +1,6 @@
 ### Beschreibung
 
-Geräte vom Typ Lampe (Expert) beschreiben Lampen, welche gedimmt werden können, bei der Lampe Expert kann allerdings eine weitere Variable (Status) angegbene werden.
+Geräte vom Typ Lampe (Experte) beschreiben Lampen, welche gedimmt werden können, bei der Lampe Expert kann allerdings eine weitere Variable (Status) angegbene werden.
 
 ### Parameter
 
