@@ -5,16 +5,11 @@ on: [push, pull_request]
 jobs:
 
   test:
- 
     runs-on: ubuntu-latest
- 
     steps:
-    - uses: actions/checkout@master
-      with:
-        submodules: true
-
-    - name: Install latest PHPUnit
-      run: wget https://phar.phpunit.de/phpunit.phar
-
-    - name: Run Tests
-      run: phpdbg -qrr phpunit.phar tests --configuration tests/phpunit.xml
+      - name: Checkout module
+        uses: actions/checkout@master
+        with:
+          submodules: true
+      - name: Run tests 
+        uses: symcon/action-tests@master
