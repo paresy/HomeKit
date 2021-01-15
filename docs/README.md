@@ -51,6 +51,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Lampe (Schaltbar)][lampe-schaltbar]
 * [Lampe (Dimmbar)][lampe-dimmbar]
 * [Lampe (Farbig)][lampe-farbig]
+* [Lampe (Experte)][lampe-experte]
 * [Bewegungsmelder][bewegungsmelder]
 * [Fenster (Position)][fenster-position]
 * [Fenster (Hoch/Runter)][fenster-hoch-runter]
@@ -147,6 +148,7 @@ In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorz
 [lampe-schaltbar]: types/lampe-schaltbar.md
 [lampe-dimmbar]: types/lampe-dimmbar.md
 [lampe-farbig]: types/lampe-farbig.md
+[lampe-experte]: types/lampe-experte.md
 [bewegungsmelder]: types/bewegungsmelder.md
 [fenster-position]: types/fenster-position.md
 [fenster-hoch-runter]: types/fenster-hoch-runter.md
