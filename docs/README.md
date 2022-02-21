@@ -16,6 +16,10 @@ _Um HomeKit über das Internet außerhalb des eigenen WLANs verwenden zu können
 </p>
 -->
 
+### Besonderheiten bei der Verwendung mit Docker
+
+Um HomeKit korrekt mit Docker verwenden zu können, muss das Netzwerk des Containers im Host-Modus konfiguriert sein. Im standardmäßig ausgewählten Bridge-Modus hat der Container ansonsten keine korrekt im internen Netzwerk erreichbare IP-Adresse (sondern nur eine hinter dem Docker NAT) und somit werden die notwendigen Bonjour/DNS-SD Pakete nicht empfangen. Soll IP-Symcon mit Docker auf Synology/QNAP verwendet werden, so ist zusätzlich darauf zu achten, dass Bonjour/DNS-SD auf dem NAS deaktivert ist, sodass der notwendige Port für den Docker Container zur Verfügung steht.
+
 #### Apple HomeKit-Instanz erstellen
 
 Damit das Apple HomeKit-Modul verwendet werden kann, muss es zuerst über das [Module Control][modulecontrol] installiert werden. Hierfür muss das [Module Control][modulecontrol] geöffnet werden. Dies befindet sich unter der Hauptkategorie "Kern Instanzen" im Objektbaum oder kann direkt über das Widget "Aktualisierungen" geöffnet werden.
