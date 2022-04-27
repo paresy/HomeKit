@@ -26,7 +26,7 @@ class TLV8
     private $type;  //TLVType
     private $value; //string
 
-    public function __construct(string &$data)
+    public function __construct(string & $data)
     {
         $this->type = ord($data[0]);
         $length = ord($data[1]);
@@ -235,7 +235,7 @@ class TLVParser
         }
     }
 
-    private function parseTLV(string &$data): TLV8
+    private function parseTLV(string & $data): TLV8
     {
         switch (ord($data[0])) {
             case TLVType::Method:

@@ -136,7 +136,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
         ];
     }
 
-    public static function doMigrate(&$data)
+    public static function doMigrate(& $data)
     {
         if (!isset($data['VariableID'])) {
             $data['VariableID'] = $data['TargetDoorState'];
