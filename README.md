@@ -1,6 +1,6 @@
-# HomeKit für IP-Symcon 5.x
+# HomeKit für IP-Symcon 6.x
 
-[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-5.x-blue.svg)](https://www.symcon.de)
+[![IP-Symcon is awesome!](https://img.shields.io/badge/IP--Symcon-6.x-blue.svg)](https://www.symcon.de)
 [![Check Style](https://github.com/paresy/HomeKit/workflows/Check%20Style/badge.svg)](https://github.com/paresy/HomeKit/actions)
 [![Run Tests](https://github.com/paresy/HomeKit/workflows/Run%20Tests/badge.svg)](https://github.com/paresy/HomeKit/actions)
 [![Show Codecov](https://codecov.io/gh/paresy/HomeKit/branch/master/graph/badge.svg)](https://codecov.io/gh/paresy/HomeKit/branch/master)
