@@ -22,17 +22,7 @@ class HAPAccessoryLightbulbExpert extends HAPAccessoryLightbulbSwitch
 
     public function writeCharacteristicOn($value)
     {
-        //Only switch the device on, if it isn't on.
-        //This should fix the problem that Apple sends on before dimming
-        if ($value && $this->readCharacteristicOn()) {
-            return;
-        }
-
-        if ($value) {
-            self::dimDevice($this->data['BrightnessID'], self::getDimValue($this->data['BrightnessID']));
-        } else {
-            self::dimDevice($this->data['BrightnessID'], 0);
-        }
+        self::switchDevice($this->data['StateID'], $value);
     }
 
     public function notifyCharacteristicBrightness()
