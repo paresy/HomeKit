@@ -6,6 +6,7 @@ include_once __DIR__ . '/lightbulbSwitch.php';
 
 class HAPAccessoryLightbulbExpert extends HAPAccessoryLightbulbSwitch
 {
+    use HelperSwitchDevice;
     use HelperDimDevice;
 
     public function notifyCharacteristicOn()
