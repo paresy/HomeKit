@@ -166,7 +166,7 @@ class HAPAccessoryConfigurationThermostat
         if (!IPS_VariableExists($data['CurrentTemperatureID'])) {
             return 'Variable CurrentTemperatureID missing';
         }
-        
+
         if (!IPS_VariableExists($data['TargetTemperatureID'])) {
             return 'Variable TargetTemperatureID missing';
         }
