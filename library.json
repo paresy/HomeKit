@@ -4,10 +4,10 @@
     "name": "HomeKit",
     "url": "https://github.com/paresy/HomeKit/",
     "compatibility": {
-        "version": "5.0",
-        "date": 1526804771
+        "version": "7.0",
+        "date": 1704544605
     },
-    "version": "1.3",
+    "version": "1.4",
     "build": 0,
     "date": 0
 }

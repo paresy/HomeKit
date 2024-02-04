@@ -112,31 +112,51 @@ Der notwendige Code kann in der Konfiguration der HomeKit-Bridge Instanz angefor
 
 ![Code eingeben][add-bridge-5]
 
-Nach der Eingabe wird die Verbindung hergestellt und kurz mit "Symcon hinzufügt" bestätigt.
+Den Raum der Bridge auswählen und mit "Weiter" fortfahren.
   
-![Bridge hinzugefügt][add-bridge-6]
+![Raum auswählen][add-bridge-6]
 
-Mit "Weiter" bestätigen.
+Namen ggf. ändern und mit "Weiter" bestätigen.
 
-![Geräte bestätigen][add-bridge-7]
+![Namen ändern][add-bridge-7]
+
+Mit "Weiter" die Einrichtung der Bridge bestätigen.
+
+![Bridge hinzufügen abgeschlosse][add-bridge-8]
+
+Mit "Weiter" bestätigen, um das Licht hinzuzufügen.
+
+![Licht hinzufügen][add-bridge-9]
+
+Den Raum des Lichts auswählen und mit "Weiter" fortfahren.
+  
+![Raum auswählen][add-bridge-10]
+
+Namen ggf. ändern und mit "Weiter" bestätigen.
+
+![Namen ändern][add-bridge-11]
 
 Mit "Fertig" die Einrichtung abschließen.
 
-![Hinzufügen abgeschlosse][add-bridge-8]
+![Hinzufügen abgeschlosse][add-bridge-12]
 
-In der Home-App sollten einige der eingerichteten Geräte sichtbar unter "Bevorzugte Geräte" sein. Der Rest wird standardmäßig im Standardraum 
+In der Home-App sind nun einige der eingerichteten Geräte sichtbar. Der Rest wird standardmäßig im Standardraum angezeigt.
 
-![Geräteübersicht][add-bridge-9]
+![Geräteübersicht][add-bridge-13]
 
 [add-bridge-1]: ../imgs/add-bridge-1.jpg
 [add-bridge-2]: ../imgs/add-bridge-2.jpg
 [add-bridge-3]: ../imgs/add-bridge-3.jpg
 [add-bridge-4]: ../imgs/add-bridge-4.jpg
-[add-bridge-5]: ../imgs/add-bridge-5.png
+[add-bridge-5]: ../imgs/add-bridge-5.jpg
 [add-bridge-6]: ../imgs/add-bridge-6.jpg
 [add-bridge-7]: ../imgs/add-bridge-7.jpg
 [add-bridge-8]: ../imgs/add-bridge-8.jpg
 [add-bridge-9]: ../imgs/add-bridge-9.jpg
+[add-bridge-10]: ../imgs/add-bridge-10.jpg
+[add-bridge-11]: ../imgs/add-bridge-11.jpg
+[add-bridge-12]: ../imgs/add-bridge-12.jpg
+[add-bridge-13]: ../imgs/add-bridge-13.jpg
 [add-device-1]: ../imgs/add-device-1.png
 [add-device-2]: ../imgs/add-device-2.png
 [add-instance]: ../imgs/add-instance.png
