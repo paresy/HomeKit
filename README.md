@@ -5,7 +5,7 @@
 [![Run Tests](https://github.com/paresy/HomeKit/workflows/Run%20Tests/badge.svg)](https://github.com/paresy/HomeKit/actions)
 [![Show Codecov](https://codecov.io/gh/paresy/HomeKit/branch/master/graph/badge.svg)](https://codecov.io/gh/paresy/HomeKit/branch/master)
 
-_Dieses Repository enthält keine von Apple zertifizierte Bridge. Außerdem wird es ausschließlich von der IP-Symcon Community (<a href="https://www.symcon.de/forum/members/1-paresy">paresy</a>, <a href="https://www.symcon.de/forum/members/10751-KaiS">KaiS</a>) gepflegt und nicht von der Symcon GmbH angeboten._
+_Dieses Repository enthält keine von Apple zertifizierte Bridge. Außerdem wird es ausschließlich von der IP-Symcon Community (<a href="https://community.symcon.de/u/paresy">paresy</a>, <a href="https://community.symcon.de/u/kais">KaiS</a>) gepflegt und nicht von der Symcon GmbH angeboten._
 
 Folgende Module beinhaltet das Symcon HomeKit Repository:
 
