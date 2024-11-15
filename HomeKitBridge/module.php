@@ -338,6 +338,10 @@ class HomeKitBridge extends DNSSDModule
             $setupCode = $this->codes->generateSetupCode();
         }
 
+        //Reformat to new UI format of newer iOS Versions (leave old format as-is for correct salt calculation)
+        $setupCode = str_replace('-', '', $setupCode);
+        $setupCode = substr($setupCode, 0, 4) . '-' . substr($setupCode, 4, 4);
+
         return $setupCode;
     }
 
