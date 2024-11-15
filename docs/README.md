@@ -76,6 +76,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Thermostat][thermostat]
 * [Zwischenstecker][zwischenstecker]
 * [Expertenoptionen][expertenoptionen]
+* [Sicherheitssystem][sicherheitssystem]
 * [Zustandsloser programmierbarer Schalter][zustandsloser-programmierbarer-schalter]
 
 Nachdem alle Geräte eingerichtet sind, werden diese mit einem Klick auf "Änderungen übernehmen" bestätigt.
@@ -193,4 +194,5 @@ In der Home-App sind nun einige der eingerichteten Geräte sichtbar. Der Rest wi
 [thermostat]: types/thermostat.md
 [zwischenstecker]: types/zwischenstecker.md
 [expertenoptionen]: types/expertenoptionen.md
+[sicherheitssystem]: types/sicherheitssystem.md
 [zustandsloser-programmierbarer-schalter]: types/zustandsloser-programmierbarer-schalter.md
