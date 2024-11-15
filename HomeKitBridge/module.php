@@ -78,6 +78,16 @@ class HomeKitBridge extends DNSSDModule
 
         //Each accessory is allowed to register properties for persistent data
         $this->manager->registerProperties();
+
+        //Create special profile for SecuritySystem
+        if (!IPS_VariableProfileExists('SecuritySystem.HomeKit')) {
+            // We need to add a static locale.json because $this->Translate does not load translations for $this->GetConfigurationForm
+            IPS_CreateVariableProfile('SecuritySystem.HomeKit', VARIABLETYPE_INTEGER);
+            IPS_SetVariableProfileAssociation('SecuritySystem.HomeKit', 0, $this->Translate('Stay'), '', -1);
+            IPS_SetVariableProfileAssociation('SecuritySystem.HomeKit', 1, $this->Translate('Away'), '', -1);
+            IPS_SetVariableProfileAssociation('SecuritySystem.HomeKit', 2, $this->Translate('Night'), '', -1);
+            IPS_SetVariableProfileAssociation('SecuritySystem.HomeKit', 3, $this->Translate('Disarm'), '', -1);
+        }
     }
 
     public function GetConfigurationForParent()

@@ -8,7 +8,7 @@ class HAPCharacteristicSecuritySystemCurrentState extends HAPCharacteristic
     const AwayArm = 1;
     const NightArm = 2;
     const Disarmed = 3;
-    const AlarmTriggerd = 4;
+    const AlarmTriggered = 4;
 
     public function __construct()
     {
