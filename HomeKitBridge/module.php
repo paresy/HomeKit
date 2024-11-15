@@ -83,7 +83,8 @@ class HomeKitBridge extends DNSSDModule
     public function GetConfigurationForParent()
     {
         return json_encode([
-            'Port' => $this->ReadPropertyInteger('BridgePort')
+            'Port' => $this->ReadPropertyInteger('BridgePort'),
+            'UseSSL' => false,
         ]);
     }
 
