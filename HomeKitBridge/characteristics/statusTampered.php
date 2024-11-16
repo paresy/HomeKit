@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicStatusTampered extends HAPCharacteristic
 {
-    const AccessoryNotTampered = 0;
-    const AccessoryTampered = 1;
+    public const AccessoryNotTampered = 0;
+    public const AccessoryTampered = 1;
 
     public function __construct()
     {

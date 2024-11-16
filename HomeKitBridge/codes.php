@@ -9,35 +9,12 @@ class HomeKitCodes
     private $getBuffer = null;
     private $setBuffer = null;
 
-    private function SendDebug(string $message): void
-    {
-        ($this->sendDebug)('HomeKitCodes', $message, 0);
-    }
-
     public function __construct(int $instanceID, callable $sendDebug, callable $getBuffer, callable $setBuffer)
     {
         $this->instanceID = $instanceID;
         $this->sendDebug = $sendDebug;
         $this->getBuffer = $getBuffer;
         $this->setBuffer = $setBuffer;
-    }
-
-    private function isValidSetupCode(string $setupCode): bool
-    {
-        return !in_array($setupCode, [
-            '000-00-000',
-            '111-11-111',
-            '222-22-222',
-            '333-33-333',
-            '444-44-444',
-            '555-55-555',
-            '666-66-666',
-            '777-77-777',
-            '888-88-888',
-            '999-99-999',
-            '123-45-678',
-            '876-54-321'
-        ]);
     }
 
     public function generateSetupCode(): string
@@ -90,5 +67,28 @@ class HomeKitCodes
         ($this->setBuffer)('SetupCode', '');
 
         $this->SendDebug('Removing current setup code: ' . $code);
+    }
+
+    private function SendDebug(string $message): void
+    {
+        ($this->sendDebug)('HomeKitCodes', $message, 0);
+    }
+
+    private function isValidSetupCode(string $setupCode): bool
+    {
+        return !in_array($setupCode, [
+            '000-00-000',
+            '111-11-111',
+            '222-22-222',
+            '333-33-333',
+            '444-44-444',
+            '555-55-555',
+            '666-66-666',
+            '777-77-777',
+            '888-88-888',
+            '999-99-999',
+            '123-45-678',
+            '876-54-321'
+        ]);
     }
 }

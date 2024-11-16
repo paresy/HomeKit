@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicContactSensorState extends HAPCharacteristic
 {
-    const ContactDetected = 0;
-    const ContactNotDetected = 1;
+    public const ContactDetected = 0;
+    public const ContactNotDetected = 1;
 
     public function __construct()
     {

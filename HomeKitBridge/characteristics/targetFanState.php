@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicTargetFanState extends HAPCharacteristic
 {
-    const Manual = 0;
-    const Auto = 1;
+    public const Manual = 0;
+    public const Auto = 1;
 
     public function __construct()
     {

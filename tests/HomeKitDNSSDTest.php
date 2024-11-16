@@ -8,14 +8,6 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
 {
     protected $dnssdModuleID = '{780B2D48-916C-4D59-AD35-5A429B2355A5}';
 
-    private function cleanup()
-    {
-        $ids = IPS_GetInstanceListByModuleID($this->dnssdModuleID);
-        foreach ($ids as $id) {
-            IPS_DeleteInstance($id);
-        }
-    }
-
     public function testCreate(): void
     {
         $this->cleanup();
@@ -58,5 +50,13 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
         $this->assertEquals([
             $expectedServiceProperty
         ], json_decode(IPS_GetProperty($dnssdID, 'Services'), true));
+    }
+
+    private function cleanup()
+    {
+        $ids = IPS_GetInstanceListByModuleID($this->dnssdModuleID);
+        foreach ($ids as $id) {
+            IPS_DeleteInstance($id);
+        }
     }
 }

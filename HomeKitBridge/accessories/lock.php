@@ -40,11 +40,11 @@ class HAPAccessoryLock extends HAPAccessoryBase
         if (strpos($profileName, '.Reversed') !== false) {
             $value = !$value;
         }
-        
+
         if ($value) {
-                return HAPCharacteristicLockCurrentState::Secured;
+            return HAPCharacteristicLockCurrentState::Secured;
         }
-        
+
         //In doubt we return Unsecured
         return HAPCharacteristicLockCurrentState::Unsecured;
     }
@@ -59,7 +59,7 @@ class HAPAccessoryLock extends HAPAccessoryBase
     public function readCharacteristicLockTargetState()
     {
         if (GetValue($this->data['VariableID'])) {
-                return HAPCharacteristicLockTargetState::Secured;
+            return HAPCharacteristicLockTargetState::Secured;
         }
         return HAPCharacteristicLockTargetState::Unsecured;
     }

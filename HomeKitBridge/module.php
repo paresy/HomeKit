@@ -16,11 +16,10 @@ include_once __DIR__ . '/accessories/autoload.php';
 
 class HomeKitBridge extends DNSSDModule
 {
+    use Simulate;
     private $pairings = null;
     private $codes = null;
     private $manager = null;
-
-    use Simulate;
 
     public function __construct($InstanceID)
     {
@@ -93,7 +92,7 @@ class HomeKitBridge extends DNSSDModule
     public function GetConfigurationForParent()
     {
         return json_encode([
-            'Port' => $this->ReadPropertyInteger('BridgePort'),
+            'Port'   => $this->ReadPropertyInteger('BridgePort'),
             'UseSSL' => false,
         ]);
     }
@@ -259,39 +258,6 @@ class HomeKitBridge extends DNSSDModule
         $this->SetTimerInterval('Cleanup', 0);
     }
 
-    private function UpdateDNSSD()
-    {
-
-        // Verify name compliance
-        if (ctype_alnum($this->ReadPropertyString('BridgeName')) === false) {
-            echo $this->Translate('Name is required to consist only of letters and numbers!');
-        }
-
-        // Verify id compliance
-        if (filter_var($this->ReadPropertyString('BridgeID'), FILTER_VALIDATE_MAC) === false) {
-            echo $this->Translate('ID is not a valid MAC style address!');
-        }
-
-        // Update DNSSD Service parameters before we call ApplyChanges, which will update DNSSD the service
-        $this->UpdateService(
-            $this->ReadPropertyString('BridgeName'),
-            '_hap._tcp',
-            '',
-            '',
-            $this->ReadPropertyInteger('BridgePort'),
-            [
-                'md=' . $this->ReadPropertyString('BridgeName'),
-                'pv=1.0',
-                'id=' . $this->ReadPropertyString('BridgeID'),
-                'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
-                's#=1',
-                'ff=0', /* Switch to 1 when we have a MFi certificate */
-                'ci=2',
-                'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
-            ]
-        );
-    }
-
     public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
     {
 
@@ -353,6 +319,39 @@ class HomeKitBridge extends DNSSDModule
         $setupCode = substr($setupCode, 0, 4) . '-' . substr($setupCode, 4, 4);
 
         return $setupCode;
+    }
+
+    private function UpdateDNSSD()
+    {
+
+        // Verify name compliance
+        if (ctype_alnum($this->ReadPropertyString('BridgeName')) === false) {
+            echo $this->Translate('Name is required to consist only of letters and numbers!');
+        }
+
+        // Verify id compliance
+        if (filter_var($this->ReadPropertyString('BridgeID'), FILTER_VALIDATE_MAC) === false) {
+            echo $this->Translate('ID is not a valid MAC style address!');
+        }
+
+        // Update DNSSD Service parameters before we call ApplyChanges, which will update DNSSD the service
+        $this->UpdateService(
+            $this->ReadPropertyString('BridgeName'),
+            '_hap._tcp',
+            '',
+            '',
+            $this->ReadPropertyInteger('BridgePort'),
+            [
+                'md=' . $this->ReadPropertyString('BridgeName'),
+                'pv=1.0',
+                'id=' . $this->ReadPropertyString('BridgeID'),
+                'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
+                's#=1',
+                'ff=0', /* Switch to 1 when we have a MFi certificate */
+                'ci=2',
+                'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
+            ]
+        );
     }
 
     private function clearSession(string $clientIP, int $clientPort)

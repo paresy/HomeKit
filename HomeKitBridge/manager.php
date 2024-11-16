@@ -4,11 +4,20 @@ declare(strict_types=1);
 
 class HomeKitManager
 {
-    const classPrefix = 'HAPAccessory';
-    const configurationClassPrefix = 'HAPAccessoryConfiguration';
-    const propertyPrefix = 'Accessory';
+    public const classPrefix = 'HAPAccessory';
+    public const configurationClassPrefix = 'HAPAccessoryConfiguration';
+    public const propertyPrefix = 'Accessory';
 
     private static $supportedAccessories = [];
+
+    private $registerProperty = null;
+    private $instanceID = 0;
+
+    public function __construct(int $instanceID, callable $registerProperty)
+    {
+        $this->registerProperty = $registerProperty;
+        $this->instanceID = $instanceID;
+    }
 
     public static function registerAccessory(string $accessory): void
     {
@@ -19,15 +28,6 @@ class HomeKitManager
         }
         //Add to our static array
         self::$supportedAccessories[] = $accessory;
-    }
-
-    private $registerProperty = null;
-    private $instanceID = 0;
-
-    public function __construct(int $instanceID, callable $registerProperty)
-    {
-        $this->registerProperty = $registerProperty;
-        $this->instanceID = $instanceID;
     }
 
     public function registerProperties(): void
@@ -158,24 +158,6 @@ class HomeKitManager
         return $wasChanged;
     }
 
-    protected function mergeTranslations($arr1, $arr2): array
-    {
-        foreach ($arr2 as $key => $value) {
-            if (array_key_exists($key, $arr1)) {
-                if (is_array($value)) {
-                    $arr1[$key] = $this->mergeTranslations($arr1[$key], $arr2[$key]);
-                } else {
-                    if ($arr1[$key] != $value) {
-                        throw new Exception('Different value ' . $value . ' for key ' . $key . ' was found!');
-                    }
-                }
-            } else {
-                $arr1[$key] = $value;
-            }
-        }
-        return $arr1;
-    }
-
     public function getConfigurationForm(): array
     {
         $content = [];
@@ -270,38 +252,6 @@ class HomeKitManager
         ];
     }
 
-    private function getAccessoryObject(int $aid): object
-    {
-        if ($aid == 1) {
-            $class = self::classPrefix . 'Bridge';
-            $bridge = new $class([
-                'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
-            ]);
-            if (!($bridge instanceof HAPAccessory)) {
-                throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
-            }
-
-            return $bridge;
-        }
-
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                if ($aid == $data['ID']) {
-                    $class = self::classPrefix . $accessory;
-                    $object = new $class($data);
-                    if (!($object instanceof HAPAccessory)) {
-                        throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
-                    }
-
-                    return $object;
-                }
-            }
-        }
-
-        throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
-    }
-
     public function validateCharacteristics(int $aid, int $iid, $value)
     {
         return $this->getAccessoryObject($aid)->validateCharacteristic($iid, $value);
@@ -335,5 +285,55 @@ class HomeKitManager
     public function notifyCharacteristics(int $aid, int $iid)
     {
         return $this->getAccessoryObject($aid)->notifyCharacteristic($iid);
+    }
+
+    protected function mergeTranslations($arr1, $arr2): array
+    {
+        foreach ($arr2 as $key => $value) {
+            if (array_key_exists($key, $arr1)) {
+                if (is_array($value)) {
+                    $arr1[$key] = $this->mergeTranslations($arr1[$key], $arr2[$key]);
+                } else {
+                    if ($arr1[$key] != $value) {
+                        throw new Exception('Different value ' . $value . ' for key ' . $key . ' was found!');
+                    }
+                }
+            } else {
+                $arr1[$key] = $value;
+            }
+        }
+        return $arr1;
+    }
+
+    private function getAccessoryObject(int $aid): object
+    {
+        if ($aid == 1) {
+            $class = self::classPrefix . 'Bridge';
+            $bridge = new $class([
+                'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
+            ]);
+            if (!($bridge instanceof HAPAccessory)) {
+                throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
+            }
+
+            return $bridge;
+        }
+
+        foreach (self::$supportedAccessories as $accessory) {
+            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
+            foreach ($datas as $data) {
+                if ($aid == $data['ID']) {
+                    $class = self::classPrefix . $accessory;
+                    $object = new $class($data);
+                    if (!($object instanceof HAPAccessory)) {
+                        throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
+                    }
+
+                    return $object;
+                }
+            }
+        }
+
+        throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
     }
 }

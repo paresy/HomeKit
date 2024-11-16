@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicStatusJammed extends HAPCharacteristic
 {
-    const NotJammed = 0;
-    const Jammed = 1;
+    public const NotJammed = 0;
+    public const Jammed = 1;
 
     public function __construct()
     {

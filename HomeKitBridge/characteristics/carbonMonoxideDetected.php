@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicCarbonMonoxideDetected extends HAPCharacteristic
 {
-    const Normal = 0;
-    const Abnormal = 1;
+    public const Normal = 0;
+    public const Abnormal = 1;
 
     public function __construct()
     {

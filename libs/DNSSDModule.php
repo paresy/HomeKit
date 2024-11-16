@@ -18,16 +18,6 @@ class DNSSDModule extends IPSModule
         $this->UpdateService($Name, $RegType, $Domain, $Host, $Port, $TXTRecords);
     }
 
-    protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
-    {
-        $this->name = $Name;
-        $this->regType = $RegType;
-        $this->domain = $Domain;
-        $this->host = $Host;
-        $this->port = $Port;
-        $this->txtRecords = $TXTRecords;
-    }
-
     public function Create()
     {
 
@@ -59,6 +49,16 @@ class DNSSDModule extends IPSModule
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $this->RegisterService($this->name, $this->regType, $this->domain, $this->host, $this->port, $this->txtRecords);
         }
+    }
+
+    protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
+    {
+        $this->name = $Name;
+        $this->regType = $RegType;
+        $this->domain = $Domain;
+        $this->host = $Host;
+        $this->port = $Port;
+        $this->txtRecords = $TXTRecords;
     }
 
     private function RegisterService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)

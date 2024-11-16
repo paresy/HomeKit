@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicFilterChangeIndication extends HAPCharacteristic
 {
-    const FilterOK = 0;
-    const FilterChangeRequired = 1;
+    public const FilterOK = 0;
+    public const FilterChangeRequired = 1;
 
     public function __construct()
     {

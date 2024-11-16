@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 class HAPCharacteristicLockCurrentState extends HAPCharacteristic
 {
-    const Unsecured = 0;
-    const Secured = 1;
-    const Jammed = 2;
-    const Unknown = 3;
+    public const Unsecured = 0;
+    public const Secured = 1;
+    public const Jammed = 2;
+    public const Unknown = 3;
 
     public function __construct()
     {

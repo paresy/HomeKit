@@ -27,7 +27,6 @@ class HAPAccessorySecuritySystem extends HAPAccessoryBase
         return $this->readCharacteristicSecuritySystemTargetState();
     }
 
-
     public function notifyCharacteristicSecuritySystemTargetState()
     {
         return [

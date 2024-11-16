@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicServiceLabelNamespace extends HAPCharacteristic
 {
-    const Dots = 0;
-    const ArabicNumerals = 1;
+    public const Dots = 0;
+    public const ArabicNumerals = 1;
 
     public function __construct()
     {

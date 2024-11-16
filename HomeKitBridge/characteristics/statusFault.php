@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicStatusFault extends HAPCharacteristic
 {
-    const NoFault = 0;
-    const GeneralFault = 1;
+    public const NoFault = 0;
+    public const GeneralFault = 1;
 
     public function __construct()
     {

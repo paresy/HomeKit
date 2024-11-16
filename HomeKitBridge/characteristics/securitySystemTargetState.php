@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 class HAPCharacteristicSecuritySystemTargetState extends HAPCharacteristic
 {
-    const StayArm = 0;
-    const AwayArm = 1;
-    const NightArm = 2;
-    const Disarm = 3;
+    public const StayArm = 0;
+    public const AwayArm = 1;
+    public const NightArm = 2;
+    public const Disarm = 3;
 
     public function __construct()
     {

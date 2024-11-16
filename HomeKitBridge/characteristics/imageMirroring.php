@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicImageMirroring extends HAPCharacteristic
 {
-    const ImageNotMirrored = 0;
-    const ImageMirrored = 1;
+    public const ImageNotMirrored = 0;
+    public const ImageMirrored = 1;
 
     public function __construct()
     {

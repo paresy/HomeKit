@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class HAPCharacteristicCurrentAirPurifierState extends HAPCharacteristic
 {
-    const Inactive = 0;
-    const Idle = 1;
-    const PurifyingAir = 2;
+    public const Inactive = 0;
+    public const Idle = 1;
+    public const PurifyingAir = 2;
 
     public function __construct()
     {

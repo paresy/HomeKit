@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class HAPCharacteristicChargingState extends HAPCharacteristic
 {
-    const NotCharging = 0;
-    const Charging = 1;
-    const NotChargeable = 2;
+    public const NotCharging = 0;
+    public const Charging = 1;
+    public const NotChargeable = 2;
 
     public function __construct()
     {

@@ -7,11 +7,6 @@ class HomeKitPairings
     private $instanceID = 0;
     private $debug = null;
 
-    private function SendDebug(string $message): void
-    {
-        ($this->debug)('HomeKitPairings', $message, 0);
-    }
-
     public function __construct(int $InstanceID, callable $sendDebug)
     {
         $this->instanceID = $InstanceID;
@@ -91,5 +86,10 @@ class HomeKitPairings
         }
 
         return $pairings[$identifier]['permissions'];
+    }
+
+    private function SendDebug(string $message): void
+    {
+        ($this->debug)('HomeKitPairings', $message, 0);
     }
 }

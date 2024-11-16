@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicLockTargetState extends HAPCharacteristic
 {
-    const Unsecured = 0;
-    const Secured = 1;
+    public const Unsecured = 0;
+    public const Secured = 1;
 
     public function __construct()
     {

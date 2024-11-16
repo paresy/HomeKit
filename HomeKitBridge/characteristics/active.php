@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicActive extends HAPCharacteristic
 {
-    const Inactive = 0;
-    const Active = 1;
+    public const Inactive = 0;
+    public const Active = 1;
 
     public function __construct()
     {

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 class HAPCharacteristicCurrentDoorState extends HAPCharacteristic
 {
-    const Open = 0;
-    const Closed = 1;
-    const Opening = 2;
-    const Closing = 3;
-    const Stopped = 4;
+    public const Open = 0;
+    public const Closed = 1;
+    public const Opening = 2;
+    public const Closing = 3;
+    public const Stopped = 4;
 
     public function __construct()
     {

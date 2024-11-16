@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicLockPhysicalControls extends HAPCharacteristic
 {
-    const ControlLockDisabled = 0;
-    const ControlLockEnabled = 1;
+    public const ControlLockDisabled = 0;
+    public const ControlLockEnabled = 1;
 
     public function __construct()
     {

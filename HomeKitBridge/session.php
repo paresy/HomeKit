@@ -49,16 +49,6 @@ class HomeKitSession
     //Required for stage PV M1+M3
     private $sessionKey = '';
 
-    private function SendDebug(string $message)
-    {
-        ($this->debug)('HomeKitSession', $message, 0);
-    }
-
-    private function SubscribeVariable(int $variableID)
-    {
-        ($this->subscribe)($variableID);
-    }
-
     public function __construct(callable $debug, callable $subscribe, HomeKitPairings $pairings, HomeKitCodes $codes, HomeKitManager $manager, string $bridgeID, string $accessoryKP, string $sessionData, callable $terminateSessions)
     {
         $this->debug = $debug;
@@ -266,6 +256,48 @@ class HomeKitSession
 
                 return '';
         }
+    }
+
+    public function notifyVariable($variableID, $value)
+    {
+        if (!$this->encrypted) {
+            return null;
+        }
+
+        $characteristics = [];
+
+        foreach ($this->events as $accessoryID => $instances) {
+            foreach ($instances as $instanceID => $ids) {
+                foreach ($ids as $id) {
+                    if ($variableID == $id) {
+                        $characteristics[] = $this->sendNotify($accessoryID, $instanceID, $value);
+                    }
+                }
+            }
+        }
+
+        if (count($characteristics) == 0) {
+            return null;
+        }
+
+        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
+            'characteristics' => $characteristics
+        ])));
+    }
+
+    public function clearSubscriptions()
+    {
+        $this->events = [];
+    }
+
+    private function SendDebug(string $message)
+    {
+        ($this->debug)('HomeKitSession', $message, 0);
+    }
+
+    private function SubscribeVariable(int $variableID)
+    {
+        ($this->subscribe)($variableID);
     }
 
     private function parseHTTP($data): array
@@ -1261,37 +1293,5 @@ class HomeKitSession
             'iid'   => $iid,
             'value' => $this->manager->readCharacteristics($aid, $iid) /*$value*/
         ];
-    }
-
-    public function notifyVariable($variableID, $value)
-    {
-        if (!$this->encrypted) {
-            return null;
-        }
-
-        $characteristics = [];
-
-        foreach ($this->events as $accessoryID => $instances) {
-            foreach ($instances as $instanceID => $ids) {
-                foreach ($ids as $id) {
-                    if ($variableID == $id) {
-                        $characteristics[] = $this->sendNotify($accessoryID, $instanceID, $value);
-                    }
-                }
-            }
-        }
-
-        if (count($characteristics) == 0) {
-            return null;
-        }
-
-        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
-            'characteristics' => $characteristics
-        ])));
-    }
-
-    public function clearSubscriptions()
-    {
-        $this->events = [];
     }
 }

@@ -8,11 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class SRP6aClientTest extends TestCase
 {
-    private function clean($s)
-    {
-        return str_replace([' ', "\n", "\r"], '', $s);
-    }
-
     public function testGeneration(): void
     {
         //Salt
@@ -89,5 +84,9 @@ class SRP6aClientTest extends TestCase
 
         //Verify K
         $this->assertEquals($Kverify, $srp->createSessionKey($Sverify));
+    }
+    private function clean($s)
+    {
+        return str_replace([' ', "\n", "\r"], '', $s);
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicAirParticulateSize extends HAPCharacteristic
 {
-    const Microsmeters2_5 = 0;
-    const Microsmeters10 = 1;
+    public const Microsmeters2_5 = 0;
+    public const Microsmeters10 = 1;
 
     public function __construct()
     {

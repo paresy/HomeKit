@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicSmokeDetected extends HAPCharacteristic
 {
-    const SmokeNotDetected = 0;
-    const SmokeDetected = 1;
+    public const SmokeNotDetected = 0;
+    public const SmokeDetected = 1;
 
     public function __construct()
     {

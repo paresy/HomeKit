@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 class TLVType
 {
-    const Method = 0x00;
-    const Identifier = 0x01;
-    const Salt = 0x02;
-    const PublicKey = 0x03;
-    const Proof = 0x04;
-    const EncryptedData = 0x05;
-    const State = 0x06;
-    const Error = 0x07;
-    const RetryDelay = 0x08;
-    const Certificate = 0x09;
-    const Signature = 0x0A;
-    const Permissions = 0x0B;
-    const FragmentData = 0x0C;
-    const FragmentLast = 0x0D;
-    const Separator = 0xFF;
+    public const Method = 0x00;
+    public const Identifier = 0x01;
+    public const Salt = 0x02;
+    public const PublicKey = 0x03;
+    public const Proof = 0x04;
+    public const EncryptedData = 0x05;
+    public const State = 0x06;
+    public const Error = 0x07;
+    public const RetryDelay = 0x08;
+    public const Certificate = 0x09;
+    public const Signature = 0x0A;
+    public const Permissions = 0x0B;
+    public const FragmentData = 0x0C;
+    public const FragmentLast = 0x0D;
+    public const Separator = 0xFF;
 }
 
 class TLV8
@@ -26,7 +26,7 @@ class TLV8
     private $type;  //TLVType
     private $value; //string
 
-    public function __construct(string & $data)
+    public function __construct(string &$data)
     {
         $this->type = ord($data[0]);
         $length = ord($data[1]);
@@ -56,12 +56,12 @@ class TLV8
 
 class TLVMethod
 {
-    const PairSetup = 0x00;
-    const PairSetupMFi = 0x01;
-    const PairVerify = 0x02;
-    const AddPairing = 0x03;
-    const RemovePairing = 0x04;
-    const ListPairings = 0x05;
+    public const PairSetup = 0x00;
+    public const PairSetupMFi = 0x01;
+    public const PairVerify = 0x02;
+    public const AddPairing = 0x03;
+    public const RemovePairing = 0x04;
+    public const ListPairings = 0x05;
 }
 
 class TLV8_Method extends TLV8
@@ -114,12 +114,12 @@ class TLV8_EncryptedData extends TLV8
 
 class TLVState
 {
-    const M1 = 0x01;
-    const M2 = 0x02;
-    const M3 = 0x03;
-    const M4 = 0x04;
-    const M5 = 0x05;
-    const M6 = 0x06;
+    public const M1 = 0x01;
+    public const M2 = 0x02;
+    public const M3 = 0x03;
+    public const M4 = 0x04;
+    public const M5 = 0x05;
+    public const M6 = 0x06;
 }
 
 class TLV8_State extends TLV8
@@ -132,23 +132,18 @@ class TLV8_State extends TLV8
 
 class TLVError
 {
-    const NA = 0x00;
-    const Unknown = 0x01;
-    const Authentication = 0x02;
-    const Backoff = 0x03;
-    const MaxPeers = 0x04;
-    const MaxTries = 0x05;
-    const Unavailable = 0x06;
-    const Busy = 0x07;
+    public const NA = 0x00;
+    public const Unknown = 0x01;
+    public const Authentication = 0x02;
+    public const Backoff = 0x03;
+    public const MaxPeers = 0x04;
+    public const MaxTries = 0x05;
+    public const Unavailable = 0x06;
+    public const Busy = 0x07;
 }
 
 class TLV8_Error extends TLV8
 {
-    public function getError(): int
-    {
-        return unpack('C', $this->getValue())[1];
-    }
-
     public function __toString(): string
     {
         switch ($this->getError()) {
@@ -167,6 +162,10 @@ class TLV8_Error extends TLV8
             default:
                 return 'Undefined Error';
         }
+    }
+    public function getError(): int
+    {
+        return unpack('C', $this->getValue())[1];
     }
 }
 
@@ -196,17 +195,12 @@ class TLV8_Signature extends TLV8
 
 class TLVPermissions
 {
-    const RegularUser = 0x00;
-    const Admin = 0x01;
+    public const RegularUser = 0x00;
+    public const Admin = 0x01;
 }
 
 class TLV8_Permissions extends TLV8
 {
-    public function getPermissions(): int
-    {
-        return unpack('C', $this->getValue())[1];
-    }
-
     public function __toString(): string
     {
         switch ($this->getPermissions()) {
@@ -217,6 +211,10 @@ class TLV8_Permissions extends TLV8
             default:
                 return 'Undefined';
         }
+    }
+    public function getPermissions(): int
+    {
+        return unpack('C', $this->getValue())[1];
     }
 }
 
@@ -235,7 +233,18 @@ class TLVParser
         }
     }
 
-    private function parseTLV(string & $data): TLV8
+    public function getByType(int $type) /* TLV8 | null */
+    {
+        foreach ($this->tlvList as $tlv) {
+            if ($tlv->getType() == $type) {
+                return $tlv;
+            }
+        }
+
+        return null;
+    }
+
+    private function parseTLV(string &$data): TLV8
     {
         switch (ord($data[0])) {
             case TLVType::Method:
@@ -268,26 +277,10 @@ class TLVParser
                 throw new Exception('Unsupported TLV');
         }
     }
-
-    public function getByType(int $type) /* TLV8 | null */
-    {
-        foreach ($this->tlvList as $tlv) {
-            if ($tlv->getType() == $type) {
-                return $tlv;
-            }
-        }
-
-        return null;
-    }
 }
 
 class TLVBuilder
 {
-    private static function Base(int $type, string $value): string
-    {
-        return chr($type) . chr(strlen($value)) . $value;
-    }
-
     public static function Method(int $method): string
     {
         return self::Base(TLVType::Method, chr($method));
@@ -357,5 +350,9 @@ class TLVBuilder
     public static function Separator(): string
     {
         return self::Base(TLVType::Separator, '');
+    }
+    private static function Base(int $type, string $value): string
+    {
+        return chr($type) . chr(strlen($value)) . $value;
     }
 }

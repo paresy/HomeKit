@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicRotationDirection extends HAPCharacteristic
 {
-    const Clockwise = 0;
-    const CounterClockwise = 1;
+    public const Clockwise = 0;
+    public const CounterClockwise = 1;
 
     public function __construct()
     {

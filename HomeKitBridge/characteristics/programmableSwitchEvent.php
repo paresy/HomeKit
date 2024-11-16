@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class HAPCharacteristicProgrammableSwitchEvent extends HAPCharacteristic
 {
-    const SinglePress = 0;
-    const DoublePress = 1;
-    const LongPress = 2;
+    public const SinglePress = 0;
+    public const DoublePress = 1;
+    public const LongPress = 2;
 
     public function __construct()
     {

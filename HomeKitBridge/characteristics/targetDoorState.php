@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicTargetDoorState extends HAPCharacteristic
 {
-    const Open = 0;
-    const Closed = 1;
+    public const Open = 0;
+    public const Closed = 1;
 
     public function __construct()
     {

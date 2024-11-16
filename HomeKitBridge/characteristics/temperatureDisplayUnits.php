@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicTemperatureDisplayUnits extends HAPCharacteristic
 {
-    const Celsius = 0;
-    const Fahrenheit = 1;
+    public const Celsius = 0;
+    public const Fahrenheit = 1;
 
     public function __construct()
     {

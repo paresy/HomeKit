@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicOccupancyDetected extends HAPCharacteristic
 {
-    const OccupancyNotDetected = 0;
-    const OccupancyDetected = 1;
+    public const OccupancyNotDetected = 0;
+    public const OccupancyDetected = 1;
 
     public function __construct()
     {

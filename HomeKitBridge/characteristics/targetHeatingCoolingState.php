@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 class HAPCharacteristicTargetHeatingCoolingState extends HAPCharacteristic
 {
-    const Off = 0;
-    const Heat = 1;
-    const Cool = 2;
-    const Auto = 3;
+    public const Off = 0;
+    public const Heat = 1;
+    public const Cool = 2;
+    public const Auto = 3;
 
     public function __construct()
     {

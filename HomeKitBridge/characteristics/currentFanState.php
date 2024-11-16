@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class HAPCharacteristicCurrentFanState extends HAPCharacteristic
 {
-    const Inactive = 0;
-    const Idle = 1;
-    const BlowingAir = 2;
+    public const Inactive = 0;
+    public const Idle = 1;
+    public const BlowingAir = 2;
 
     public function __construct()
     {

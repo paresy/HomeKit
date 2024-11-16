@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class HAPCharacteristicPositionState extends HAPCharacteristic
 {
-    const GoingToMinimum = 0;
-    const GoingToMaximum = 1;
-    const Stopped = 2;
+    public const GoingToMinimum = 0;
+    public const GoingToMaximum = 1;
+    public const Stopped = 2;
 
     public function __construct()
     {

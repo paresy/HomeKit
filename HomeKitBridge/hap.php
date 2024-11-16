@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 class HAPAccessory
 {
-    private $services;
-
     protected $data;
+    private $services;
 
     public function __construct(array $data, array $services)
     {
@@ -30,17 +29,6 @@ class HAPAccessory
             'aid'      => $accessoryID,
             'services' => $services
         ];
-    }
-
-    private function getServiceObject(int $instanceID): object
-    {
-        $index = intval(floor($instanceID / 100));
-
-        if ($index >= count($this->services)) {
-            throw new Exception('InstanceID is out of bounds for accessory!');
-        }
-
-        return $this->services[$index];
     }
 
     public function validateCharacteristic(int $instanceID, $value)
@@ -77,6 +65,17 @@ class HAPAccessory
     {
         return $this->getServiceObject($instanceID)->notifyCharacteristic($instanceID % 100, $this);
     }
+
+    private function getServiceObject(int $instanceID): object
+    {
+        $index = intval(floor($instanceID / 100));
+
+        if ($index >= count($this->services)) {
+            throw new Exception('InstanceID is out of bounds for accessory!');
+        }
+
+        return $this->services[$index];
+    }
 }
 
 class HAPService
@@ -90,19 +89,6 @@ class HAPService
         $this->type = $type;
         $this->requiredCharacteristics = $requiredCharacteristics;
         $this->optionalCharacteristics = $optionalCharacteristics;
-    }
-
-    private function getCharacteristicObject(int $instanceID): object
-    {
-        $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
-
-        $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
-
-        if ($index >= count($characteristics)) {
-            throw new Exception('InstanceID is out of bounds for service!');
-        }
-
-        return $characteristics[$index];
     }
 
     public function validateCharacteristic(int $instanceID, $value, HAPAccessory $accessory)
@@ -258,6 +244,19 @@ class HAPService
         ];
     }
 
+    private function getCharacteristicObject(int $instanceID): object
+    {
+        $characteristics = array_merge($this->requiredCharacteristics, $this->optionalCharacteristics);
+
+        $index = $instanceID - 2; //First InstanceID is the sevice itself - starting with 1
+
+        if ($index >= count($characteristics)) {
+            throw new Exception('InstanceID is out of bounds for service!');
+        }
+
+        return $characteristics[$index];
+    }
+
     private function makeReadFunctionName(HAPCharacteristic $characteristic): string
     {
         //Filter HAP from Class Name
@@ -279,35 +278,35 @@ class HAPService
 
 class HAPCharacteristicFormat
 {
-    const Boolean = 'bool';
-    const UnsignedInt8 = 'uint8';
-    const UnsignedInt16 = 'uint16';
-    const UnsignedInt32 = 'uint32';
-    const UnsignedInt64 = 'uint64';
-    const Integer = 'int';
-    const Float = 'float';
-    const String = 'string';
-    const TLV8 = 'tlv8';
-    const Data = 'data';
+    public const Boolean = 'bool';
+    public const UnsignedInt8 = 'uint8';
+    public const UnsignedInt16 = 'uint16';
+    public const UnsignedInt32 = 'uint32';
+    public const UnsignedInt64 = 'uint64';
+    public const Integer = 'int';
+    public const Float = 'float';
+    public const String = 'string';
+    public const TLV8 = 'tlv8';
+    public const Data = 'data';
 }
 
 class HAPCharacteristicPermission
 {
-    const PairedRead = 'pr';
-    const PairedWrite = 'pw';
-    const Notify = 'ev'; //Originally named Events, but somehow used as Notify everywhere
-    const AdditionalAuthorization = 'aa';
-    const TimedWrite = 'tw';
-    const Hidden = 'hd';
+    public const PairedRead = 'pr';
+    public const PairedWrite = 'pw';
+    public const Notify = 'ev'; //Originally named Events, but somehow used as Notify everywhere
+    public const AdditionalAuthorization = 'aa';
+    public const TimedWrite = 'tw';
+    public const Hidden = 'hd';
 }
 
 class HAPCharacteristicUnit
 {
-    const Celsius = 'celsius';
-    const Percentage = 'percentage';
-    const ArcDegrees = 'arcdegrees';
-    const Lux = 'lux';
-    const Seconds = 'seconds';
+    public const Celsius = 'celsius';
+    public const Percentage = 'percentage';
+    public const ArcDegrees = 'arcdegrees';
+    public const Lux = 'lux';
+    public const Seconds = 'seconds';
 }
 
 class HAPCharacteristic

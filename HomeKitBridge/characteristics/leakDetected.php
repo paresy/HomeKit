@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicLeakDetected extends HAPCharacteristic
 {
-    const LeakNotDetected = 0;
-    const LeakDetected = 1;
+    public const LeakNotDetected = 0;
+    public const LeakDetected = 1;
 
     public function __construct()
     {

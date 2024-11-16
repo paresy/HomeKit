@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class HAPCharacteristicSwingMode extends HAPCharacteristic
 {
-    const SwingDisabled = 0;
-    const SwingEnabled = 0;
+    public const SwingDisabled = 0;
+    public const SwingEnabled = 0;
 
     public function __construct()
     {

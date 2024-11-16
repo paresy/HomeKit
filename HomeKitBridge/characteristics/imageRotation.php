@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 class HAPCharacteristicImageRotation extends HAPCharacteristic
 {
-    const NoRotation = 0;
-    const Rotated90DegreesRight = 90;
-    const Rotated180DegreesRight = 180;
-    const Rotated270DegreesRight = 270;
+    public const NoRotation = 0;
+    public const Rotated90DegreesRight = 90;
+    public const Rotated180DegreesRight = 180;
+    public const Rotated270DegreesRight = 270;
 
     public function __construct()
     {
