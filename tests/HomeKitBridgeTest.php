@@ -20,7 +20,8 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $form = json_decode(IPS_GetConfigurationForParent($bridgeID), true);
 
         $this->assertEquals([
-            'Port' => IPS_GetProperty($bridgeID, 'BridgePort')
+            'Port' => IPS_GetProperty($bridgeID, 'BridgePort'),
+            'UseSSL' => false,
         ], $form);
     }
 
@@ -48,7 +49,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
 
         $setupCode = $bridgeInterface->RestartPairing();
 
-        $this->assertTrue(preg_match('/\d{3}-\d{2}-\d{3}/', $setupCode) == 1);
+        $this->assertTrue(preg_match('/\d{4}-\d{4}/', $setupCode) == 1);
     }
 
     public function testHTTPInvalidResponse(): void

@@ -321,6 +321,12 @@ class HomeKitBridge extends DNSSDModule
         return $setupCode;
     }
 
+    // This is just required for testing
+    protected function getTime()
+    {
+        return time();
+    }
+
     private function UpdateDNSSD()
     {
 
