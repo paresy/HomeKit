@@ -20,7 +20,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $form = json_decode(IPS_GetConfigurationForParent($bridgeID), true);
 
         $this->assertEquals([
-            'Port' => IPS_GetProperty($bridgeID, 'BridgePort'),
+            'Port'   => IPS_GetProperty($bridgeID, 'BridgePort'),
             'UseSSL' => false,
         ], $form);
     }
