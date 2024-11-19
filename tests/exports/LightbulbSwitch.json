@@ -1,92 +1,92 @@
 [
-  {
-    "aid": 2,
-    "services": [
-      {
-        "type": "3E",
-        "iid": 1,
-        "characteristics": [
-          {
-            "type": "14",
-            "iid": 2,
-            "format": "bool",
-            "perms": [
-              "pw"
-            ]
-          },
-          {
-            "type": "20",
-            "iid": 3,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "IP-Symcon Community"
-          },
-          {
-            "type": "21",
-            "iid": 4,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "LightbulbSwitch"
-          },
-          {
-            "type": "23",
-            "iid": 5,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "Test"
-          },
-          {
-            "type": "30",
-            "iid": 6,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "e4b85ff1"
-          },
-          {
-            "type": "52",
-            "iid": 7,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "5.2"
-          }
+    {
+        "aid": 2,
+        "services": [
+            {
+                "type": "3E",
+                "iid": 1,
+                "characteristics": [
+                    {
+                        "type": "14",
+                        "iid": 2,
+                        "format": "bool",
+                        "perms": [
+                            "pw"
+                        ]
+                    },
+                    {
+                        "type": "20",
+                        "iid": 3,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "IP-Symcon Community"
+                    },
+                    {
+                        "type": "21",
+                        "iid": 4,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "LightbulbSwitch"
+                    },
+                    {
+                        "type": "23",
+                        "iid": 5,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "Test"
+                    },
+                    {
+                        "type": "30",
+                        "iid": 6,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "e4b85ff1"
+                    },
+                    {
+                        "type": "52",
+                        "iid": 7,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "5.2"
+                    }
+                ]
+            },
+            {
+                "type": "43",
+                "iid": 101,
+                "characteristics": [
+                    {
+                        "type": "25",
+                        "iid": 102,
+                        "format": "bool",
+                        "perms": [
+                            "pr",
+                            "pw",
+                            "ev"
+                        ],
+                        "value": false
+                    },
+                    {
+                        "type": "23",
+                        "iid": 105,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "Test"
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "type": "43",
-        "iid": 101,
-        "characteristics": [
-          {
-            "type": "25",
-            "iid": 102,
-            "format": "bool",
-            "perms": [
-              "pr",
-              "pw",
-              "ev"
-            ],
-            "value": false
-          },
-          {
-            "type": "23",
-            "iid": 105,
-            "format": "string",
-            "perms": [
-              "pr"
-            ],
-            "value": "Test"
-          }
-        ]
-      }
-    ]
-  }
+    }
 ]
