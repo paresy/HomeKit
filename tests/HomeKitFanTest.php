@@ -10,7 +10,7 @@ class HomeKitFanTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $VariableID = IPS_CreateVariable(1 /* Integer */);
+        $vid = IPS_CreateVariable(1 /* Integer */);
 
         //Currently stubs do not provide default profiles
         if (!IPS_VariableProfileExists('~Intensity.100')) {
@@ -18,14 +18,14 @@ class HomeKitFanTest extends HomeKitBaseTest
             IPS_SetVariableProfileValues('~Intensity.100', 0, 100, 1);
         }
 
-        IPS_SetVariableCustomProfile($VariableID, '~Intensity.100');
-        IPS_SetVariableCustomAction($VariableID, 10001); //Any valid ID will do
+        IPS_SetVariableCustomProfile($vid, '~Intensity.100');
+        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryFan', json_encode([
             [
                 'ID'                    => 3,
                 'Name'                  => 'Test',
-                'VariableID'            => $VariableID
+                'VariableID'            => $vid
             ]
         ]));
         IPS_ApplyChanges($bridgeID);

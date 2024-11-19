@@ -10,21 +10,21 @@ class HomeKitWindowUpDownTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $VariableID = IPS_CreateVariable(1 /* Integer */);
+        $vid = IPS_CreateVariable(1 /* Integer */);
 
         //Currently stubs do not provide default profiles
         if (!IPS_VariableProfileExists('~ShutterMoveStop')) {
             IPS_CreateVariableProfile('~ShutterMoveStop', 1 /* Integer */);
         }
 
-        IPS_SetVariableCustomProfile($VariableID, '~ShutterMoveStop');
-        IPS_SetVariableCustomAction($VariableID, 10001); //Any valid ID will do
+        IPS_SetVariableCustomProfile($vid, '~ShutterMoveStop');
+        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryWindowUpDown', json_encode([
             [
                 'ID'                    => 3,
                 'Name'                  => 'Test',
-                'VariableID'            => $VariableID
+                'VariableID'            => $vid
             ]
         ]));
         IPS_ApplyChanges($bridgeID);

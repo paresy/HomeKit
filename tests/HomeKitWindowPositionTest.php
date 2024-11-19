@@ -10,7 +10,7 @@ class HomeKitWindowPositionTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        $VariableID = IPS_CreateVariable(1 /* Integer */);
+        $vid = IPS_CreateVariable(1 /* Integer */);
 
         //Currently stubs do not provide default profiles
         if (!IPS_VariableProfileExists('~ShutterPosition')) {
@@ -18,14 +18,14 @@ class HomeKitWindowPositionTest extends HomeKitBaseTest
             IPS_SetVariableProfileValues('~ShutterPosition', 0, 100, 0);
         }
 
-        IPS_SetVariableCustomProfile($VariableID, '~ShutterPosition');
-        IPS_SetVariableCustomAction($VariableID, 10001); //Any valid ID will do
+        IPS_SetVariableCustomProfile($vid, '~ShutterPosition');
+        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
         IPS_SetProperty($bridgeID, 'AccessoryWindowPosition', json_encode([
             [
                 'ID'                    => 3,
                 'Name'                  => 'Test',
-                'VariableID'            => $VariableID
+                'VariableID'            => $vid
             ]
         ]));
         IPS_ApplyChanges($bridgeID);

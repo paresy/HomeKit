@@ -72,6 +72,7 @@ Jeder Eintrag erfordert einen Namen unter welchem das Gerät bei Apple HomeKit b
 * [Rauchmelder][rauchmelder]
 * [Rollladen/Jalousie (Position)][rollladen-jalousie-position]
 * [Rollladen/Jalousie (Hoch/Runter)][rollladen-jalousie-hoch-runter]
+* [Schloss][schloss]
 * [Temperatursensor][temperatursensor]
 * [Thermostat][thermostat]
 * [Zwischenstecker][zwischenstecker]
@@ -190,6 +191,7 @@ In der Home-App sind nun einige der eingerichteten Geräte sichtbar. Der Rest wi
 [rauchmelder]: types/rauchmelder.md
 [rollladen-jalousie-position]: types/rollladen-jalousie-position.md
 [rollladen-jalousie-hoch-runter]: types/rollladen-jalousie-hoch-runter.md
+[schloss]: types/schloss.md
 [temperatursensor]: types/temperatursensor.md
 [thermostat]: types/thermostat.md
 [zwischenstecker]: types/zwischenstecker.md
