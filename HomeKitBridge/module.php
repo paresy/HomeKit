@@ -176,7 +176,12 @@ class HomeKitBridge extends DNSSDModule
                 'These options are for experts only! Do not touch!'                                   => 'Diese Einstellungen sind nur für Experten. Nicht anfassen!',
                 'Expert options'                                                                      => 'Expertenoptionen',
                 'After changing the name please delete the old entry in the DNS-SD control'           => 'Nach einer Namensänderung muss der alte Eintrag im DNS-SD Control manuell gelöscht werden',
-                'Our parent instance (ServerSocket) is not active!'                                   => 'Die übergeordnete Instanz (ServerSocket) ist nicht aktiv!'
+                'Our parent instance (ServerSocket) is not active!'                                   => 'Die übergeordnete Instanz (ServerSocket) ist nicht aktiv!',
+                // SecuritySystem
+                'Stay'   => 'Zuhause',
+                'Away'   => 'Abwesend',
+                'Night'  => 'Nacht',
+                'Disarm' => 'Aus',
             ]
         ];
 
