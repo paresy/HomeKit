@@ -90,15 +90,16 @@ class HAPAccessoryConfigurationSecuritySystem
             $profileName = $targetVariable['VariableProfile'];
         }
 
-        if (!IPS_VariableProfileExists($profileName)) {
-            return 'Profile required';
-        }
-
-        switch ($profileName) {
-            case 'SecuritySystem.HomeKit':
+        $presentation = IPS_GetVariablePresentation($data['VariableID']);
+        switch($presentation['PRESENTATION'] ?? 'Invalid Presentation') {
+            case VARIABLE_PRESENTATION_LEGACY:
+                if ($presentation['PROFILE'] != 'SecuritySystem.HomeKit') {
+                    return 'Unsupported Profile';
+                }
+            case VARIABLE_PRESENTATION_ENUMERATION:
                 break;
             default:
-                return 'Unsupported Profile';
+                return 'Unsupported Presentation';
         }
 
         if ($targetVariable['VariableCustomAction'] != 0) {
