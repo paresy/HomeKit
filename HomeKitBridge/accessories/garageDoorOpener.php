@@ -111,6 +111,9 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
 class HAPAccessoryConfigurationGarageDoorOpener
 {
+
+    use HelperShutterDevice;
+
     public static function getPosition()
     {
         return 10;
@@ -150,45 +153,7 @@ class HAPAccessoryConfigurationGarageDoorOpener
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['VariableID'])) {
-            return 'Variable missing';
-        }
-
-        $targetVariable = IPS_GetVariable($data['VariableID']);
-
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Int required';
-        }
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        if (!IPS_VariableProfileExists($profileName)) {
-            return 'Profile required';
-        }
-
-        switch ($profileName) {
-            case '~ShutterMoveStop':
-            case '~ShutterMoveStep':
-                break;
-            default:
-                return 'Unsupported Profile';
-        }
-
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if (!($profileAction > 10000)) {
-            return 'Action required';
-        }
-
-        return 'OK';
+        return self::getShutterCompatibility($data['VariableID']);
     }
 
     public static function getTranslations()

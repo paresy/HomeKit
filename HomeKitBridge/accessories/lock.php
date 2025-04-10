@@ -26,22 +26,7 @@ class HAPAccessoryLock extends HAPAccessoryBase
 
     public function readCharacteristicLockCurrentState()
     {
-        $targetVariable = IPS_GetVariable($this->data['VariableID']);
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        $value = GetValue($this->data['VariableID']);
-
-        //invert value if the variable profile is inverted
-        if (strpos($profileName, '.Reversed') !== false) {
-            $value = !$value;
-        }
-
-        if ($value) {
+        if (self::getSwitchValue($this->data['VariableID'])) {
             return HAPCharacteristicLockCurrentState::Secured;
         }
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class HAPAccessoryMotionSensor extends HAPAccessoryBase
 {
+    use HelperSwitchDevice;
+
     public function __construct($data)
     {
         parent::__construct(
@@ -24,22 +26,7 @@ class HAPAccessoryMotionSensor extends HAPAccessoryBase
 
     public function readCharacteristicMotionDetected()
     {
-        $targetVariable = IPS_GetVariable($this->data['VariableID']);
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        $value = GetValue($this->data['VariableID']);
-
-        //invert value if the variable profile is inverted
-        if (strpos($profileName, '.Reversed') !== false) {
-            $value = !$value;
-        }
-
-        return $value;
+        return self::GetSwitchValue($this->data['VariableID']);;
     }
 }
 

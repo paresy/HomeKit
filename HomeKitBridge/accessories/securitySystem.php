@@ -80,14 +80,8 @@ class HAPAccessoryConfigurationSecuritySystem
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
+        if ($targetVariable['VariableType'] != VARIABLETYPE_INTEGER) {
             return 'Int required';
-        }
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
         }
 
         $presentation = IPS_GetVariablePresentation($data['VariableID']);
@@ -103,13 +97,7 @@ class HAPAccessoryConfigurationSecuritySystem
                 return 'Unsupported Presentation';
         }
 
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if (!($profileAction > 10000)) {
+        if (!HasAction($data['VariableID'])) {
             return 'Action required';
         }
 
