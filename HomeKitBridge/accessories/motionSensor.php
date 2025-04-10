@@ -26,7 +26,7 @@ class HAPAccessoryMotionSensor extends HAPAccessoryBase
 
     public function readCharacteristicMotionDetected()
     {
-        return self::GetSwitchValue($this->data['VariableID']);;
+        return self::GetSwitchValue($this->data['VariableID']);
     }
 }
 

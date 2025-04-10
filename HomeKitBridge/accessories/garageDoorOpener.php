@@ -111,7 +111,6 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
 class HAPAccessoryConfigurationGarageDoorOpener
 {
-
     use HelperShutterDevice;
 
     public static function getPosition()
