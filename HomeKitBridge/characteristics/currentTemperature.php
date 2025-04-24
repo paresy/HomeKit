@@ -13,7 +13,8 @@ class HAPCharacteristicCurrentTemperature extends HAPCharacteristic
                 HAPCharacteristicPermission::PairedRead,
                 HAPCharacteristicPermission::Notify
             ],
-            0,
+            // This is not compliant with the specs, but it fixed a lot of trouble for users
+            -100,
             100,
             0.1,
             HAPCharacteristicUnit::Celsius
