@@ -19,11 +19,17 @@ class HAPAccessorySecuritySystem extends HAPAccessoryBase
 
     public function notifyCharacteristicSecuritySystemCurrentState()
     {
-        return $this->notifyCharacteristicSecuritySystemTargetState();
+        return [
+            $this->data['VariableID'],
+            $this->data['AlarmID']
+        ];
     }
 
     public function readCharacteristicSecuritySystemCurrentState()
     {
+        if (IPS_VariableExists($this->data['AlarmID']) && GetValue($this->data['AlarmID'])) {
+            return HAPCharacteristicSecuritySystemCurrentState::AlarmTriggered;
+        }
         return $this->readCharacteristicSecuritySystemTargetState();
     }
 
@@ -63,6 +69,15 @@ class HAPAccessoryConfigurationSecuritySystem
             [
                 'label' => 'VariableID',
                 'name'  => 'VariableID',
+                'width' => '250px',
+                'add'   => 0,
+                'edit'  => [
+                    'type' => 'SelectVariable'
+                ]
+            ],
+            [
+                'label' => 'AlarmID (optional)',
+                'name'  => 'AlarmID',
                 'width' => '250px',
                 'add'   => 0,
                 'edit'  => [
@@ -120,6 +135,7 @@ class HAPAccessoryConfigurationSecuritySystem
             'de' => [
                 'Security System'     => 'Sicherheitssystem',
                 'VariableID'          => 'VariablenID',
+                'AlarmID (optional)'  => 'AlarmID (Optional)',
                 'Variable missing'    => 'Variable fehlt',
                 'Int required'        => 'Int benötigt',
                 'Profile required'    => 'Profil benötigt',
