@@ -19,15 +19,21 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function notifyCharacteristicCurrentHeatingCoolingState()
     {
-        return [
-            $this->data['TargetHeatingCoolingStateID'],
+        $ids = [
             $this->data['TargetTemperatureID'],
             $this->data['CurrentTemperatureID']
         ];
+        if (IPS_VariableExists($this->data['TargetHeatingCoolingStateID'])) {
+            $ids[] = $this->data['TargetHeatingCoolingStateID'];
+        }
+        return $ids;
     }
 
     public function notifyCharacteristicTargetHeatingCoolingState()
     {
+        if (!IPS_VariableExists($this->data['TargetHeatingCoolingStateID'])) {
+            return [];
+        }
         return [
             $this->data['TargetHeatingCoolingStateID']
         ];
@@ -54,7 +60,7 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function readCharacteristicCurrentHeatingCoolingState()
     {
-        switch (GetValue(($this->data['TargetHeatingCoolingStateID']))) {
+        switch ($this->readCharacteristicTargetHeatingCoolingState()) {
             case HAPCharacteristicTargetHeatingCoolingState::Auto:
                 if (GetValue(($this->data['CurrentTemperatureID'])) < GetValue($this->data['TargetTemperatureID'])) {
                     return HAPCharacteristicCurrentHeatingCoolingState::Heat;
@@ -77,6 +83,9 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function readCharacteristicTargetHeatingCoolingState()
     {
+        if (!IPS_VariableExists($this->data['TargetHeatingCoolingStateID'])) {
+            return HAPCharacteristicTargetHeatingCoolingState::Auto;
+        }
         return GetValue($this->data['TargetHeatingCoolingStateID']);
     }
 
@@ -97,7 +106,9 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
 
     public function writeCharacteristicTargetHeatingCoolingState($value)
     {
-        self::setDevice($this->data['TargetHeatingCoolingStateID'], $value);
+        if (IPS_VariableExists($this->data['TargetHeatingCoolingStateID'])) {
+            self::setDevice($this->data['TargetHeatingCoolingStateID'], $value);
+        }
     }
 
     public function writeCharacteristicTargetTemperature($value)
@@ -128,7 +139,7 @@ class HAPAccessoryConfigurationThermostat
     {
         return [
             [
-                'label' => 'TargetHeatingCoolingStateID',
+                'label' => 'TargetHeatingCoolingStateID (Optional)',
                 'name'  => 'TargetHeatingCoolingStateID',
                 'width' => '150px',
                 'add'   => 0,
@@ -159,10 +170,6 @@ class HAPAccessoryConfigurationThermostat
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['TargetHeatingCoolingStateID'])) {
-            return 'Variable TargetHeatingCoolingStateID missing';
-        }
-
         if (!IPS_VariableExists($data['CurrentTemperatureID'])) {
             return 'Variable CurrentTemperatureID missing';
         }
@@ -171,20 +178,23 @@ class HAPAccessoryConfigurationThermostat
             return 'Variable TargetTemperatureID missing';
         }
 
-        $targetVariable = IPS_GetVariable($data['TargetHeatingCoolingStateID']);
+        // Make those check optional if the variable is set
+        if (IPS_VariableExists($data['TargetHeatingCoolingStateID'])) {
+            $targetVariable = IPS_GetVariable($data['TargetHeatingCoolingStateID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'TargetHeatingCoolingStateID: Int required';
-        }
+            if ($targetVariable['VariableType'] != 1 /* Integer */) {
+                return 'TargetHeatingCoolingStateID: Int required';
+            }
 
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
+            if ($targetVariable['VariableCustomAction'] != 0) {
+                $profileAction = $targetVariable['VariableCustomAction'];
+            } else {
+                $profileAction = $targetVariable['VariableAction'];
+            }
 
-        if (!($profileAction > 10000)) {
-            return 'TargetHeatingCoolingStateID: Action required';
+            if (!($profileAction > 10000)) {
+                return 'TargetHeatingCoolingStateID: Action required';
+            }
         }
 
         $targetVariable = IPS_GetVariable($data['CurrentTemperatureID']);
@@ -218,7 +228,7 @@ class HAPAccessoryConfigurationThermostat
             'de' => [
                 'Thermostat'                                            => 'Thermostat',
                 'CurrentHeatingCoolingStateID'                          => 'CurrentHeatingCoolingStateID',
-                'TargetHeatingCoolingStateID'                           => 'TargetHeatingCoolingStateID',
+                'TargetHeatingCoolingStateID (Optional)'                => 'TargetHeatingCoolingStateID (Optional)',
                 'CurrentTemperatureID'                                  => 'CurrentTemperatureID',
                 'Variable CurrentTemperatureID missing'                 => 'Variable CurrentTemperatureID fehlt',
                 'TargetHeatingCoolingStateID: Int required'             => 'TargetHeatingCoolingStateID: Int benötigt',
