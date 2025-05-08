@@ -95,34 +95,24 @@ class HAPAccessoryConfigurationSecuritySystem
 
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
+        if ($targetVariable['VariableType'] != VARIABLETYPE_INTEGER) {
             return 'Int required';
         }
 
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        if (!IPS_VariableProfileExists($profileName)) {
-            return 'Profile required';
-        }
-
-        switch ($profileName) {
-            case 'SecuritySystem.HomeKit':
+        $presentation = IPS_GetVariablePresentation($data['VariableID']);
+        switch ($presentation['PRESENTATION'] ?? 'Invalid Presentation') {
+            case VARIABLE_PRESENTATION_LEGACY:
+                if ($presentation['PROFILE'] != 'SecuritySystem.HomeKit') {
+                    return 'Unsupported Profile';
+                }
+                // No break. Add additional comment above this line if intentional
+            case VARIABLE_PRESENTATION_ENUMERATION:
                 break;
             default:
-                return 'Unsupported Profile';
+                return 'Unsupported Presentation';
         }
 
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if (!($profileAction > 10000)) {
+        if (!HasAction($data['VariableID'])) {
             return 'Action required';
         }
 

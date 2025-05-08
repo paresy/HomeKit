@@ -79,6 +79,8 @@ class HAPAccessoryWindowCoveringUpDown extends HAPAccessoryBase
 
 class HAPAccessoryConfigurationWindowCoveringUpDown
 {
+    use HelperShutterDevice;
+
     public static function getPosition()
     {
         return 10;
@@ -106,45 +108,8 @@ class HAPAccessoryConfigurationWindowCoveringUpDown
 
     public static function getStatus($data)
     {
-        if (!IPS_VariableExists($data['VariableID'])) {
-            return 'Variable missing';
-        }
+        return self::getShutterCompatibility($data['VariableID']);
 
-        $targetVariable = IPS_GetVariable($data['VariableID']);
-
-        if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Int required';
-        }
-
-        if ($targetVariable['VariableCustomProfile'] != '') {
-            $profileName = $targetVariable['VariableCustomProfile'];
-        } else {
-            $profileName = $targetVariable['VariableProfile'];
-        }
-
-        if (!IPS_VariableProfileExists($profileName)) {
-            return 'Profile required';
-        }
-
-        switch ($profileName) {
-            case '~ShutterMoveStop':
-            case '~ShutterMoveStep':
-                break;
-            default:
-                return 'Unsupported Profile';
-        }
-
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if (!($profileAction > 10000)) {
-            return 'Action required';
-        }
-
-        return 'OK';
     }
 
     public static function getTranslations()
