@@ -19,7 +19,8 @@ class HomeKitSecuritySystemTest extends HomeKitBaseTest
             [
                 'ID'                    => 3,
                 'Name'                  => 'Test',
-                'VariableID'            => $vid
+                'VariableID'            => $vid,
+                'AlarmID'               => 0
             ]
         ]));
         IPS_ApplyChanges($bridgeID);
