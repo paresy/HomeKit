@@ -53,6 +53,10 @@ class HomeKitBridge extends DNSSDModule
             function ($Name, $Value)
             {
                 $this->RegisterPropertyString($Name, $Value);
+            },
+            function ($ID)
+            {
+                $this->RegisterReference($ID);
             }
         );
     }
@@ -286,6 +290,13 @@ class HomeKitBridge extends DNSSDModule
 
         // Diese Zeile nicht löschen
         parent::ApplyChanges();
+
+        // Remove all References
+        // updateAccessories will register the new ones
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
 
         // We need to check for IDs that have the value zero and assign a proper ID
         if ($this->manager->updateAccessories()) {

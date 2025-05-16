@@ -87,6 +87,14 @@ class HAPAccessoryConfigurationSecuritySystem
         ];
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['VariableID'],
+            $data['AlarmID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {

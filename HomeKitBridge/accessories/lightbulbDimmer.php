@@ -67,6 +67,13 @@ class HAPAccessoryConfigurationLightbulbDimmer extends HAPAccessoryConfiguration
         return 'Lightbulb (Dimmer)';
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['VariableID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         return self::getDimCompatibility($data['VariableID']);

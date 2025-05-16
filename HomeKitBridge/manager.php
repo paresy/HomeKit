@@ -11,11 +11,13 @@ class HomeKitManager
     private static $supportedAccessories = [];
 
     private $registerProperty = null;
+    private $registerReference = null;
     private $instanceID = 0;
 
-    public function __construct(int $instanceID, callable $registerProperty)
+    public function __construct(int $instanceID, callable $registerProperty, callable $registerReference)
     {
         $this->registerProperty = $registerProperty;
+        $this->registerReference = $registerReference;
         $this->instanceID = $instanceID;
     }
 
@@ -111,7 +113,7 @@ class HomeKitManager
         foreach (self::$supportedAccessories as $accessory) {
             $wasUpdated = false;
             $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $name => &$data) {
+            foreach ($datas as &$data) {
                 //ids which are currently zero need an id
                 if ($data['ID'] == 0) {
                     $data['ID'] = ++$highestID;
@@ -142,6 +144,21 @@ class HomeKitManager
             if (IPS_GetProperty($this->instanceID, 'ConfigurationHash') != $hash) {
                 IPS_SetProperty($this->instanceID, 'ConfigurationHash', $hash);
                 $wasChanged = true;
+            }
+        }
+
+        //Update all object references
+        foreach (self::$supportedAccessories as $accessory) {
+            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
+            foreach ($datas as $data) {
+                //check for migration
+                if (method_exists(self::configurationClassPrefix . $accessory, 'getObjectIDs')) {
+                    foreach (call_user_func_array(self::configurationClassPrefix . $accessory . '::getObjectIDs', [$data]) as $id) {
+                        if ($id > 0) {
+                            ($this->registerReference)($id);
+                        }
+                    }
+                }
             }
         }
 

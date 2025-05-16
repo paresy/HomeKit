@@ -59,6 +59,14 @@ class HAPAccessoryConfigurationLightbulbExpert extends HAPAccessoryConfiguration
         return 'Lightbulb (Expert)';
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['StateID'],
+            $data['BrightnessID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['StateID'])) {
@@ -66,7 +74,7 @@ class HAPAccessoryConfigurationLightbulbExpert extends HAPAccessoryConfiguration
         }
 
         if (!IPS_VariableExists($data['BrightnessID'])) {
-            return 'Variable BrigntessID missing';
+            return 'Variable BrightnessID missing';
         }
 
         return self::getSwitchCompatibility($data['StateID']);

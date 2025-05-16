@@ -92,6 +92,14 @@ class HAPAccessoryConfigurationSpeaker
         ];
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['MuteID'],
+            $data['VolumeID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         $return = self::getSwitchCompatibility($data['MuteID']);

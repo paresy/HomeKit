@@ -142,6 +142,13 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
         return 'Lightbulb (Color)';
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['VariableID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         return self::getColorCompatibility($data['VariableID']);

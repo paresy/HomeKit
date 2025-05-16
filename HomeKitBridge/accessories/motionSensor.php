@@ -57,6 +57,13 @@ class HAPAccessoryConfigurationMotionSensor
         ];
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['VariableID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['VariableID'])) {

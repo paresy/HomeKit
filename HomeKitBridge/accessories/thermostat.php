@@ -168,6 +168,15 @@ class HAPAccessoryConfigurationThermostat
         ];
     }
 
+    public static function getObjectIDs($data)
+    {
+        return [
+            $data['TargetHeatingCoolingStateID'],
+            $data['CurrentTemperatureID'],
+            $data['TargetTemperatureID'],
+        ];
+    }
+
     public static function getStatus($data)
     {
         if (!IPS_VariableExists($data['CurrentTemperatureID'])) {
