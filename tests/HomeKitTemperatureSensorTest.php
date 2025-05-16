@@ -36,7 +36,7 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(2 /* Float */);
 
-        SetValue($vid, -5);
+        SetValue($vid, -500);
 
         IPS_SetProperty($bridgeID, 'AccessoryTemperatureSensor', json_encode([
             [
@@ -51,6 +51,8 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
         $accessory = json_decode(file_get_contents(__DIR__ . '/exports/TemperatureSensor.json'), true);
+
+        $accessory[0]['services'][1]['characteristics'][0]['value'] = -100.0;
 
         //Check if the generated content matches our test file
         $this->assertEquals(array_merge($base, $accessory), $bridgeInterface->DebugAccessories());

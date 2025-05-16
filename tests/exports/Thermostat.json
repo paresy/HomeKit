@@ -101,7 +101,7 @@
                             "ev"
                         ],
                         "value": 0,
-                        "minValue": 0,
+                        "minValue": -100,
                         "maxValue": 100,
                         "minStep": 0.1,
                         "unit": "celsius"
