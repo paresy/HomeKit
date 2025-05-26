@@ -9,8 +9,14 @@ class HAPAccessoryBridge extends HAPAccessoryBase
         parent::__construct(
             $data,
             [
-                new HAPServiceAccessoryInformation()
+                new HAPServiceAccessoryInformation(),
+                new HAPServiceProtocolInformation(),
             ]
         );
+    }
+
+    public function readCharacteristicVersion()
+    {
+        return "01.01.00";
     }
 }

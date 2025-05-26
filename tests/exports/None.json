@@ -60,6 +60,22 @@
                         "value": "5.2"
                     }
                 ]
+            },
+            {
+                "type": "A2",
+                "iid": 101,
+                "characteristics": [
+                    {
+                        "type": "37",
+                        "iid": 102,
+                        "format": "string",
+                        "perms": [
+                            "pr"
+                        ],
+                        "value": "01.01.00",
+                        "maxLen": 64
+                    }
+                ]
             }
         ]
     }

@@ -31,7 +31,7 @@ class HomeKitDNSSDTest extends HomeKitBaseTest
             'Domain'     => '',
             'Host'       => '',
             'Port'       => 34587,
-            'TXTRecords' => [0 => ['Value' => 'md=Symcon'], 1 => ['Value' => 'pv=1.0'], 2 => ['Value' => 'id=3E:64:C3:71:BA:2B'], 3 => ['Value' => 'c#=1'], 4 => ['Value' => 's#=1'], 5 => ['Value' => 'ff=0'], 6 => ['Value' => 'ci=2'], 7 => ['Value' => 'sf=1']]
+            'TXTRecords' => [0 => ['Value' => 'md=Symcon'], 1 => ['Value' => 'pv=1.1'], 2 => ['Value' => 'id=3E:64:C3:71:BA:2B'], 3 => ['Value' => 'c#=1'], 4 => ['Value' => 's#=1'], 5 => ['Value' => 'ff=0'], 6 => ['Value' => 'ci=2'], 7 => ['Value' => 'sf=1']]
         ];
 
         $this->assertEquals([

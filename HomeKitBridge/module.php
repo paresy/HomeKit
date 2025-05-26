@@ -74,6 +74,8 @@ class HomeKitBridge extends DNSSDModule
         $this->RegisterPropertyString('AccessoryKeyPair', bin2hex(sodium_crypto_sign_keypair()));
         $this->RegisterPropertyString('Pairings', '[]');
 
+        $this->RegisterAttributeInteger('CurrentStateNumber', 1);
+
         //Always create our own ServerSocket, when no parent is already available
         $this->RequireParent('{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}');
 
@@ -365,10 +367,10 @@ class HomeKitBridge extends DNSSDModule
             $this->ReadPropertyInteger('BridgePort'),
             [
                 'md=' . $this->ReadPropertyString('BridgeName'),
-                'pv=1.0',
+                'pv=1.1',
                 'id=' . $this->ReadPropertyString('BridgeID'),
                 'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
-                's#=1',
+                's#=' . $this->ReadAttributeInteger('CurrentStateNumber'),
                 'ff=0', /* Switch to 1 when we have a MFi certificate */
                 'ci=2',
                 'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
@@ -466,6 +468,9 @@ class HomeKitBridge extends DNSSDModule
                 $this->setSession($clientIP, intval($clientPort), $session);
             }
         }
+        $nextNumber = ($this->ReadAttributeInteger('CurrentStateNumber') % 65535) + 1;
+        $this->WriteAttributeInteger('CurrentStateNumber', $nextNumber);
+        $this->UpdateDNSSD();
     }
 
     private function clearSessionSubscriptions()
