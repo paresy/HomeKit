@@ -17,6 +17,6 @@ class HAPAccessoryBridge extends HAPAccessoryBase
 
     public function readCharacteristicVersion()
     {
-        return "01.01.00";
+        return '01.01.00';
     }
 }
