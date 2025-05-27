@@ -227,6 +227,8 @@ class HomeKitSession
                 break;
             case 'PUT':
                 switch ($http['uri']) {
+                    case '/prepare':
+                        return $this->prepareWrite($http);
                     case '/characteristics':
                         return $this->writeCharacteristics($http);
                     default:
@@ -1081,6 +1083,20 @@ class HomeKitSession
                 'body'    => null
             ]);
         }
+    }
+
+    private function prepareWrite(): string
+    {
+        return $this->buildEncryptedResponse($this->buildHTTP([
+            'status'  => '200 OK',
+            'version' => 'HTTP/1.1',
+            'headers' => [
+                'Content-Type' => 'application/hap+json'
+            ],
+            'body' => json_encode([
+                'status' => 0
+            ])
+        ]));
     }
 
     private function writeCharacteristics(array $http): string
