@@ -137,45 +137,48 @@ class HomeKitSession
             //Append data
             $this->encryptedData .= $data;
 
-            if (strlen($this->encryptedData) < 2) {
-                $this->sendDebug('Waiting for data...');
+            //We might need to consume multiple packets in one go
+            while ($this->encryptedData !== '') {
+                if (strlen($this->encryptedData) < 2) {
+                    $this->sendDebug('Waiting for data...');
 
-                return '';
+                    return '';
+                }
+
+                $expectedLength = unpack('v', $this->encryptedData)[1];
+                if (strlen($this->encryptedData) < $expectedLength + 2 /* Length */ + 16 /* AuthTag */) {
+                    $this->sendDebug('Waiting for data... ' . strlen($this->encryptedData) . ' / ' . $expectedLength);
+
+                    return '';
+                }
+
+                $message = substr($this->encryptedData, 2, $expectedLength + 16);
+                $ad = substr($this->encryptedData, 0, 2);
+
+                if (PHP_INT_SIZE == 4) {
+                    $nonce = "\0\0\0\0" . pack('V', $this->messageRecvCounter) . "\0\0\0\0";
+                } else {
+                    $nonce = "\0\0\0\0" . pack('P', $this->messageRecvCounter);
+                }
+
+                $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($message, $ad, $nonce, $this->messageRecvKey);
+                if ($decryptedData === null) {
+                    $this->sendDebug('Decrypting failed!');
+
+                    //FIXME: We need to invalidate the whole session!
+
+                    return '';
+                }
+
+                //Increment nonce counter
+                $this->messageRecvCounter++;
+
+                //We consumed the data
+                $this->encryptedData = substr($this->encryptedData, $expectedLength + 2 /* Length */ + 16 /* AuthTag */);
+
+                //Append decrypted data
+                $this->data .= $decryptedData;
             }
-
-            $expectedLength = unpack('v', $this->encryptedData)[1];
-            if (strlen($this->encryptedData) < $expectedLength + 2 /* Length */ + 16 /* AuthTag */) {
-                $this->sendDebug('Waiting for data... ' . strlen($this->encryptedData) . ' / ' . $expectedLength);
-
-                return '';
-            }
-
-            $message = substr($this->encryptedData, 2, $expectedLength + 16);
-            $ad = substr($this->encryptedData, 0, 2);
-
-            if (PHP_INT_SIZE == 4) {
-                $nonce = "\0\0\0\0" . pack('V', $this->messageRecvCounter) . "\0\0\0\0";
-            } else {
-                $nonce = "\0\0\0\0" . pack('P', $this->messageRecvCounter);
-            }
-
-            $decryptedData = sodium_crypto_aead_chacha20poly1305_ietf_decrypt($message, $ad, $nonce, $this->messageRecvKey);
-            if ($decryptedData === null) {
-                $this->sendDebug('Decrypting failed!');
-
-                //FIXME: We need to invalidate the whole session!
-
-                return '';
-            }
-
-            //Increment nonce counter
-            $this->messageRecvCounter++;
-
-            //We consumed the data
-            $this->encryptedData = '';
-
-            //Append decrypted data
-            $this->data .= $decryptedData;
         } else {
             //Append data
             $this->data .= $data;
@@ -263,7 +266,7 @@ class HomeKitSession
     public function notifyVariable($variableID, $value)
     {
         if (!$this->encrypted) {
-            return null;
+            return '';
         }
 
         $characteristics = [];
@@ -279,7 +282,7 @@ class HomeKitSession
         }
 
         if (count($characteristics) == 0) {
-            return null;
+            return '';
         }
 
         return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
