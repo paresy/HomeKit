@@ -107,21 +107,33 @@ class HAPAccessoryConfigurationSecuritySystem
             return 'Int required';
         }
 
-        $presentation = IPS_GetVariablePresentation($data['VariableID']);
-        switch ($presentation['PRESENTATION'] ?? 'Invalid Presentation') {
-            case VARIABLE_PRESENTATION_LEGACY:
-                if ($presentation['PROFILE'] != 'SecuritySystem.HomeKit') {
-                    return 'Unsupported Profile';
-                }
-                // No break. Add additional comment above this line if intentional
-            case VARIABLE_PRESENTATION_ENUMERATION:
-                break;
-            default:
-                return 'Unsupported Presentation';
-        }
-
         if (!HasAction($data['VariableID'])) {
             return 'Action required';
+        }
+
+        if (!function_exists('IPS_GetVariablePresentation')) {
+            $profileName = '';
+            if ($targetVariable['VariableCustomProfile'] != '') {
+                $profileName = $targetVariable['VariableCustomProfile'];
+            } else {
+                $profileName = $targetVariable['VariableProfile'];
+            }
+            if ($profileName != 'SecuritySystem.HomeKit') {
+                return 'Unsupported Profile';
+            }
+        } else {
+            $presentation = IPS_GetVariablePresentation($data['VariableID']);
+            switch ($presentation['PRESENTATION'] ?? 'Invalid Presentation') {
+                case VARIABLE_PRESENTATION_LEGACY:
+                    if ($presentation['PROFILE'] != 'SecuritySystem.HomeKit') {
+                        return 'Unsupported Profile';
+                    }
+                    // No break. Add additional comment above this line if intentional
+                case VARIABLE_PRESENTATION_ENUMERATION:
+                    break;
+                default:
+                    return 'Unsupported Presentation';
+            }
         }
 
         return 'OK';

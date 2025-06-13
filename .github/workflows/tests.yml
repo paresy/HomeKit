@@ -13,3 +13,7 @@ jobs:
           submodules: true
       - name: Run tests 
         uses: symcon/action-tests@master
+      - name: Patch phpunit.xml to use Version 7.4 emulationAdd commentMore actions
+        run: sed -i '/<const name="PHPUNIT_TESTSUITE" value="true"\/>/a \    <const name="IPS_VERSION" value="7.4"/>' tests/phpunit.xml
+      - name: Run tests (for 7.4)
+        uses: symcon/action-tests@master
