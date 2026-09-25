@@ -46,6 +46,11 @@ class HAPAccessory
         $this->getServiceObject($instanceID)->writeCharacteristic($instanceID % 100, $value, $this);
     }
 
+    //Called after all writes of a batch were delivered. Accessories that compose multiple writes send the final value here
+    public function flushWriteCharacteristics(): void
+    {
+    }
+
     public function supportsReadCharacteristic(int $instanceID)
     {
         return $this->getServiceObject($instanceID)->supportsReadCharacteristic($instanceID % 100, $this);

@@ -13,6 +13,7 @@ class HomeKitManager
     private $registerProperty = null;
     private $registerReference = null;
     private $instanceID = 0;
+    private $accessoryCache = null;
 
     public function __construct(int $instanceID, callable $registerProperty, callable $registerReference)
     {
@@ -269,6 +270,21 @@ class HomeKitManager
         ];
     }
 
+    //While the cache is active, every request for the same accessory returns the same object.
+    //This allows accessories to keep state across multiple writes within one batch (e.g. Hue/Saturation/Brightness)
+    public function beginAccessoryCache(): void
+    {
+        $this->accessoryCache = [];
+    }
+
+    public function endAccessoryCache(): void
+    {
+        foreach ($this->accessoryCache as $accessory) {
+            $accessory->flushWriteCharacteristics();
+        }
+        $this->accessoryCache = null;
+    }
+
     public function validateCharacteristics(int $aid, int $iid, $value)
     {
         return $this->getAccessoryObject($aid)->validateCharacteristic($iid, $value);
@@ -281,7 +297,13 @@ class HomeKitManager
 
     public function writeCharacteristics(int $aid, int $iid, $value): void
     {
-        $this->getAccessoryObject($aid)->writeCharacteristic($iid, $value);
+        $accessory = $this->getAccessoryObject($aid);
+        $accessory->writeCharacteristic($iid, $value);
+
+        //Without an active batch there will be no endAccessoryCache, so flush immediately
+        if ($this->accessoryCache === null) {
+            $accessory->flushWriteCharacteristics();
+        }
     }
 
     public function supportsReadCharacteristics(int $aid, int $iid): bool
@@ -323,6 +345,18 @@ class HomeKitManager
     }
 
     private function getAccessoryObject(int $aid): object
+    {
+        if ($this->accessoryCache !== null) {
+            if (!isset($this->accessoryCache[$aid])) {
+                $this->accessoryCache[$aid] = $this->createAccessoryObject($aid);
+            }
+            return $this->accessoryCache[$aid];
+        }
+
+        return $this->createAccessoryObject($aid);
+    }
+
+    private function createAccessoryObject(int $aid): object
     {
         if ($aid == 1) {
             $class = self::classPrefix . 'Bridge';
