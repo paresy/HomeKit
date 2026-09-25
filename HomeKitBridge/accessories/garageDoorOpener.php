@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 {
-    use HelperSwitchDevice;
+    use HelperShutterDevice;
 
     public function __construct($data)
     {
@@ -58,44 +58,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function writeCharacteristicTargetDoorState($value)
     {
-        switch ($value) {
-            case HAPCharacteristicTargetDoorState::Open:
-                $value = 0;
-                break;
-            case HAPCharacteristicTargetDoorState::Closed:
-                $value = 4;
-                break;
-        }
-
-        if (!IPS_VariableExists($this->data['VariableID'])) {
-            return;
-        }
-
-        $targetVariable = IPS_GetVariable($this->data['VariableID']);
-
-        if ($targetVariable['VariableCustomAction'] != 0) {
-            $profileAction = $targetVariable['VariableCustomAction'];
-        } else {
-            $profileAction = $targetVariable['VariableAction'];
-        }
-
-        if ($profileAction < 10000) {
-            return;
-        }
-
-        if ($targetVariable['VariableType'] == 1 /* Integer */) {
-            $value = intval($value);
-        } else {
-            return;
-        }
-
-        if (IPS_InstanceExists($profileAction)) {
-            IPS_RunScriptText('IPS_RequestAction(' . var_export($profileAction, true) . ', ' . var_export(IPS_GetObject($this->data['VariableID'])['ObjectIdent'], true) . ', ' . var_export($value, true) . ');');
-        } elseif (IPS_ScriptExists($profileAction)) {
-            IPS_RunScriptEx($profileAction, ['VARIABLE' => $this->data['VariableID'], 'VALUE' => $value, 'SENDER' => 'VoiceControl']);
-        } else {
-            return;
-        }
+        self::setShutterOpen($this->data['VariableID'], $value == HAPCharacteristicTargetDoorState::Open);
     }
 
     public function notifyCharacteristicObstructionDetected()

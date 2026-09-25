@@ -32,9 +32,9 @@ class HAPAccessoryWindowUpDown extends HAPAccessoryBase
     public function writeCharacteristicTargetPosition($value)
     {
         if ($value > 0) {
-            $this->setDevice($this->data['VariableID'], 0 /* Open */);
+            self::setDevice($this->data['VariableID'], 0 /* Open */);
         } else {
-            $this->setDevice($this->data['VariableID'], 4 /* Close */);
+            self::setDevice($this->data['VariableID'], 4 /* Close */);
         }
     }
 
@@ -72,7 +72,7 @@ class HAPAccessoryWindowUpDown extends HAPAccessoryBase
     public function writeCharacteristicHoldPosition($value)
     {
         if ($value) {
-            $this->setDevice($this->data['VariableID'], 2 /* Stop */);
+            self::setDevice($this->data['VariableID'], 2 /* Stop */);
         }
     }
 }
