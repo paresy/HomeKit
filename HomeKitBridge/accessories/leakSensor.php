@@ -77,7 +77,7 @@ class HAPAccessoryConfigurationLeakSensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 0 /* Boolean */) {
-            return 'Bool required';
+            return 'Boolean required';
         }
 
         return 'OK';
@@ -90,7 +90,7 @@ class HAPAccessoryConfigurationLeakSensor
                 'Leak Sensor'           => 'Leckagesensor',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Bool required'         => 'Bool benötigt',
+                'Boolean required'         => 'Boolean benötigt',
                 'OK'                    => 'OK'
             ]
         ];

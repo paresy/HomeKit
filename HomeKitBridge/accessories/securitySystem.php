@@ -104,7 +104,7 @@ class HAPAccessoryConfigurationSecuritySystem
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != VARIABLETYPE_INTEGER) {
-            return 'Int required';
+            return 'Integer required';
         }
 
         if (!HasAction($data['VariableID'])) {
@@ -147,7 +147,7 @@ class HAPAccessoryConfigurationSecuritySystem
                 'VariableID'          => 'VariablenID',
                 'AlarmID (optional)'  => 'AlarmID (Optional)',
                 'Variable missing'    => 'Variable fehlt',
-                'Int required'        => 'Int benötigt',
+                'Integer required'        => 'Integer benötigt',
                 'Profile required'    => 'Profil benötigt',
                 'Unsupported Profile' => 'Falsches Profil',
                 'OK'                  => 'OK',

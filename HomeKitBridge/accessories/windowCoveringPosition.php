@@ -105,7 +105,7 @@ class HAPAccessoryConfigurationWindowCoveringPosition
                 'Window Covering (Position)'     => 'Rollladen/Jalousie (Position)',
                 'VariableID'                     => 'VariablenID',
                 'Variable missing'               => 'Variable fehlt',
-                'Int/Float required'             => 'Int/Float benötigt',
+                'Integer/Float required'             => 'Integer/Float benötigt',
                 'Profile required'               => 'Profil benötigt',
                 'Action required'                => 'Aktion benötigt',
                 'OK'                             => 'OK'

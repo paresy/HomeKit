@@ -76,7 +76,7 @@ class HAPAccessoryConfigurationContactSensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 0 /* Boolean */) {
-            return 'Bool required';
+            return 'Boolean required';
         }
         return 'OK';
     }
@@ -88,7 +88,7 @@ class HAPAccessoryConfigurationContactSensor
                 'Contact Sensor'       => 'Kontaktsensor',
                 'VariableID'           => 'VariablenID',
                 'Variable missing'     => 'Variable fehlt',
-                'Bool required'        => 'Bool benötigt',
+                'Boolean required'        => 'Boolean benötigt',
                 'OK'                   => 'OK'
             ]
         ];

@@ -73,7 +73,7 @@ class HAPAccessoryConfigurationStatelessProgrammableSwitch
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */) {
-            return 'Int required';
+            return 'Integer required';
         }
         return 'OK';
     }
@@ -85,7 +85,7 @@ class HAPAccessoryConfigurationStatelessProgrammableSwitch
                 'Stateless Programmable Switch'                => 'Zustandsloser programmierbarer Schalter',
                 'VariableID'                                   => 'VariablenID',
                 'Variable missing'                             => 'Variable fehlt',
-                'Int required'                                 => 'Int benötigt',
+                'Integer required'                                 => 'Integer benötigt',
                 'OK'                                           => 'OK'
             ]
         ];

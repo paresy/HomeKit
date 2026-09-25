@@ -114,7 +114,7 @@ class HAPAccessoryConfigurationLightbulbExpert extends HAPAccessoryConfiguration
                 'BrightnessID'                     => 'HelligkeitsID',
                 'Variable StateID missing'         => 'Variable StatusID fehlt',
                 'Variable BrightnessID missing'    => 'Variable HelligkeitsID fehlt',
-                'Int/Float required'               => 'Int/Float benötigt',
+                'Integer/Float required'               => 'Integer/Float benötigt',
                 'Profile required'                 => 'Profil benötigt',
                 'Action required'                  => 'Aktion benötigt',
                 'OK'                               => 'OK'

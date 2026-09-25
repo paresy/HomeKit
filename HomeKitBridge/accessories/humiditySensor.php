@@ -71,7 +71,7 @@ class HAPAccessoryConfigurationHumiditySensor
         $targetVariable = IPS_GetVariable($data['VariableID']);
 
         if ($targetVariable['VariableType'] != 1 /* Integer */ && $targetVariable['VariableType'] != 2 /* Float */) {
-            return 'Int/Float required';
+            return 'Integer/Float required';
         }
 
         return 'OK';
@@ -84,7 +84,7 @@ class HAPAccessoryConfigurationHumiditySensor
                 'Humidity Sensor'       => 'Feuchtigkeitssensor',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int/Float required'    => 'Int/Float benötigt',
+                'Integer/Float required'    => 'Integer/Float benötigt',
                 'OK'                    => 'OK'
             ]
         ];

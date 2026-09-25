@@ -83,7 +83,7 @@ class HAPAccessoryConfigurationLightbulbSwitch
                 'Lightbulb (Switch)'    => 'Lampe (Schaltbar)',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Bool required'         => 'Bool benötigt',
+                'Boolean required'         => 'Boolean benötigt',
                 'Action required'       => 'Aktion benötigt',
                 'OK'                    => 'OK'
             ]

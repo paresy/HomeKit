@@ -125,7 +125,7 @@ class HAPAccessoryConfigurationWindowUpDown
                 'Window (Up/Down)'      => 'Fenster (Hoch/Runter)',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int required'          => 'Int benötigt',
+                'Integer required'          => 'Integer benötigt',
                 'Profile required'      => 'Profil benötigt',
                 'Unsupported Profile'   => 'Falsches Profil',
                 'OK'                    => 'OK'

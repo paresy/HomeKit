@@ -86,7 +86,7 @@ class HAPAccessoryConfigurationLightbulbDimmer extends HAPAccessoryConfiguration
                 'Lightbulb (Dimmer)'    => 'Lampe (Dimmbar)',
                 'VariableID'            => 'VariablenID',
                 'Variable missing'      => 'Variable fehlt',
-                'Int/Float required'    => 'Int/Float benötigt',
+                'Integer/Float required'    => 'Integer/Float benötigt',
                 'Profile required'      => 'Profil benötigt',
                 'Action required'       => 'Aktion benötigt',
                 'OK'                    => 'OK'

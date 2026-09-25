@@ -121,7 +121,7 @@ class HAPAccessoryConfigurationSpeaker
                 'MuteID'                => 'MuteID',
                 'VolumeID'              => 'VolumeID',
                 'Variable missing'      => 'Variable fehlt',
-                'Bool required'         => 'Bool benötigt',
+                'Boolean required'         => 'Boolean benötigt',
                 'Action required'       => 'Aktion benötigt',
                 'OK'                    => 'OK'
             ]
