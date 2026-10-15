@@ -173,12 +173,12 @@ class HomeKitBridge extends DNSSDModule
                             'caption' => 'Expert options',
                             'items'   => [
                                 [
-                                    'type'  => 'Label',
-                                    'label' => 'These options are for experts only! Do not touch!'
+                                    'type'    => 'Label',
+                                    'caption' => 'These options are for experts only! Do not touch!'
                                 ],
                                 [
-                                    'type'  => 'Label',
-                                    'label' => 'After changing the name please delete the old entry in the DNS-SD control'
+                                    'type'    => 'Label',
+                                    'caption' => 'After changing the name please delete the old entry in the DNS-SD control'
                                 ],
                                 [
                                     'type'    => 'ValidationTextBox',

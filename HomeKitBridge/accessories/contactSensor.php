@@ -49,11 +49,11 @@ class HAPAccessoryConfigurationContactSensor
     {
         return [
             [
-                'label' => 'VariableID',
-                'name'  => 'VariableID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'VariableID',
+                'name'    => 'VariableID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ]

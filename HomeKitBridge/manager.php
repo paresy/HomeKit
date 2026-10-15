@@ -260,7 +260,7 @@ class HomeKitManager
             //The fields of this type, which are only shown inside the edit dialog while this type is selected
             $items = [];
             foreach (call_user_func(self::configurationClassPrefix . $accessory . '::getColumns') as $column) {
-                $fieldCaption = $column['label'] ?? $column['caption'] ?? $column['name'];
+                $fieldCaption = $column['caption'] ?? $column['name'];
 
                 //Every dialog field requires a backing column with a default value,
                 //so adding a new row properly resets the field inside the reused dialog

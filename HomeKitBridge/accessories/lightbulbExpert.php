@@ -85,20 +85,20 @@ class HAPAccessoryConfigurationLightbulbExpert extends HAPAccessoryConfiguration
     {
         return [
             [
-                'label' => 'StateID',
-                'name'  => 'StateID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'StateID',
+                'name'    => 'StateID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ],
             [
-                'label' => 'BrightnessID',
-                'name'  => 'BrightnessID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'BrightnessID',
+                'name'    => 'BrightnessID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ]

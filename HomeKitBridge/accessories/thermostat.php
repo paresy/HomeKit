@@ -139,29 +139,29 @@ class HAPAccessoryConfigurationThermostat
     {
         return [
             [
-                'label' => 'TargetHeatingCoolingStateID (Optional)',
-                'name'  => 'TargetHeatingCoolingStateID',
-                'width' => '150px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'TargetHeatingCoolingStateID (Optional)',
+                'name'    => 'TargetHeatingCoolingStateID',
+                'width'   => '150px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ],
             [
-                'label' => 'CurrentTemperatureID',
-                'name'  => 'CurrentTemperatureID',
-                'width' => '150px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'CurrentTemperatureID',
+                'name'    => 'CurrentTemperatureID',
+                'width'   => '150px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ],
             [
-                'label' => 'TargetTemperatureID',
-                'name'  => 'TargetTemperatureID',
-                'width' => '150px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'TargetTemperatureID',
+                'name'    => 'TargetTemperatureID',
+                'width'   => '150px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ]
@@ -239,6 +239,7 @@ class HAPAccessoryConfigurationThermostat
                 'CurrentHeatingCoolingStateID'                          => 'CurrentHeatingCoolingStateID',
                 'TargetHeatingCoolingStateID (Optional)'                => 'TargetHeatingCoolingStateID (Optional)',
                 'CurrentTemperatureID'                                  => 'CurrentTemperatureID',
+                'TargetTemperatureID'                                   => 'TargetTemperatureID',
                 'Variable CurrentTemperatureID missing'                 => 'Variable CurrentTemperatureID fehlt',
                 'TargetHeatingCoolingStateID: Int required'             => 'TargetHeatingCoolingStateID: Int benötigt',
                 'TargetHeatingCoolingStateID: Action required'          => 'TargetHeatingCoolingStateID: Aktion benötigt',

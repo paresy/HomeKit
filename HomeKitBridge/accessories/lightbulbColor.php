@@ -146,20 +146,20 @@ class HAPAccessoryConfigurationLightbulbColor extends HAPAccessoryConfigurationL
     {
         return [
             [
-                'label' => 'VariableID',
-                'name'  => 'VariableID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'VariableID',
+                'name'    => 'VariableID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ],
             [
-                'label' => 'BrightnessID',
-                'name'  => 'BrightnessID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'BrightnessID',
+                'name'    => 'BrightnessID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ]

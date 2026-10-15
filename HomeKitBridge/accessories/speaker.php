@@ -72,20 +72,20 @@ class HAPAccessoryConfigurationSpeaker
     {
         return [
             [
-                'label' => 'MuteID',
-                'name'  => 'MuteID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'MuteID',
+                'name'    => 'MuteID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ],
             [
-                'label' => 'VolumeID',
-                'name'  => 'VolumeID',
-                'width' => '250px',
-                'add'   => 0,
-                'edit'  => [
+                'caption' => 'VolumeID',
+                'name'    => 'VolumeID',
+                'width'   => '250px',
+                'add'     => 0,
+                'edit'    => [
                     'type' => 'SelectVariable'
                 ]
             ]
