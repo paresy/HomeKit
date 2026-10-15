@@ -20,9 +20,10 @@ class HomeKitGarageDoorOpenerTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, '~ShutterMoveStop');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryGarageDoorOpener', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'GarageDoorOpener',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid
             ]
@@ -54,18 +55,26 @@ class HomeKitGarageDoorOpenerTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($TargetDoorStateID, '~ShutterMoveStop');
         IPS_SetVariableCustomAction($TargetDoorStateID, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryGarageDoorOpener', json_encode([
-            [
-                'ID'                    => 3,
-                'Name'                  => 'Test',
-                'CurrentDoorState'      => $CurrentDoorStateID,
-                'TargetDoorState'       => $TargetDoorStateID,
-                'ObstructionDetected'   => $ObstructionDetectedID
-            ]
-        ]));
-        IPS_ApplyChanges($bridgeID);
-
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
+
+        //Stage the persistence of the oldest schema, which is converted by the Migrate hook
+        $bridgeInterface->ApplyPersistence([
+            'configuration' => [
+                'AccessoryGarageDoorOpener' => json_encode([
+                    [
+                        'ID'                    => 3,
+                        'Name'                  => 'Test',
+                        'CurrentDoorState'      => $CurrentDoorStateID,
+                        'TargetDoorState'       => $TargetDoorStateID,
+                        'ObstructionDetected'   => $ObstructionDetectedID
+                    ]
+                ])
+            ]
+        ]);
+
+        $this->assertTrue(IPS\InstanceManager::migrateInstance($bridgeID));
+
+        IPS_ApplyChanges($bridgeID);
 
         $base = json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true);
         $accessory = json_decode(file_get_contents(__DIR__ . '/exports/GarageDoorOpener.json'), true);

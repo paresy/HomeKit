@@ -20,9 +20,10 @@ class HomeKitWindowCoveringUpDownTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, '~ShutterMoveStop');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryWindowCoveringUpDown', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'WindowCoveringUpDown',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid
             ]

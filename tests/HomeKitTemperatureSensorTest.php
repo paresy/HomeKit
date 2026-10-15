@@ -12,9 +12,10 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(2 /* Float */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryTemperatureSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'TemperatureSensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -38,9 +39,10 @@ class HomeKitTemperatureSensorTest extends HomeKitBaseTest
 
         SetValue($vid, -500);
 
-        IPS_SetProperty($bridgeID, 'AccessoryTemperatureSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'TemperatureSensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]

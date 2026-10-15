@@ -12,9 +12,10 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(1 /* Integer */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryStatelessProgrammableSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'StatelessProgrammableSwitch',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -38,9 +39,10 @@ class HomeKitStatelessProgrammableSwitchTest extends HomeKitBaseTest
 
         SetValue($vid, -5);
 
-        IPS_SetProperty($bridgeID, 'AccessoryStatelessProgrammableSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'StatelessProgrammableSwitch',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]

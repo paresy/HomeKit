@@ -21,9 +21,10 @@ class HomeKitFanTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, '~Intensity.100');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryFan', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'Fan',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid
             ]

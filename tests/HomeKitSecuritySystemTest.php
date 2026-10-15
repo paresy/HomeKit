@@ -15,9 +15,10 @@ class HomeKitSecuritySystemTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, 'SecuritySystem.HomeKit');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessorySecuritySystem', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'SecuritySystem',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid,
                 'AlarmID'               => 0

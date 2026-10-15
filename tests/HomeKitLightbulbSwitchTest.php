@@ -14,9 +14,10 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
 
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 1,
+                'Type'       => 'LightbulbSwitch',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -38,9 +39,10 @@ class HomeKitLightbulbSwitchTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(0 /* Boolean */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbSwitch', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 1,
+                'Type'       => 'LightbulbSwitch',
                 'Name'       => 'Test',
                 'VariableID' => $vid /* The action is missing */
             ]

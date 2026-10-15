@@ -21,9 +21,10 @@ class HomeKitWindowPositionTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, '~ShutterPosition');
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryWindowPosition', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'WindowPosition',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid
             ]

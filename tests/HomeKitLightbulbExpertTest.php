@@ -24,9 +24,10 @@ class HomeKitLightbulbExpertTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($hid, '~Intensity.100'); //Any valid profile will do
         IPS_SetVariableCustomAction($hid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbExpert', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'           => 2,
+                'ID'           => 1,
+                'Type'         => 'LightbulbExpert',
                 'Name'         => 'Test',
                 'StateID'      => $sid,
                 'BrightnessID' => $hid,
@@ -49,9 +50,10 @@ class HomeKitLightbulbExpertTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(1 /* Integer */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightbulbDimmer', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 1,
+                'Type'       => 'LightbulbDimmer',
                 'Name'       => 'Test',
                 'VariableID' => $vid /* The profile/action is missing */
             ]

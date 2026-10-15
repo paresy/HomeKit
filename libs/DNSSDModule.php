@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class DNSSDModule extends IPSModule
+class DNSSDModule extends IPSModuleStrict
 {
     private $name = '';
     private $regType = '';
@@ -18,7 +18,7 @@ class DNSSDModule extends IPSModule
         $this->UpdateService($Name, $RegType, $Domain, $Host, $Port, $TXTRecords);
     }
 
-    public function Create()
+    public function Create(): void
     {
 
         //Never delete this line!
@@ -28,7 +28,7 @@ class DNSSDModule extends IPSModule
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
 
         //Never delete this line!
@@ -39,11 +39,17 @@ class DNSSDModule extends IPSModule
         }
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
 
         //Never delete this line!
         parent::ApplyChanges();
+
+        $this->AnnounceService();
+    }
+
+    protected function AnnounceService(): void
+    {
 
         //Only call this in READY state. On startup the DNSSD instance might not be available yet
         if (IPS_GetKernelRunlevel() == KR_READY) {
@@ -51,7 +57,7 @@ class DNSSDModule extends IPSModule
         }
     }
 
-    protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
+    protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords): void
     {
         $this->name = $Name;
         $this->regType = $RegType;
@@ -61,7 +67,7 @@ class DNSSDModule extends IPSModule
         $this->txtRecords = $TXTRecords;
     }
 
-    private function RegisterService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords)
+    private function RegisterService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords): void
     {
 
         //Lets expand the array our more complicated persistence format

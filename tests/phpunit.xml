@@ -3,7 +3,7 @@
   <coverage/>
   <php>
     <const name="PHPUNIT_TESTSUITE" value="true"/>
-    <const name="IPS_VERSION" value="7.4"/>
+    <const name="IPS_VERSION" value="9.1"/>
   </php>
   <source>
     <include>

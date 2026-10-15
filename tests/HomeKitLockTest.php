@@ -14,9 +14,10 @@ class HomeKitLockTest extends HomeKitBaseTest
 
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryLock', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                    => 3,
+                'ID'                    => 2,
+                'Type'                  => 'Lock',
                 'Name'                  => 'Test',
                 'VariableID'            => $vid
             ]

@@ -12,9 +12,10 @@ class HomeKitCarbonMonoxideSensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(0 /* Boolean */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryCarbonMonoxideSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'CarbonMonoxideSensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -34,9 +35,10 @@ class HomeKitCarbonMonoxideSensorTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        IPS_SetProperty($bridgeID, 'AccessoryCarbonMonoxideSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'CarbonMonoxideSensor',
                 'Name'       => 'Test',
                 'VariableID' => 9999 /* This is always an invalid variableID */
             ]

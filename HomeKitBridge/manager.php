@@ -36,16 +36,99 @@ class HomeKitManager
     public function registerProperties(): void
     {
 
-        //This will be incremented after each change
-        ($this->registerProperty)('ConfigurationNumber', '');
+        //All accessories live inside one unified list property
+        ($this->registerProperty)('Accessories', '[]');
+    }
 
-        //Save a hash over all accessory properties to only increment number on real changes
-        ($this->registerProperty)('ConfigurationHash', '');
+    //Transforms the persistence of previous module versions:
+    // - merges the legacy per-type Accessory<Type> properties into the unified 'Accessories' property
+    // - rewrites the stored IDs, so that aid = ID + 1 and the increment generator of the list can start at 1
+    // - runs the per-type doMigrate over all rows
+    // - moves the ConfigurationNumber property into its attribute
+    //Returns the new persistence or null if nothing changed
+    public static function migratePersistence(array $persistence): ?array
+    {
+        $changed = false;
 
-        //Add all accessory specific properties
-        foreach (self::$supportedAccessories as $accessory) {
-            ($this->registerProperty)(self::propertyPrefix . $accessory, '[]');
+        $configuration = $persistence['configuration'] ?? [];
+        $attributes = $persistence['attributes'] ?? [];
+
+        $accessories = json_decode($configuration['Accessories'] ?? '[]', true);
+        if (!is_array($accessories)) {
+            $accessories = [];
         }
+
+        //Merge the legacy per-type properties into the unified list
+        foreach (self::$supportedAccessories as $accessory) {
+            $legacyProperty = self::propertyPrefix . $accessory;
+            if (!isset($configuration[$legacyProperty])) {
+                continue;
+            }
+
+            $datas = json_decode($configuration[$legacyProperty], true);
+            if (is_array($datas)) {
+                foreach ($datas as $data) {
+                    $data['Type'] = $accessory;
+                    $data['ID'] = intval($data['ID'] ?? 0) - 1;
+                    $accessories[] = $data;
+                }
+            }
+
+            unset($configuration[$legacyProperty]);
+            $changed = true;
+        }
+
+        //Assign IDs to rows which never received one (legacy rows with ID zero turned into -1 above)
+        $highestID = 0;
+        foreach ($accessories as $data) {
+            if (intval($data['ID'] ?? 0) > $highestID) {
+                $highestID = intval($data['ID']);
+            }
+        }
+        foreach ($accessories as &$data) {
+            if (intval($data['ID'] ?? 0) <= 0) {
+                $data['ID'] = ++$highestID;
+                $changed = true;
+            }
+        }
+        unset($data);
+
+        //Run the per-type migrations over all rows
+        foreach ($accessories as &$data) {
+            $configurationClass = self::configurationClassPrefix . ($data['Type'] ?? '');
+            if (method_exists($configurationClass, 'doMigrate')) {
+                if (call_user_func_array($configurationClass . '::doMigrate', [&$data])) {
+                    $changed = true;
+                }
+            }
+        }
+        unset($data);
+
+        if ($changed) {
+            $configuration['Accessories'] = json_encode($accessories);
+        }
+
+        //The configuration number lives inside an attribute now
+        if (isset($configuration['ConfigurationNumber'])) {
+            $attributes['ConfigurationNumber'] = intval($configuration['ConfigurationNumber']);
+            unset($configuration['ConfigurationNumber']);
+            $changed = true;
+        }
+
+        //The hash is recomputed into its attribute on the next ApplyChanges
+        if (isset($configuration['ConfigurationHash'])) {
+            unset($configuration['ConfigurationHash']);
+            $changed = true;
+        }
+
+        if (!$changed) {
+            return null;
+        }
+
+        return [
+            'attributes'    => $attributes,
+            'configuration' => $configuration
+        ];
     }
 
     public function getAccessories(): array
@@ -55,132 +138,69 @@ class HomeKitManager
         $accessories = [(new HAPAccessoryBridge([
             'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
         ]))->doExport(1)];
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                if (in_array($data['ID'], $aidList)) {
-                    throw new Exception('AccessoryID has to be unique for all accessories');
+
+        foreach ($this->getAccessoriesData() as $data) {
+            if (!in_array($data['Type'] ?? '', self::$supportedAccessories)) {
+                continue;
+            }
+
+            //The bridge always occupies aid 1
+            $aid = intval($data['ID']) + 1;
+
+            if (in_array($aid, $aidList)) {
+                throw new Exception('AccessoryID has to be unique for all accessories');
+            }
+
+            //Only add accessories that are OK
+            if (call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data) == 'OK') {
+                $class = self::classPrefix . $data['Type'];
+                $object = new $class($data);
+
+                if ($object instanceof HAPAccessory) {
+                    $accessories[] = $object->doExport($aid);
                 }
 
-                //Only add accessories that are OK
-                if (call_user_func(self::configurationClassPrefix . $accessory . '::getStatus', $data) == 'OK') {
-                    $class = self::classPrefix . $accessory;
-                    $object = new $class($data);
-
-                    if ($object instanceof HAPAccessory) {
-                        $accessories[] = $object->doExport($data['ID']);
-                    }
-
-                    //Add to id list
-                    $aidList[] = $data['ID'];
-                }
+                //Add to id list
+                $aidList[] = $aid;
             }
         }
 
         return $accessories;
     }
 
-    public function updateAccessories(): bool
+    public function updateAccessories(): void
     {
         $ids = [];
 
-        //Check that all IDs have distinct values and build an id array
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                //Skip over uninitialized zero values
-                if ($data['ID'] != 0) {
-                    if (in_array($data['ID'], $ids)) {
-                        throw new Exception('InstanceID has to be unique for all characteristics');
-                    }
-                    $ids[] = $data['ID'];
-                }
+        foreach ($this->getAccessoriesData() as $data) {
+
+            //The list generates unique IDs. This is just a safety net
+            if (in_array($data['ID'], $ids)) {
+                throw new Exception('AccessoryID has to be unique for all accessories');
             }
-        }
+            $ids[] = $data['ID'];
 
-        //Sort array and determine highest value
-        rsort($ids);
-
-        //We have at least AccessoryID 1 used for the Bridge accessory
-        $highestID = 1;
-
-        //Highest value is first
-        if ((count($ids) > 0) && ($ids[0] > 0)) {
-            $highestID = $ids[0];
-        }
-
-        //Update all properties
-        $wasChanged = false;
-        foreach (self::$supportedAccessories as $accessory) {
-            $wasUpdated = false;
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as &$data) {
-                //ids which are currently zero need an id
-                if ($data['ID'] == 0) {
-                    $data['ID'] = ++$highestID;
-                    $wasChanged = true;
-                    $wasUpdated = true;
-                }
-                //check for migration
-                if (method_exists(self::configurationClassPrefix . $accessory, 'doMigrate')) {
-                    if (call_user_func_array(self::configurationClassPrefix . $accessory . '::doMigrate', [&$data])) {
-                        $wasChanged = true;
-                        $wasUpdated = true;
-                    }
-                }
-            }
-            if ($wasUpdated) {
-                IPS_SetProperty($this->instanceID, self::propertyPrefix . $accessory, json_encode($datas));
-            }
-        }
-
-        //if we have no new ids, lets check if anything else has been changed
-        if (!$wasChanged) {
-            $data = '';
-            //Collect all properties
-            foreach (self::$supportedAccessories as $accessory) {
-                $data .= IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory);
-            }
-            $hash = md5($data);
-            if (IPS_GetProperty($this->instanceID, 'ConfigurationHash') != $hash) {
-                IPS_SetProperty($this->instanceID, 'ConfigurationHash', $hash);
-                $wasChanged = true;
-            }
-        }
-
-        //Update all object references
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                //check for migration
-                if (method_exists(self::configurationClassPrefix . $accessory, 'getObjectIDs')) {
-                    foreach (call_user_func_array(self::configurationClassPrefix . $accessory . '::getObjectIDs', [$data]) as $id) {
-                        if ($id > 0) {
-                            ($this->registerReference)($id);
-                        }
+            //Register all object references
+            $configurationClass = self::configurationClassPrefix . ($data['Type'] ?? '');
+            if (method_exists($configurationClass, 'getObjectIDs')) {
+                foreach (call_user_func_array($configurationClass . '::getObjectIDs', [$data]) as $id) {
+                    if ($id > 0) {
+                        ($this->registerReference)($id);
                     }
                 }
             }
         }
-
-        //This is dangerous. We need to be sure that we do not end in an endless loop!
-        if ($wasChanged) {
-
-            //Increment configuration number so the hap device will reload all accessories
-            IPS_SetProperty($this->instanceID, 'ConfigurationNumber', intval(IPS_GetProperty($this->instanceID, 'ConfigurationNumber')) + 1);
-
-            //Save. This will start a recursion. We need to be careful, that the recursion stops after this.
-            IPS_ApplyChanges($this->instanceID);
-        }
-
-        return $wasChanged;
     }
 
     public function getConfigurationForm(): array
     {
-        $content = [];
-        $elements = [];
-        $translations = [];
+        $translations = [
+            'de' => [
+                'Accessories'      => 'Geräte',
+                'Type'             => 'Typ',
+                'Unsupported type' => 'Unbekannter Typ'
+            ]
+        ];
 
         $sortedAccessories = self::$supportedAccessories;
         usort($sortedAccessories, function ($a, $b)
@@ -202,67 +222,139 @@ class HomeKitManager
             return strcmp($dePosA, $dePosB);
         });
 
+        $typeColumnOptions = [];
+        $typeFormOptions = [];
+        $unionColumns = [];
+
         foreach ($sortedAccessories as $accessory) {
-            $columns = [
-                [
-                    'label' => 'ID',
-                    'name'  => 'ID',
-                    'width' => '35px',
-                    'add'   => 0,
-                    'save'  => true
-                ],
-                [
-                    'label' => 'Name',
-                    'name'  => 'Name',
-                    'width' => 'auto',
-                    'add'   => '',
-                    'edit'  => [
-                        'type' => 'ValidationTextBox'
-                    ]
-                ], //We will insert the custom columns here
-                [
-                    'label' => 'Status',
-                    'name'  => 'Status',
-                    'width' => '150px',
-                    'add'   => '-'
-                ]
-            ];
+            $caption = call_user_func(self::configurationClassPrefix . $accessory . '::getCaption');
 
-            array_splice($columns, 2, 0, call_user_func(self::configurationClassPrefix . $accessory . '::getColumns'));
+            //The fields of this type, which are only shown inside the edit dialog while this type is selected
+            $items = [];
+            foreach (call_user_func(self::configurationClassPrefix . $accessory . '::getColumns') as $column) {
+                $fieldCaption = $column['label'] ?? $column['caption'] ?? $column['name'];
 
-            $values = [];
+                //Every dialog field requires a backing column with a default value,
+                //so adding a new row properly resets the field inside the reused dialog
+                if (!isset($unionColumns[$column['name']])) {
+                    $unionColumns[$column['name']] = [
+                        'caption' => $fieldCaption,
+                        'name'    => $column['name'],
+                        'width'   => '100px',
+                        'add'     => $column['add'],
+                        'save'    => true,
+                        'visible' => false
+                    ];
+                }
 
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                $values[] = [
-                    'Status' => call_user_func(self::configurationClassPrefix . $accessory . '::getStatus', $data)
-                ];
+                $items[] = array_merge($column['edit'] ?? ['type' => 'ValidationTextBox'], [
+                    'name'    => $column['name'],
+                    'caption' => $fieldCaption
+                ]);
             }
 
-            $content = [
-                'type'     => 'List',
-                'name'     => self::propertyPrefix . $accessory,
-                'rowCount' => 10,
-                'add'      => true,
-                'delete'   => true,
+            $typeColumnOptions[] = [
+                'caption' => $caption,
+                'value'   => $accessory
+            ];
+
+            $typeFormOptions[] = [
+                'caption' => $caption,
+                'value'   => $accessory,
+                'items'   => $items
+            ];
+
+            $translations = $this->mergeTranslations($translations, call_user_func(self::configurationClassPrefix . $accessory . '::getTranslations'));
+        }
+
+        $columns = [
+            [
+                'caption' => 'ID',
+                'name'    => 'ID',
+                'width'   => '35px',
+                'add'     => [
+                    'strategy' => 'increment',
+                    'step'     => 1
+                ],
+                'save' => true
+            ],
+            [
+                'caption'     => 'Name',
+                'name'        => 'Name',
+                'width'       => 'auto',
+                'add'         => '',
+                'quickFilter' => true,
+                'edit'        => [
+                    'type' => 'ValidationTextBox'
+                ]
+            ],
+            [
+                'caption' => 'Type',
+                'name'    => 'Type',
+                'width'   => '200px',
+                'add'     => $sortedAccessories[0] ?? '',
+                'save'    => true,
+
+                //The edit parameter is never used (the dialog is defined via form),
+                //but it makes the list render the translated caption of the type
+                'edit' => [
+                    'type'    => 'Select',
+                    'options' => $typeColumnOptions
+                ]
+            ],
+            [
+                'caption' => 'Status',
+                'name'    => 'Status',
+                'width'   => '150px',
+                'add'     => '-'
+            ]
+        ];
+        $columns = array_merge($columns, array_values($unionColumns));
+
+        $values = [];
+        foreach ($this->getAccessoriesData() as $data) {
+            if (in_array($data['Type'] ?? '', self::$supportedAccessories)) {
+                $values[] = [
+                    'Status' => call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data)
+                ];
+            } else {
+                $values[] = [
+                    'Status' => 'Unsupported type'
+                ];
+            }
+        }
+
+        $elements = [
+            [
+                'type'    => 'List',
+                'name'    => 'Accessories',
+                'caption' => 'Accessories',
+                'add'     => true,
+                'delete'  => true,
                 'sort'     => [
                     'column'    => 'Name',
                     'direction' => 'ascending'
                 ],
                 'columns' => $columns,
-                'values'  => $values
-            ];
+                'values'  => $values,
 
-            $elements[] = [
-                'type'      => 'ExpansionPanel',
-                'caption'   => call_user_func(self::configurationClassPrefix . $accessory . '::getCaption'),
-                'items'     => [
-                    $content
+                //One dialog for all types: the fields of each type are defined as items
+                //of its Select option and are only shown while that type is selected
+                'form' => [
+                    [
+                        'type'    => 'ValidationTextBox',
+                        'name'    => 'Name',
+                        'caption' => 'Name'
+                    ],
+                    [
+                        'type'    => 'Select',
+                        'name'    => 'Type',
+                        'caption' => 'Type',
+                        'options' => $typeFormOptions
+                    ]
                 ]
-            ];
-
-            $translations = $this->mergeTranslations($translations, call_user_func(self::configurationClassPrefix . $accessory . '::getTranslations'));
-        }
+            ]
+        ];
 
         return [
             'elements'     => $elements,
@@ -344,6 +436,15 @@ class HomeKitManager
         return $arr1;
     }
 
+    private function getAccessoriesData(): array
+    {
+        $datas = json_decode(IPS_GetProperty($this->instanceID, 'Accessories'), true);
+        if (!is_array($datas)) {
+            return [];
+        }
+        return $datas;
+    }
+
     private function getAccessoryObject(int $aid): object
     {
         if ($this->accessoryCache !== null) {
@@ -370,18 +471,19 @@ class HomeKitManager
             return $bridge;
         }
 
-        foreach (self::$supportedAccessories as $accessory) {
-            $datas = json_decode(IPS_GetProperty($this->instanceID, self::propertyPrefix . $accessory), true);
-            foreach ($datas as $data) {
-                if ($aid == $data['ID']) {
-                    $class = self::classPrefix . $accessory;
-                    $object = new $class($data);
-                    if (!($object instanceof HAPAccessory)) {
-                        throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
-                    }
-
-                    return $object;
+        foreach ($this->getAccessoriesData() as $data) {
+            if ((intval($data['ID']) + 1) == $aid) {
+                if (!in_array($data['Type'] ?? '', self::$supportedAccessories)) {
+                    break;
                 }
+
+                $class = self::classPrefix . $data['Type'];
+                $object = new $class($data);
+                if (!($object instanceof HAPAccessory)) {
+                    throw new Exception(sprintf('Cannot use accessory with ID %d', $aid));
+                }
+
+                return $object;
             }
         }
 

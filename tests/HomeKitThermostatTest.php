@@ -18,9 +18,10 @@ class HomeKitThermostatTest extends HomeKitBaseTest
         $ttid = IPS_CreateVariable(2 /* Float */); //TargetTemperatureID
         IPS_SetVariableCustomAction($ttid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                            => 2,
+                'ID'                            => 1,
+                'Type'                          => 'Thermostat',
                 'Name'                          => 'Test Thermostat',
                 'TargetHeatingCoolingStateID'   => $thid,
                 'CurrentTemperatureID'          => $ctid,
@@ -43,9 +44,10 @@ class HomeKitThermostatTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        IPS_SetProperty($bridgeID, 'AccessoryThermostat', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'                               => 2,
+                'ID'                               => 1,
+                'Type'                             => 'Thermostat',
                 'Name'                             => 'Test Thermostat',
                 'TargetHeatingCoolingStateID'      => 9999,  /* This is always an invalid variableID */
                 'CurrentTemperatureID'             => 9999,  /* This is always an invalid variableID */

@@ -25,9 +25,10 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
         IPS_SetVariableCustomProfile($vid, '~Intensity.100'); //Any valid profile will do
         IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
 
-        IPS_SetProperty($bridgeID, 'AccessorySpeaker', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 1,
+                'Type'       => 'Speaker',
                 'Name'       => 'Test Speaker',
                 'MuteID'     => $mid,
                 'VolumeID'   => $vid
@@ -52,9 +53,10 @@ class HomeKitSpeakerTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(1 /* Integer */);
 
-        IPS_SetProperty($bridgeID, 'AccessorySpeaker', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 2,
+                'ID'         => 1,
+                'Type'       => 'Speaker',
                 'Name'       => 'Test Speaker',
                 'MuteID'     => $mid, /* The profile/action is missing */
                 'VolumeID'   => $vid /* The profile/action is missing */

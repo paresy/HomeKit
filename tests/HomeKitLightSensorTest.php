@@ -12,9 +12,10 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(2 /* Float */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'LightSensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -38,9 +39,10 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
 
         SetValue($vid, -5);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'LightSensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -60,9 +62,10 @@ class HomeKitLightSensorTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
 
-        IPS_SetProperty($bridgeID, 'AccessoryLightSensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'LightSensor',
                 'Name'       => 'Test',
                 'VariableID' => 9999 /* This is always an invalid variableID */
             ]

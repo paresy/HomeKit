@@ -12,9 +12,10 @@ class HomeKitHumiditySensorTest extends HomeKitBaseTest
 
         $vid = IPS_CreateVariable(2 /* Float */);
 
-        IPS_SetProperty($bridgeID, 'AccessoryHumiditySensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'HumiditySensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]
@@ -38,9 +39,10 @@ class HomeKitHumiditySensorTest extends HomeKitBaseTest
 
         SetValue($vid, -5);
 
-        IPS_SetProperty($bridgeID, 'AccessoryHumiditySensor', json_encode([
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
             [
-                'ID'         => 3,
+                'ID'         => 2,
+                'Type'       => 'HumiditySensor',
                 'Name'       => 'Test',
                 'VariableID' => $vid
             ]

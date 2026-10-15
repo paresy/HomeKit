@@ -21,7 +21,7 @@ class HomeKitBridge extends DNSSDModule
     private $codes = null;
     private $manager = null;
 
-    public function __construct($InstanceID)
+    public function __construct(int $InstanceID)
     {
         parent::__construct($InstanceID, '', '', '', '', 0, []);
 
@@ -61,7 +61,7 @@ class HomeKitBridge extends DNSSDModule
         );
     }
 
-    public function Create()
+    public function Create(): void
     {
 
         //Never delete this line!
@@ -75,6 +75,10 @@ class HomeKitBridge extends DNSSDModule
         $this->RegisterPropertyString('Pairings', '[]');
 
         $this->RegisterAttributeInteger('CurrentStateNumber', 1);
+
+        //Incremented whenever the exported accessories change, so controllers reload them
+        $this->RegisterAttributeInteger('ConfigurationNumber', 0);
+        $this->RegisterAttributeString('ConfigurationHash', '');
 
         //Always create our own ServerSocket, when no parent is already available
         $this->RequireParent('{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}');
@@ -95,7 +99,24 @@ class HomeKitBridge extends DNSSDModule
         }
     }
 
-    public function GetConfigurationForParent()
+    public function Migrate(string $JSONData): string
+    {
+
+        //Never delete this line!
+        parent::Migrate($JSONData);
+
+        //Merges the legacy per-type accessory properties into the unified 'Accessories' property
+        //and moves the configuration number into an attribute
+        $persistence = HomeKitManager::migratePersistence(json_decode($JSONData, true));
+
+        if ($persistence === null) {
+            return '';
+        }
+
+        return json_encode($persistence);
+    }
+
+    public function GetConfigurationForParent(): string
     {
         return json_encode([
             'Port'   => $this->ReadPropertyInteger('BridgePort'),
@@ -103,65 +124,60 @@ class HomeKitBridge extends DNSSDModule
         ]);
     }
 
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
-        $pairing = [
-            [
-                'type'  => 'RowLayout',
-                'items' => [
-                    [
-                        'type'    => 'Button',
-                        'label'   => 'Request setup code!',
-                        'onClick' => 'echo HK_RestartPairing($id);'
-                    ],
-                    [
-                        'type'  => 'Label',
-                        'label' => 'Press the button to start the pairing process. Code is valid for at most 5 minutes.'
-                    ]
-                ]
-            ]
+        $hasPairings = $this->pairings->hasPairings();
+
+        $pairButton = [
+            'type'    => 'Button',
+            'caption' => $hasPairings ? 'Pair again' : 'Pair now',
+            'onClick' => 'echo HK_RestartPairing($id);'
         ];
 
-        $label = [
-            [
-                'type'  => 'Label',
-                'label' => ''
-            ],
-            [
-                'type'  => 'Label',
-                'label' => 'You can add new items for each accessory type'
-            ]
-        ];
+        if ($hasPairings) {
+            $pairButton['confirm'] = 'Pairing again will remove the current pairing and create a new one. Only one pairing can exist at a time. To share your HomeKit devices with other people, invite them to your HomeKit home.';
+        }
 
         $dnssd = [
             [
-                'type'      => 'PopupButton',
-                'caption'   => 'Expert options',
-                'popup'     => [
-                    'caption'   => 'Expert options',
-                    'items'     => [
-                        [
-                            'type'  => 'Label',
-                            'label' => 'These options are for experts only! Do not touch!'
-                        ],
-                        [
-                            'type'  => 'Label',
-                            'label' => 'After changing the name please delete the old entry in the DNS-SD control'
-                        ],
-                        [
-                            'type'    => 'ValidationTextBox',
-                            'caption' => 'Name',
-                            'name'    => 'BridgeName'
-                        ],
-                        [
-                            'type'    => 'ValidationTextBox',
-                            'caption' => 'ID',
-                            'name'    => 'BridgeID'
-                        ],
-                        [
-                            'type'    => 'NumberSpinner',
-                            'caption' => 'Port',
-                            'name'    => 'BridgePort'
+                'type'  => 'RowLayout',
+                'items' => [
+                    $pairButton,
+                    [
+                        'type'    => 'Label',
+                        'caption' => '',
+                        'width'   => '20px'
+                    ],
+                    [
+                        'type'    => 'PopupButton',
+                        'caption' => 'Expert options',
+                        'popup'   => [
+                            'caption' => 'Expert options',
+                            'items'   => [
+                                [
+                                    'type'  => 'Label',
+                                    'label' => 'These options are for experts only! Do not touch!'
+                                ],
+                                [
+                                    'type'  => 'Label',
+                                    'label' => 'After changing the name please delete the old entry in the DNS-SD control'
+                                ],
+                                [
+                                    'type'    => 'ValidationTextBox',
+                                    'caption' => 'Name',
+                                    'name'    => 'BridgeName'
+                                ],
+                                [
+                                    'type'    => 'ValidationTextBox',
+                                    'caption' => 'ID',
+                                    'name'    => 'BridgeID'
+                                ],
+                                [
+                                    'type'    => 'NumberSpinner',
+                                    'caption' => 'Port',
+                                    'name'    => 'BridgePort'
+                                ]
+                            ]
                         ]
                     ]
                 ]
@@ -176,9 +192,9 @@ class HomeKitBridge extends DNSSDModule
                 'Name is required to consist only of letters and numbers!'                            => 'Name darf nur aus Buchstaben und Zahlen bestehen!',
                 'ID is not a valid MAC style address!'                                                => 'ID muss wie eine MAC Adresse aussehen!',
                 'OK!'                                                                                 => 'OK!',
-                'Press the button to start the pairing process. Code is valid for at most 5 minutes.' => 'Hier drücken, um das Verknüpfen zu Starten. Der Code ist für maximal 5 Minuten gültig.',
-                'Request setup code!'                                                                 => 'Code anfordern!',
-                'You can add new items for each accessory type'                                       => 'Pro Gerätetyp können Einträge hinzugefügt werden',
+                'Pair now'                                                                            => 'Jetzt koppeln',
+                'Pair again'                                                                          => 'Erneut koppeln',
+                'Pairing again will remove the current pairing and create a new one. Only one pairing can exist at a time. To share your HomeKit devices with other people, invite them to your HomeKit home.' => 'Erneutes Koppeln entfernt die bestehende Kopplung und erstellt eine neue. Es kann immer nur eine Kopplung gleichzeitig bestehen. Um HomeKit-Geräte mit weiteren Personen zu teilen, müssen diese in das HomeKit Zuhause eingeladen werden.',
                 'These options are for experts only! Do not touch!'                                   => 'Diese Einstellungen sind nur für Experten. Nicht anfassen!',
                 'Expert options'                                                                      => 'Expertenoptionen',
                 'After changing the name please delete the old entry in the DNS-SD control'           => 'Nach einer Namensänderung muss der alte Eintrag im DNS-SD Control manuell gelöscht werden',
@@ -192,7 +208,7 @@ class HomeKitBridge extends DNSSDModule
         ];
 
         $formFront = [
-            'elements'     => array_merge($pairing, $label),
+            'elements'     => [],
             'translations' => $translations
         ];
 
@@ -203,12 +219,12 @@ class HomeKitBridge extends DNSSDModule
         return json_encode(array_merge_recursive($formFront, $this->manager->getConfigurationForm(), $formBack));
     }
 
-    public function ForwardData($JSONString)
+    public function ForwardData(string $JSONString): string
     {
         return '';
     }
 
-    public function ReceiveData($JSONString)
+    public function ReceiveData(string $JSONString): string
     {
         $data = json_decode($JSONString);
 
@@ -222,11 +238,11 @@ class HomeKitBridge extends DNSSDModule
                 break;
             case 1: /* Connected */
                 $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Connected', 0);
-                return;
+                return '';
             case 2: /* Disconnected */
                 $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Disconnected', 0);
                 $this->clearSession($data->ClientIP, $data->ClientPort);
-                return;
+                return '';
         }
 
         //Get Session for ClientIP/ClientPort
@@ -245,9 +261,11 @@ class HomeKitBridge extends DNSSDModule
 
         //Save session for ClientIP/ClientPort
         $this->setSession($data->ClientIP, $data->ClientPort, $session);
+
+        return '';
     }
 
-    public function Cleanup()
+    public function Cleanup(): void
     {
 
         //This function is used to properly disconnect sessions after any responses were send
@@ -269,7 +287,7 @@ class HomeKitBridge extends DNSSDModule
         $this->SetTimerInterval('Cleanup', 0);
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
+    public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
 
         //Update DNSSD parameters before we register the service
@@ -284,7 +302,7 @@ class HomeKitBridge extends DNSSDModule
         parent::MessageSink($TimeStamp, $SenderID, $Message, $Data);
     }
 
-    public function ApplyChanges()
+    public function ApplyChanges(): void
     {
 
         //Update DNSSD parameters before we register the service
@@ -300,15 +318,26 @@ class HomeKitBridge extends DNSSDModule
             $this->UnregisterReference($ref);
         }
 
-        // We need to check for IDs that have the value zero and assign a proper ID
-        if ($this->manager->updateAccessories()) {
+        // Validate accessories and register object references
+        $this->manager->updateAccessories();
 
-            // If we had changes we need to clear subscriptions which might be invalid.
+        // Increment the configuration number whenever the exported accessories might have changed,
+        // so controllers invalidate their cached accessory database
+        $hash = md5($this->ReadPropertyString('Accessories') . $this->ReadPropertyString('BridgeName'));
+        if ($this->ReadAttributeString('ConfigurationHash') != $hash) {
+            $this->WriteAttributeString('ConfigurationHash', $hash);
+            $this->WriteAttributeInteger('ConfigurationNumber', $this->ReadAttributeInteger('ConfigurationNumber') + 1);
+
+            // Subscriptions might be invalid after accessories changed. Clients will resubscribe
             $this->clearSessionSubscriptions();
+
+            // Announce the new configuration number
+            $this->UpdateDNSSD();
+            $this->AnnounceService();
         }
     }
 
-    public function RestartPairing()
+    public function RestartPairing(): string
     {
 
         //Check if our parent instance (ServerSocket) is active
@@ -340,12 +369,12 @@ class HomeKitBridge extends DNSSDModule
     }
 
     // This is just required for testing
-    protected function getTime()
+    protected function getTime(): int
     {
         return time();
     }
 
-    private function UpdateDNSSD()
+    private function UpdateDNSSD(): void
     {
 
         // Verify name compliance
@@ -369,7 +398,7 @@ class HomeKitBridge extends DNSSDModule
                 'md=' . $this->ReadPropertyString('BridgeName'),
                 'pv=1.1',
                 'id=' . $this->ReadPropertyString('BridgeID'),
-                'c#=' . $this->ReadPropertyString('ConfigurationNumber'), /* This is registered inside manager.php */
+                'c#=' . $this->ReadAttributeInteger('ConfigurationNumber'),
                 's#=' . $this->ReadAttributeInteger('CurrentStateNumber'),
                 'ff=0', /* Switch to 1 when we have a MFi certificate */
                 'ci=2',
@@ -378,12 +407,12 @@ class HomeKitBridge extends DNSSDModule
         );
     }
 
-    private function clearSession(string $clientIP, int $clientPort)
+    private function clearSession(string $clientIP, int $clientPort): void
     {
         $this->SetBuffer($clientIP . ':' . $clientPort, '');
     }
 
-    private function getSession(string $clientIP, int $clientPort)
+    private function getSession(string $clientIP, int $clientPort): HomeKitSession
     {
         $data = $this->GetBuffer($clientIP . ':' . $clientPort);
 
@@ -411,7 +440,7 @@ class HomeKitBridge extends DNSSDModule
         );
     }
 
-    private function setSession(string $clientIP, int $clientPort, HomeKitSession $session)
+    private function setSession(string $clientIP, int $clientPort, HomeKitSession $session): void
     {
         $data = $session->__toString();
 
@@ -424,7 +453,7 @@ class HomeKitBridge extends DNSSDModule
         $this->SetBuffer($clientIP . ':' . $clientPort, $data);
     }
 
-    private function terminateSessions($Identifier)
+    private function terminateSessions(string $Identifier): void
     {
         $this->SendDebug('HomeKit', 'Terminate Sessions: ' . $Identifier, 0);
 
@@ -441,7 +470,7 @@ class HomeKitBridge extends DNSSDModule
         $this->SetTimerInterval('Cleanup', 3 * 1000);
     }
 
-    private function processNotifications($VariableID, $Value)
+    private function processNotifications(int $VariableID, mixed $Value): void
     {
         $this->SendDebug('Notify Event', 'VariableID ' . $VariableID . ' = ' . var_export($Value, true), 0);
         foreach ($this->GetBufferList() as $name) {
@@ -473,7 +502,7 @@ class HomeKitBridge extends DNSSDModule
         $this->UpdateDNSSD();
     }
 
-    private function clearSessionSubscriptions()
+    private function clearSessionSubscriptions(): void
     {
         foreach ($this->GetBufferList() as $name) {
             //check for a colon, which indicates an ip / port combination
