@@ -39,15 +39,8 @@ class DNSSDModule extends IPSModuleStrict
         }
     }
 
-    public function ApplyChanges(): void
-    {
-
-        //Never delete this line!
-        parent::ApplyChanges();
-
-        $this->AnnounceService();
-    }
-
+    //Publishing is not done in ApplyChanges, as the TXT records might still change afterwards.
+    //Modules have to call AnnounceService once their records are final
     protected function AnnounceService(): void
     {
 
@@ -55,6 +48,23 @@ class DNSSDModule extends IPSModuleStrict
         if (IPS_GetKernelRunlevel() == KR_READY) {
             $this->RegisterService($this->name, $this->regType, $this->domain, $this->host, $this->port, $this->txtRecords);
         }
+    }
+
+    //The TXT records currently published by the DNSSD instance, or null if the service is not published (yet)
+    protected function GetPublishedTXTRecords(string $Name): ?array
+    {
+        $ids = IPS_GetInstanceListByModuleID('{780B2D48-916C-4D59-AD35-5A429B2355A5}');
+        if (count($ids) == 0) {
+            return null;
+        }
+
+        foreach (json_decode(IPS_GetProperty($ids[0], 'Services'), true) as $service) {
+            if ($service['Name'] == $Name) {
+                return array_column($service['TXTRecords'], 'Value');
+            }
+        }
+
+        return null;
     }
 
     protected function UpdateService(string $Name, string $RegType, string $Domain, string $Host, int $Port, array $TXTRecords): void

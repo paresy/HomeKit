@@ -290,6 +290,12 @@ class HomeKitSession
         ])));
     }
 
+    //A session is secure after pair-verify. Controllers connected this way receive events directly
+    public function isEncrypted(): bool
+    {
+        return $this->encrypted;
+    }
+
     public function clearSubscriptions()
     {
         $this->events = [];
@@ -1303,7 +1309,7 @@ class HomeKitSession
         }
 
         $response = [
-            'accessories' => $this->manager->getAccessories()
+            'accessories' => $this->manager->exportAccessories()
         ];
 
         return $this->buildEncryptedResponse($this->buildAccessoriesResponse(json_encode($response)));

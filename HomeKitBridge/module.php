@@ -57,6 +57,10 @@ class HomeKitBridge extends DNSSDModule
             function ($ID)
             {
                 $this->RegisterReference($ID);
+            },
+            function ($Export)
+            {
+                $this->onAccessoriesExported($Export);
             }
         );
     }
@@ -74,14 +78,18 @@ class HomeKitBridge extends DNSSDModule
         $this->RegisterPropertyString('AccessoryKeyPair', bin2hex(sodium_crypto_sign_keypair()));
         $this->RegisterPropertyString('Pairings', '[]');
 
+        //Advertised as s#. Incremented when the state changes while no controller is connected
         $this->RegisterAttributeInteger('CurrentStateNumber', 1);
+
+        //Multiple state changes only increment the state number once, until a controller connects again
+        $this->RegisterAttributeBoolean('StateNumberPending', false);
 
         //Incremented whenever the exported accessories change, so controllers reload them
         $this->RegisterAttributeInteger('ConfigurationNumber', 0);
         $this->RegisterAttributeString('ConfigurationHash', '');
 
-        //Always create our own ServerSocket, when no parent is already available
-        $this->RequireParent('{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}');
+        //Links the setup QR code to this bridge via the sh TXT record
+        $this->RegisterAttributeString('SetupID', '');
 
         $this->RegisterTimer('Cleanup', 0, 'HK_Cleanup($_IPS["TARGET"]);');
 
@@ -116,6 +124,16 @@ class HomeKitBridge extends DNSSDModule
         return json_encode($persistence);
     }
 
+    public function GetCompatibleParents(): string
+    {
+
+        //Each bridge requires its own ServerSocket
+        return json_encode([
+            'type'      => 'require',
+            'moduleIDs' => ['{8062CF2B-600E-41D6-AD4B-1BA66C32D6ED}']
+        ]);
+    }
+
     public function GetConfigurationForParent(): string
     {
         return json_encode([
@@ -131,7 +149,7 @@ class HomeKitBridge extends DNSSDModule
         $pairButton = [
             'type'    => 'Button',
             'caption' => $hasPairings ? 'Pair again' : 'Pair now',
-            'onClick' => 'echo HK_RestartPairing($id);'
+            'onClick' => 'HK_RestartPairing($id);'
         ];
 
         if ($hasPairings) {
@@ -181,6 +199,33 @@ class HomeKitBridge extends DNSSDModule
                         ]
                     ]
                 ]
+            ],
+            [
+                'type'    => 'PopupAlert',
+                'name'    => 'PairingAlert',
+                'visible' => false,
+                'popup'   => [
+                    'caption' => 'Pair with HomeKit',
+                    'items'   => [
+                        [
+                            'type'        => 'QrCode',
+                            'name'        => 'PairingQR',
+                            'source'      => '',
+                            'description' => false,
+                            'center'      => true
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'name'    => 'PairingCode',
+                            'caption' => '',
+                            'bold'    => true
+                        ],
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Scan the QR code with the camera of your iOS device or enter the setup code manually in the Home app. The code is valid for 5 minutes.'
+                        ]
+                    ]
+                ]
             ]
         ];
 
@@ -194,6 +239,8 @@ class HomeKitBridge extends DNSSDModule
                 'OK!'                                                                                 => 'OK!',
                 'Pair now'                                                                            => 'Jetzt koppeln',
                 'Pair again'                                                                          => 'Erneut koppeln',
+                'Pair with HomeKit'                                                                   => 'Mit HomeKit koppeln',
+                'Scan the QR code with the camera of your iOS device or enter the setup code manually in the Home app. The code is valid for 5 minutes.' => 'Den QR-Code mit der Kamera des iOS-Geräts scannen oder den Code manuell in der Home-App eingeben. Der Code ist für maximal 5 Minuten gültig.',
                 'Pairing again will remove the current pairing and create a new one. Only one pairing can exist at a time. To share your HomeKit devices with other people, invite them to your HomeKit home.' => 'Erneutes Koppeln entfernt die bestehende Kopplung und erstellt eine neue. Es kann immer nur eine Kopplung gleichzeitig bestehen. Um HomeKit-Geräte mit weiteren Personen zu teilen, müssen diese in das HomeKit Zuhause eingeladen werden.',
                 'These options are for experts only! Do not touch!'                                   => 'Diese Einstellungen sind nur für Experten. Nicht anfassen!',
                 'Expert options'                                                                      => 'Expertenoptionen',
@@ -228,8 +275,8 @@ class HomeKitBridge extends DNSSDModule
     {
         $data = json_decode($JSONString);
 
-        //Decode buffer
-        $buffer = utf8_decode($data->Buffer);
+        //Decode buffer (IPSModuleStrict transports the data flow HEX encoded)
+        $buffer = hex2bin($data->Buffer);
 
         //Show some debug data
         switch ($data->Type) {
@@ -251,12 +298,17 @@ class HomeKitBridge extends DNSSDModule
         //Add new data and process it inside the session
         $response = $session->processData($buffer);
 
+        //A controller is connected again, so the next state change while disconnected has to increment the state number
+        if ($session->isEncrypted() && $this->ReadAttributeBoolean('StateNumberPending')) {
+            $this->WriteAttributeBoolean('StateNumberPending', false);
+        }
+
         //Only if we have a valid response
         if ($response !== '') {
             $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Transmit: ' . $response, 0);
 
             //Send response
-            $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $data->ClientIP, 'ClientPort' => $data->ClientPort, 'Type' => 0 /* Data */]));
+            $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => bin2hex($response), 'ClientIP' => $data->ClientIP, 'ClientPort' => $data->ClientPort, 'Type' => 0 /* Data */]));
         }
 
         //Save session for ClientIP/ClientPort
@@ -289,13 +341,25 @@ class HomeKitBridge extends DNSSDModule
 
     public function MessageSink(int $TimeStamp, int $SenderID, int $Message, array $Data): void
     {
+        if (($Message == IPS_KERNELMESSAGE) && ($Data[0] == KR_READY)) {
 
-        //Update DNSSD parameters before we register the service
-        $this->UpdateDNSSD();
+            //The state number has to be incremented by one after every restart
+            if ($this->pairings->hasPairings()) {
+                $this->incrementStateNumber();
+            }
 
-        //Forward variable events to sessions
+            //Update DNSSD parameters before the service is registered
+            $this->UpdateDNSSD();
+        }
+
         if (($Message == VM_UPDATE) && $Data[1] /* Changed */) {
-            $this->processNotifications($SenderID, $Data[0] /* Value */);
+            if ($this->isControllerConnected()) {
+                //Connected controllers receive events
+                $this->processNotifications($SenderID, $Data[0] /* Value */);
+            } else {
+                //Disconnected controllers detect changes via the state number
+                $this->processDisconnectedStateChange();
+            }
         }
 
         // Diese Zeile nicht löschen
@@ -304,9 +368,6 @@ class HomeKitBridge extends DNSSDModule
 
     public function ApplyChanges(): void
     {
-
-        //Update DNSSD parameters before we register the service
-        $this->UpdateDNSSD();
 
         // Diese Zeile nicht löschen
         parent::ApplyChanges();
@@ -321,32 +382,35 @@ class HomeKitBridge extends DNSSDModule
         // Validate accessories and register object references
         $this->manager->updateAccessories();
 
-        // Increment the configuration number whenever the exported accessories might have changed,
-        // so controllers invalidate their cached accessory database
-        $hash = md5($this->ReadPropertyString('Accessories') . $this->ReadPropertyString('BridgeName'));
-        if ($this->ReadAttributeString('ConfigurationHash') != $hash) {
-            $this->WriteAttributeString('ConfigurationHash', $hash);
-            $this->WriteAttributeInteger('ConfigurationNumber', $this->ReadAttributeInteger('ConfigurationNumber') + 1);
+        // Structure changes of the attribute database require a new configuration number
+        if ($this->updateConfigurationNumber($this->manager->getAccessories())) {
 
             // Subscriptions might be invalid after accessories changed. Clients will resubscribe
             $this->clearSessionSubscriptions();
-
-            // Announce the new configuration number
-            $this->UpdateDNSSD();
-            $this->AnnounceService();
         }
+
+        $this->updateMessageRegistrations();
+
+        $this->announce();
     }
 
     public function RestartPairing(): string
     {
 
-        //Check if our parent instance (ServerSocket) is active
+        //Check if our parent instance (ServerSocket) is connected and active
         $pid = IPS_GetInstance($this->InstanceID)['ConnectionID'];
-        if (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */) {
+        if (($pid == 0) || (IPS_GetInstance($pid)['InstanceStatus'] != 102 /* IS_ACTIVE */)) {
             echo $this->Translate('Our parent instance (ServerSocket) is not active!');
 
             return '';
         }
+
+        //The setup ID links the QR code to this bridge via the sh TXT record
+        $setupID = '';
+        for ($i = 0; $i < 4; $i++) {
+            $setupID .= substr('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', random_int(0, 35), 1);
+        }
+        $this->WriteAttributeString('SetupID', $setupID);
 
         //Remove all pairings before staring the pairing process
         $this->pairings->clearPairings();
@@ -362,10 +426,31 @@ class HomeKitBridge extends DNSSDModule
         }
 
         //Reformat to new UI format of newer iOS Versions (leave old format as-is for correct salt calculation)
-        $setupCode = str_replace('-', '', $setupCode);
-        $setupCode = substr($setupCode, 0, 4) . '-' . substr($setupCode, 4, 4);
+        $displayCode = str_replace('-', '', $setupCode);
+        $displayCode = substr($displayCode, 0, 4) . '-' . substr($displayCode, 4, 4);
 
-        return $setupCode;
+        //Show the QR code and the setup code in the pairing popup
+        $this->UpdateFormField('PairingQR', 'source', $this->buildSetupURI($setupCode, $setupID));
+        $this->UpdateFormField('PairingCode', 'caption', $displayCode);
+        $this->UpdateFormField('PairingAlert', 'visible', true);
+
+        return $displayCode;
+    }
+
+    //Builds the X-HM:// setup URI which iOS devices can pair from via QR code
+    private function buildSetupURI(string $setupCode, string $setupID): string
+    {
+
+        //45-bit payload: version (3 bit) | reserved (4 bit) | category (8 bit) | flags (4 bit) | setup code (27 bit)
+        $payload = 0;
+        $payload |= 2 /* Bridge */ << 31;
+        $payload |= (1 << 1) /* IP pairing */ << 27;
+        $payload |= intval(str_replace('-', '', $setupCode)) & 0x7FFFFFF;
+
+        //Encode as base36, padded to 9 characters
+        $encoded = strtoupper(str_pad(base_convert(strval($payload), 10, 36), 9, '0', STR_PAD_LEFT));
+
+        return 'X-HM://' . $encoded . $setupID;
     }
 
     // This is just required for testing
@@ -387,24 +472,37 @@ class HomeKitBridge extends DNSSDModule
             echo $this->Translate('ID is not a valid MAC style address!');
         }
 
-        // Update DNSSD Service parameters before we call ApplyChanges, which will update DNSSD the service
+        // Update DNSSD Service parameters. Publishing them is done via AnnounceService
         $this->UpdateService(
             $this->ReadPropertyString('BridgeName'),
             '_hap._tcp',
             '',
             '',
             $this->ReadPropertyInteger('BridgePort'),
-            [
-                'md=' . $this->ReadPropertyString('BridgeName'),
-                'pv=1.1',
-                'id=' . $this->ReadPropertyString('BridgeID'),
-                'c#=' . $this->ReadAttributeInteger('ConfigurationNumber'),
-                's#=' . $this->ReadAttributeInteger('CurrentStateNumber'),
-                'ff=0', /* Switch to 1 when we have a MFi certificate */
-                'ci=2',
-                'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
-            ]
+            $this->buildTXTRecords()
         );
+    }
+
+    private function buildTXTRecords(): array
+    {
+        $txtRecords = [
+            'md=' . $this->ReadPropertyString('BridgeName'),
+            'pv=1.1',
+            'id=' . $this->ReadPropertyString('BridgeID'),
+            'c#=' . $this->ReadAttributeInteger('ConfigurationNumber'),
+            's#=' . $this->ReadAttributeInteger('CurrentStateNumber'),
+            'ff=0', /* Switch to 1 when we have a MFi certificate */
+            'ci=2',
+            'sf=' . ($this->pairings->hasPairings() ? '0' : '1') /* Do not allow more than one pairing */
+        ];
+
+        //Lets iOS devices match the setup QR code to this bridge
+        $setupID = $this->ReadAttributeString('SetupID');
+        if ($setupID != '') {
+            $txtRecords[] = 'sh=' . base64_encode(substr(hash('sha512', $setupID . $this->ReadPropertyString('BridgeID'), true), 0, 4));
+        }
+
+        return $txtRecords;
     }
 
     private function clearSession(string $clientIP, int $clientPort): void
@@ -490,16 +588,116 @@ class HomeKitBridge extends DNSSDModule
                     $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Transmit: ' . $response, 0);
 
                     //Send response
-                    $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => utf8_encode($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort), 'Type' => 0 /* Data */]));
+                    $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => bin2hex($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort), 'Type' => 0 /* Data */]));
                 }
 
                 //Save session for ClientIP/ClientPort
                 $this->setSession($clientIP, intval($clientPort), $session);
             }
         }
-        $nextNumber = ($this->ReadAttributeInteger('CurrentStateNumber') % 65535) + 1;
-        $this->WriteAttributeInteger('CurrentStateNumber', $nextNumber);
+    }
+
+    private function processDisconnectedStateChange(): void
+    {
+
+        //Only paired accessories advertise state changes, and only once until a controller connects again
+        if (!$this->pairings->hasPairings() || $this->ReadAttributeBoolean('StateNumberPending')) {
+            return;
+        }
+
+        $this->WriteAttributeBoolean('StateNumberPending', true);
+        $this->incrementStateNumber();
+
         $this->UpdateDNSSD();
+        $this->AnnounceService();
+    }
+
+    private function incrementStateNumber(): void
+    {
+
+        //Must have a range of 1-65535 and wrap to 1 when it overflows
+        $this->WriteAttributeInteger('CurrentStateNumber', ($this->ReadAttributeInteger('CurrentStateNumber') % 65535) + 1);
+    }
+
+    private function updateConfigurationNumber(array $export): bool
+    {
+        $hash = HomeKitManager::getConfigurationHash($export);
+        if ($this->ReadAttributeString('ConfigurationHash') == $hash) {
+            return false;
+        }
+
+        $this->WriteAttributeString('ConfigurationHash', $hash);
+
+        //Must have a range of 1-65535 and wrap to 1 when it overflows
+        $this->WriteAttributeInteger('ConfigurationNumber', ($this->ReadAttributeInteger('ConfigurationNumber') % 65535) + 1);
+
+        return true;
+    }
+
+    //Called while serving the attribute database to a controller
+    private function onAccessoriesExported(array $export): void
+    {
+        if ($this->updateConfigurationNumber($export)) {
+            $this->updateMessageRegistrations();
+            $this->announce();
+        }
+    }
+
+    //Only variables backing a characteristic with notifications are relevant for events and the state number
+    private function updateMessageRegistrations(): void
+    {
+        $variableIDs = $this->manager->getNotifyVariableIDs();
+
+        foreach ($this->GetMessageList() as $senderID => $messages) {
+            if (in_array(VM_UPDATE, $messages) && !in_array($senderID, $variableIDs)) {
+                $this->UnregisterMessage($senderID, VM_UPDATE);
+            }
+        }
+
+        foreach ($variableIDs as $variableID) {
+            $this->RegisterMessage($variableID, VM_UPDATE);
+        }
+    }
+
+    //A controller is connected, as soon as at least one secure session exists
+    private function isControllerConnected(): bool
+    {
+        foreach ($this->GetBufferList() as $name) {
+            //check for a colon, which indicates an ip / port combination
+            if (strpos($name, ':') === false) {
+                continue;
+            }
+
+            $json = json_decode($this->GetBuffer($name), true);
+            if (($json['encrypted'] ?? false) && !($json['locked'] ?? false)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function announce(): void
+    {
+
+        //Re-publishing changed records while no controller is connected is a state change as well
+        if ((IPS_GetKernelRunlevel() == KR_READY) && $this->pairings->hasPairings() && !$this->isControllerConnected()) {
+            $withoutStateNumber = function (array $records)
+            {
+                return array_values(array_filter($records, function ($record)
+                {
+                    return strpos($record, 's#=') !== 0;
+                }));
+            };
+
+            $published = $this->GetPublishedTXTRecords($this->ReadPropertyString('BridgeName'));
+            if (($published !== null) && ($withoutStateNumber($published) != $withoutStateNumber($this->buildTXTRecords()))) {
+                $this->incrementStateNumber();
+            }
+        }
+
+        $this->UpdateDNSSD();
+        $this->AnnounceService();
     }
 
     private function clearSessionSubscriptions(): void

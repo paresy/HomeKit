@@ -10,8 +10,27 @@ class HomeKitBridgeTest extends HomeKitBaseTest
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
         $this->assertEquals(1, count(IPS_GetInstanceListByModuleID($this->bridgeModuleID)));
-        $this->assertEquals(1, count(IPS_GetInstanceListByModuleID($this->serverModuleID)));
-        $this->assertEquals(IPS_GetInstanceListByModuleID($this->serverModuleID)[0], IPS_GetInstance($bridgeID)['ConnectionID']);
+
+        //The parent is no longer created by the module, but described via GetCompatibleParents
+        $this->assertEquals(0, count(IPS_GetInstanceListByModuleID($this->serverModuleID)));
+        $this->assertEquals([
+            'type'      => 'require',
+            'moduleIDs' => [$this->serverModuleID]
+        ], json_decode(IPS\InstanceManager::getInstanceInterface($bridgeID)->GetCompatibleParents(), true));
+    }
+
+    public function testSetupCodeWithoutParent(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
+
+        ob_start();
+        $setupCode = $bridgeInterface->RestartPairing();
+        $output = ob_get_clean();
+
+        $this->assertEquals('', $setupCode);
+        $this->assertEquals('Our parent instance (ServerSocket) is not active!', $output);
     }
 
     public function testConfigurationForParent(): void
@@ -43,7 +62,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
 
     public function testSetupCode(): void
     {
-        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+        $bridgeID = $this->createBridge();
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 
@@ -54,7 +73,7 @@ class HomeKitBridgeTest extends HomeKitBaseTest
 
     public function testHTTPInvalidResponse(): void
     {
-        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+        $bridgeID = $this->createBridge();
 
         $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
 

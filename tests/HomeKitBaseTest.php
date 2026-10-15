@@ -32,6 +32,16 @@ class HomeKitBaseTest extends TestCase
         parent::setUp();
     }
 
+    //The console creates the ServerSocket based on GetCompatibleParents. Tests have to do this themselves
+    protected function createBridge(): int
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+        $serverID = IPS_CreateInstance($this->serverModuleID);
+        IPS_ConnectInstance($bridgeID, $serverID);
+
+        return $bridgeID;
+    }
+
     public function testNop(): void
     {
         $this->assertTrue(true);

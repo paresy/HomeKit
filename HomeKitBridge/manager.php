@@ -12,14 +12,35 @@ class HomeKitManager
 
     private $registerProperty = null;
     private $registerReference = null;
+    private $onAccessoriesExported = null;
     private $instanceID = 0;
     private $accessoryCache = null;
 
-    public function __construct(int $instanceID, callable $registerProperty, callable $registerReference)
+    public function __construct(int $instanceID, callable $registerProperty, callable $registerReference, ?callable $onAccessoriesExported = null)
     {
         $this->registerProperty = $registerProperty;
         $this->registerReference = $registerReference;
+        $this->onAccessoriesExported = $onAccessoriesExported;
         $this->instanceID = $instanceID;
+    }
+
+    //Hashes the structure of the attribute database, which has to bump the configuration number (c#) on changes.
+    //Values are excluded, as they change all the time. Only the values of the accessory information service
+    //are included, as they hold the names and the firmware revision
+    public static function getConfigurationHash(array $export): string
+    {
+        foreach ($export as &$accessory) {
+            foreach ($accessory['services'] as &$service) {
+                if ($service['type'] == '3E' /* AccessoryInformation */) {
+                    continue;
+                }
+                foreach ($service['characteristics'] as &$characteristic) {
+                    unset($characteristic['value']);
+                }
+            }
+        }
+
+        return md5(json_encode($export));
     }
 
     public static function registerAccessory(string $accessory): void
@@ -133,39 +154,41 @@ class HomeKitManager
 
     public function getAccessories(): array
     {
-        $aidList = [];
-
         $accessories = [(new HAPAccessoryBridge([
             'Name' => IPS_GetProperty($this->instanceID, 'BridgeName')
         ]))->doExport(1)];
 
-        foreach ($this->getAccessoriesData() as $data) {
-            if (!in_array($data['Type'] ?? '', self::$supportedAccessories)) {
-                continue;
-            }
-
-            //The bridge always occupies aid 1
-            $aid = intval($data['ID']) + 1;
-
-            if (in_array($aid, $aidList)) {
-                throw new Exception('AccessoryID has to be unique for all accessories');
-            }
-
-            //Only add accessories that are OK
-            if (call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data) == 'OK') {
-                $class = self::classPrefix . $data['Type'];
-                $object = new $class($data);
-
-                if ($object instanceof HAPAccessory) {
-                    $accessories[] = $object->doExport($aid);
-                }
-
-                //Add to id list
-                $aidList[] = $aid;
-            }
+        foreach ($this->getExportedAccessoryObjects() as $aid => $object) {
+            $accessories[] = $object->doExport($aid);
         }
 
         return $accessories;
+    }
+
+    //Used when serving the attribute database to a controller. Allows to detect structure changes,
+    //which happened without ApplyChanges, e.g. an accessory disappearing because its variable was deleted
+    public function exportAccessories(): array
+    {
+        $accessories = $this->getAccessories();
+
+        if ($this->onAccessoriesExported !== null) {
+            ($this->onAccessoriesExported)($accessories);
+        }
+
+        return $accessories;
+    }
+
+    public function getNotifyVariableIDs(): array
+    {
+        $ids = [];
+        foreach ($this->getExportedAccessoryObjects() as $object) {
+            $ids = array_merge($ids, $object->getNotifyVariableIDs());
+        }
+
+        return array_values(array_unique(array_filter($ids, function ($id)
+        {
+            return IPS_VariableExists($id);
+        })));
     }
 
     public function updateAccessories(): void
@@ -434,6 +457,37 @@ class HomeKitManager
             }
         }
         return $arr1;
+    }
+
+    //Only accessories with status OK are exported. The bridge always occupies aid 1
+    private function getExportedAccessoryObjects(): array
+    {
+        $objects = [];
+
+        foreach ($this->getAccessoriesData() as $data) {
+            if (!in_array($data['Type'] ?? '', self::$supportedAccessories)) {
+                continue;
+            }
+
+            $aid = intval($data['ID']) + 1;
+
+            if (isset($objects[$aid])) {
+                throw new Exception('AccessoryID has to be unique for all accessories');
+            }
+
+            if (call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data) != 'OK') {
+                continue;
+            }
+
+            $class = self::classPrefix . $data['Type'];
+            $object = new $class($data);
+
+            if ($object instanceof HAPAccessory) {
+                $objects[$aid] = $object;
+            }
+        }
+
+        return $objects;
     }
 
     private function getAccessoriesData(): array

@@ -71,6 +71,16 @@ class HAPAccessory
         return $this->getServiceObject($instanceID)->notifyCharacteristic($instanceID % 100, $this);
     }
 
+    //All variables whose changes are relevant for any characteristic supporting notifications
+    public function getNotifyVariableIDs(): array
+    {
+        $ids = [];
+        foreach ($this->services as $service) {
+            $ids = array_merge($ids, $service->getNotifyVariableIDs($this));
+        }
+        return array_values(array_unique($ids));
+    }
+
     private function getServiceObject(int $instanceID): object
     {
         $index = intval(floor($instanceID / 100));
@@ -247,6 +257,24 @@ class HAPService
             'iid'             => $baseInstanceID,
             'characteristics' => $characteristics
         ];
+    }
+
+    public function getNotifyVariableIDs(HAPAccessory $accessory): array
+    {
+        $ids = [];
+        foreach (array_merge($this->requiredCharacteristics, $this->optionalCharacteristics) as $characteristic) {
+            if (!$characteristic->hasPermission(HAPCharacteristicPermission::Notify)) {
+                continue;
+            }
+
+            //Optional characteristics are only exported if they are implemented
+            if (!method_exists($accessory, $this->makeNotifyFunctionName($characteristic))) {
+                continue;
+            }
+
+            $ids = array_merge($ids, $accessory->{$this->makeNotifyFunctionName($characteristic)}());
+        }
+        return $ids;
     }
 
     private function getCharacteristicObject(int $instanceID): object
