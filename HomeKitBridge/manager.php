@@ -8,6 +8,9 @@ class HomeKitManager
     public const configurationClassPrefix = 'HAPAccessoryConfiguration';
     public const propertyPrefix = 'Accessory';
 
+    //A bridge must not expose more than 150 HAP accessory objects, the bridge itself included (HAP R17, 2.5.3.2)
+    public const maxAccessories = 149;
+
     private static $supportedAccessories = [];
 
     private $registerProperty = null;
@@ -221,7 +224,9 @@ class HomeKitManager
             'de' => [
                 'Accessories'      => 'Geräte',
                 'Type'             => 'Typ',
-                'Unsupported type' => 'Unbekannter Typ'
+                'Unsupported type' => 'Unbekannter Typ',
+                'Limit exceeded'   => 'Limit überschritten',
+                'HomeKit supports at most 149 accessories per bridge. Accessories with the status "Limit exceeded" are not available in HomeKit.' => 'HomeKit unterstützt maximal 149 Geräte pro Bridge. Geräte mit dem Status "Limit überschritten" sind in HomeKit nicht verfügbar.'
             ]
         ];
 
@@ -334,11 +339,22 @@ class HomeKitManager
         ];
         $columns = array_merge($columns, array_values($unionColumns));
 
+        $exportedIDs = array_keys($this->getExportedAccessoryObjects());
+        $limitExceeded = false;
+
         $values = [];
         foreach ($this->getAccessoriesData() as $data) {
             if (in_array($data['Type'] ?? '', self::$supportedAccessories)) {
+                $status = call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data);
+
+                //Valid accessories above the limit are not exposed
+                if (($status == 'OK') && !in_array(intval($data['ID']) + 1, $exportedIDs)) {
+                    $status = 'Limit exceeded';
+                    $limitExceeded = true;
+                }
+
                 $values[] = [
-                    'Status' => call_user_func(self::configurationClassPrefix . $data['Type'] . '::getStatus', $data)
+                    'Status' => $status
                 ];
             } else {
                 $values[] = [
@@ -347,34 +363,42 @@ class HomeKitManager
             }
         }
 
-        $elements = [
-            [
-                'type'    => 'List',
-                'name'    => 'Accessories',
-                'caption' => 'Accessories',
-                'add'     => true,
-                'delete'  => true,
-                'sort'     => [
-                    'column'    => 'Name',
-                    'direction' => 'ascending'
-                ],
-                'columns' => $columns,
-                'values'  => $values,
+        $elements = [];
 
-                //One dialog for all types: the fields of each type are defined as items
-                //of its Select option and are only shown while that type is selected
-                'form' => [
-                    [
-                        'type'    => 'ValidationTextBox',
-                        'name'    => 'Name',
-                        'caption' => 'Name'
-                    ],
-                    [
-                        'type'    => 'Select',
-                        'name'    => 'Type',
-                        'caption' => 'Type',
-                        'options' => $typeFormOptions
-                    ]
+        if ($limitExceeded) {
+            $elements[] = [
+                'type'    => 'Label',
+                'bold'    => true,
+                'caption' => 'HomeKit supports at most 149 accessories per bridge. Accessories with the status "Limit exceeded" are not available in HomeKit.'
+            ];
+        }
+
+        $elements[] = [
+            'type'    => 'List',
+            'name'    => 'Accessories',
+            'caption' => 'Accessories',
+            'add'     => true,
+            'delete'  => true,
+            'sort'    => [
+                'column'    => 'Name',
+                'direction' => 'ascending'
+            ],
+            'columns' => $columns,
+            'values'  => $values,
+
+            //One dialog for all types: the fields of each type are defined as items
+            //of its Select option and are only shown while that type is selected
+            'form' => [
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'Name',
+                    'caption' => 'Name'
+                ],
+                [
+                    'type'    => 'Select',
+                    'name'    => 'Type',
+                    'caption' => 'Type',
+                    'options' => $typeFormOptions
                 ]
             ]
         ];
@@ -487,7 +511,10 @@ class HomeKitManager
             }
         }
 
-        return $objects;
+        //Everything above the limit is dropped. Lowest IDs win, so adding accessories never removes existing ones
+        ksort($objects);
+
+        return array_slice($objects, 0, self::maxAccessories, true);
     }
 
     private function getAccessoriesData(): array
@@ -525,7 +552,14 @@ class HomeKitManager
             return $bridge;
         }
 
-        foreach ($this->getAccessoriesData() as $data) {
+        $datas = $this->getAccessoriesData();
+
+        //Accessories above the limit are not exposed, so they must not be reachable either
+        if ((count($datas) > self::maxAccessories) && !array_key_exists($aid, $this->getExportedAccessoryObjects())) {
+            throw new Exception(sprintf('Cannot find accessory with ID %d', $aid));
+        }
+
+        foreach ($datas as $data) {
             if ((intval($data['ID']) + 1) == $aid) {
                 if (!in_array($data['Type'] ?? '', self::$supportedAccessories)) {
                     break;
