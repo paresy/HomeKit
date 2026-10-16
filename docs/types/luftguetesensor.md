@@ -1,26 +1,27 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Luftgütesensor beschreiben Geräte, welche über die aktuelle Luftqualität benachrichtigen.
+Geräte vom Typ Luftgütesensor übertragen die aktuelle Luftqualität an HomeKit.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Integer, welche den aktuellen Luftgüte Wert beinhaltet.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine Variable vom Typ Integer, welche den aktuellen Wert der Luftgüte enthält. Eine Aktion wird nicht benötigt
 
 ### Werte
-Wert       | Beschreibung
----------- | ---------------
-0          | Unbekannt
-1          | Hervorragend
-2          | Gut
-3          | Ok
-4          | Minderwertig
-5          | Schlecht
+
+Wert | Bedeutung
+---- | ---------
+0    | Unbekannt
+1    | Hervorragend
+2    | Gut
+3    | Ok
+4    | Minderwertig
+5    | Schlecht
 
 #### Mögliche Aktionen
 
-Aktion               | Beschreibung                              | Möglicher Satz zum Aktivieren
--------------------- | ----------------------------------------- | -----------------------------
-Luftqualität abfragen | Fragt die aktuelle Qualität der Luft in einem Raum ab | "Hey Siri, wie ist die Luftqualität von _<Name\>_."
+Aktion                | Beschreibung                       | Möglicher Satz zum Aktivieren
+--------------------- | ---------------------------------- | -----------------------------
+Luftqualität abfragen | Fragt die aktuelle Luftqualität ab | "Hey Siri, wie ist die Luftqualität von _<Name\>_?"

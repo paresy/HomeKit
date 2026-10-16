@@ -1,16 +1,16 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Helligkeitssensor beschreiben Geräte, welche die Helligkeit in einem Raum an HomeKit übertragen.
+Geräte vom Typ Helligkeitssensor übertragen die Helligkeit an HomeKit.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Integer/Float, die die Helligkeit in Lux an HomeKit übermittelt.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine Variable vom Typ Integer oder Float, welche die Helligkeit in Lux (0,0001-100.000) enthält. Eine Aktion wird nicht benötigt
 
 #### Mögliche Aktionen
 
-Aktion               | Beschreibung                              | Möglicher Satz zum Aktivieren
--------------------- | ----------------------------------------- | -----------------------------
-Helligkeit abfragen | Fragt die Helligkeit in einem Raum ab | "Hey Siri, wie ist die Helligkeit von _<Name\>_."
+Aktion              | Beschreibung                     | Möglicher Satz zum Aktivieren
+------------------- | -------------------------------- | -----------------------------
+Helligkeit abfragen | Fragt die aktuelle Helligkeit ab | "Hey Siri, wie ist die Helligkeit von _<Name\>_?"

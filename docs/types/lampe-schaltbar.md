@@ -4,10 +4,10 @@ Geräte vom Typ Lampe (Schaltbar) beschreiben Lampen, welche an- und ausgeschalt
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine schaltbare Variable vom Typ Boolean, über welche das Licht An oder Aus geschaltet wird
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen) mit Aktion, über welche die Lampe an- und ausgeschaltet wird
 
 #### Mögliche Aktionen
 

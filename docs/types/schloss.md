@@ -1,16 +1,17 @@
 ### Beschreibung
 
-Geräte vom Typ Schloss beschreiben Geräte, welche geöffnet/geschlossen werden können.
+Geräte vom Typ Schloss beschreiben Schlösser, welche ver- und entriegelt werden können.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine schaltbare Variable vom Typ Boolean, über welche das Gerät geöffnet oder geschlossen wird
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen) mit Aktion, über welche das Schloss geschaltet wird (True = verriegelt, False = entriegelt)
 
 #### Mögliche Aktionen
 
-Aktion                | Beschreibung                              | Möglicher Satz zum Aktivieren
---------------------- | ----------------------------------------- | -----------------------------
-Öffnen oder Schließen | Schaltet die Variable auf True oder False | "Hey Siri, öffne _<Name\>_."
+Aktion     | Beschreibung                    | Möglicher Satz zum Aktivieren
+---------- | ------------------------------- | -----------------------------
+Verriegeln | Schaltet die Variable auf True  | "Hey Siri, verriegle _<Name\>_."
+Entriegeln | Schaltet die Variable auf False | "Hey Siri, entriegle _<Name\>_."

@@ -1,10 +1,17 @@
 ### Beschreibung
 
-Geräte vom Typ Bewegunsmelder reagieren auf Bewegung und können nicht geschaltet werden.
+Geräte vom Typ Bewegungsmelder melden erkannte Bewegungen an HomeKit. Sie können z.B. in Automationen der Home-App verwendet werden.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Boolean, die den Status des Bewegungsmelders in HomeKit wiederspiegelt.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen). Eine Aktion wird nicht benötigt
+
+### Werte
+
+Wert  | Bedeutung
+----- | ---------
+True  | Bewegung erkannt
+False | Keine Bewegung

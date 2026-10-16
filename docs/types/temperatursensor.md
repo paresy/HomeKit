@@ -1,16 +1,16 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Temperatursensor spiegeln die aktuelle Temperatur in HomeKit wieder.
+Geräte vom Typ Temperatursensor übertragen die aktuelle Temperatur an HomeKit.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Integer/Float, die die aktuelle Temperatur in HomeKit wiederspiegelt.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine Variable vom Typ Integer oder Float, welche die Temperatur in °C (-100 bis 100) enthält. Eine Aktion wird nicht benötigt
 
 #### Mögliche Aktionen
 
-Aktion               | Beschreibung                              | Möglicher Satz zum Aktivieren
--------------------- | ----------------------------------------- | -----------------------------
-Temperatur abfragen | Fragt die aktuelle Temperatur im Raum ab | "Hey Siri, wie ist die Temperatur _<Name\>_?"
+Aktion              | Beschreibung                     | Möglicher Satz zum Aktivieren
+------------------- | -------------------------------- | -----------------------------
+Temperatur abfragen | Fragt die aktuelle Temperatur ab | "Hey Siri, wie ist die Temperatur von _<Name\>_?"

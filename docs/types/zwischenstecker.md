@@ -1,13 +1,13 @@
 ### Beschreibung
 
-Geräte vom Typ Zwischenstecker beschreiben Geräte, welche an- und ausgeschaltet werden können.
+Geräte vom Typ Zwischenstecker beschreiben Geräte, welche an- und ausgeschaltet werden können. In der Home-App erscheinen sie als Schalter.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine schaltbare Variable vom Typ Boolean, über welche das Gerät An oder Aus geschaltet wird
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen) mit Aktion, über welche das Gerät an- und ausgeschaltet wird
 
 #### Mögliche Aktionen
 

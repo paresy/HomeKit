@@ -1,10 +1,17 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Kohlenmonoxid Sensor beschreiben Geräte, welche auf zu hohe Kohlenstoffmonoxid Werte reagieren.
+Geräte vom Typ Kohlenmonoxid Sensor melden zu hohe Kohlenmonoxid-Werte an HomeKit.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Boolean, die den Status des Kohlenmonoxid Sensors in HomeKit wiederspiegelt.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen). Eine Aktion wird nicht benötigt
+
+### Werte
+
+Wert  | Bedeutung
+----- | ---------
+True  | Wert zu hoch
+False | Normal

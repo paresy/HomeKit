@@ -4,15 +4,17 @@ Geräte vom Typ Fenster (Position) beschreiben Fenster, welche positioniert werd
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine schaltbare Variable vom Typ Integer oder Float, über welche das Fenster positioniert wird
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [dimmbare Variable](../README.md#anforderungen-an-variablen) mit Aktion, über welche das Fenster positioniert wird
+
+HomeKit gibt an, wie weit geöffnet wird, die Variable dagegen, wie weit geschlossen wird. Der Wert wird daher umgekehrt: 0 % der Variable entspricht in HomeKit einer vollständig geöffneten Position (100 %), 100 % der Variable einer geschlossenen. Das entspricht der üblichen Darstellung von Rollläden in Symcon (0 % = oben).
 
 #### Mögliche Aktionen
 
-Aktion               | Beschreibung                                   | Möglicher Satz zum Aktivieren
--------------------- | ---------------------------------------------- | -----------------------------
-Öffnen               | Schaltet die Variable auf 0%                   | "Hey Siri, öffne _<Name\>_."
-Schließen            | Schaltet die Variable auf 100%                 | "Hey Siri, schließe _<Name\>_."
-Positionieren        | Schaltet die Variable auf den angegebenen Wert. Dabei wird der Wert invertiert, sodass der eigentliche Wert von 100 abgezogen wird | "Hey Siri, fahre _<Name\>_ auf 40%."
+Aktion        | Beschreibung                                                                | Möglicher Satz zum Aktivieren
+------------- | --------------------------------------------------------------------------- | -----------------------------
+Öffnen        | Schaltet die Variable auf 0 %                                               | "Hey Siri, öffne _<Name\>_."
+Schließen     | Schaltet die Variable auf 100 %                                             | "Hey Siri, schließe _<Name\>_."
+Positionieren | Öffnet auf den angegebenen Wert, z.B. schaltet "40 %" die Variable auf 60 % | "Hey Siri, öffne _<Name\>_ auf 40%."

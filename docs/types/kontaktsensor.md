@@ -1,10 +1,17 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Kontaktsensor reagieren auf Kontakte wie zum Beispiel Fenster (geöffnet/geschlossen) und können nicht geschaltet werden.
+Geräte vom Typ Kontaktsensor melden z.B., ob ein Fenster oder eine Tür geöffnet oder geschlossen ist.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Boolean, die den Status des Kontakts in HomeKit wiederspiegelt.
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen). Eine Aktion wird nicht benötigt
+
+### Werte
+
+Wert  | Bedeutung
+----- | ---------
+True  | Geöffnet (kein Kontakt)
+False | Geschlossen (Kontakt)

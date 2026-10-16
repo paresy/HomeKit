@@ -1,10 +1,17 @@
-﻿### Beschreibung
+### Beschreibung
 
-Geräte vom Typ Leckagesensor geben eine Rückmeldung im HomeKit ob eine Lackage in einem Raum erkannt wurde.
+Geräte vom Typ Leckagesensor melden ein erkanntes Leck, z.B. Wasser, an HomeKit.
 
 ### Parameter
 
-Name       | Beschreibung
----------- | ---------------
-Name       | Name mit dem das Gerät über HomeKit angesprochen werden kann
-Variable   | Eine Variable vom Typ Boolean, die eine Leckage an HomeKit übermittelt
+Feld        | Beschreibung
+----------- | ------------
+Name        | Name, unter dem das Gerät in HomeKit erscheint
+VariablenID | Eine [Schaltvariable](../README.md#anforderungen-an-variablen). Eine Aktion wird nicht benötigt
+
+### Werte
+
+Wert  | Bedeutung
+----- | ---------
+True  | Leck erkannt
+False | Kein Leck
