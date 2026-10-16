@@ -44,12 +44,12 @@ class HAPAccessorySpeaker extends HAPAccessoryBase
 
     public function writeCharacteristicMute($value)
     {
-        self::switchDevice($this->data['MuteID'], $value);
+        return self::switchDevice($this->data['MuteID'], $value);
     }
 
     public function writeCharacteristicVolume($value)
     {
-        self::dimDevice($this->data['VolumeID'], $value);
+        return self::dimDevice($this->data['VolumeID'], $value);
     }
 }
 

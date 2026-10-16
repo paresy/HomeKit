@@ -7,6 +7,9 @@ include_once __DIR__ . '/srp.php';
 
 class HomeKitSession
 {
+    //Seconds in which a device reporting the written value is considered the result of the write
+    private const writeEchoTimeout = 10;
+
     private $debug = null;
     private $subscribe = null;
     private $pairings = null;
@@ -36,6 +39,9 @@ class HomeKitSession
 
     //Event subscriptions
     private $events = [];
+
+    //Characteristics written by this controller, which must not be notified back to it (HAP R17 6.8.2)
+    private $written = [];
 
     //Required for stage PS M1+M3
     private $salt = '';
@@ -75,6 +81,7 @@ class HomeKitSession
 
             //Copy events
             $this->events = $json['events'];
+            $this->written = $json['written'] ?? [];
 
             //Copy encryption
             $this->encrypted = $json['encrypted'];
@@ -105,6 +112,7 @@ class HomeKitSession
             'data'               => bin2hex($this->data),
             'identifier'         => $this->identifier,
             'events'             => $this->events,
+            'written'            => $this->written,
             'encrypted'          => $this->encrypted,
             'encryptedData'      => bin2hex($this->encryptedData),
             'messageRecvKey'     => bin2hex($this->messageRecvKey),
@@ -214,6 +222,79 @@ class HomeKitSession
         //We consumed the data
         $this->data = '';
 
+        //A failure must not leave the controller without a response. It would wait until it times out
+        try {
+            return $this->processRequest($http);
+        } catch (Throwable $e) {
+            $this->sendDebug('Processing ' . $http['method'] . ' ' . $http['uri'] . ' failed: ' . $e->getMessage());
+            $response = $this->buildHTTP([
+                'status'  => '500 Internal Server Error',
+                'version' => 'HTTP/1.1',
+                'headers' => [
+                    'Content-Type' => 'application/hap+json'
+                ],
+                'body' => json_encode(['status' => -70402])
+            ]);
+            return $this->encrypted ? $this->buildEncryptedResponse($response) : $response;
+        }
+    }
+
+    //Unchanged updates are only relevant for characteristics which notify on every update (e.g. button presses)
+    public function notifyVariable($variableID, $value, bool $changed = true)
+    {
+        if (!$this->encrypted) {
+            return '';
+        }
+
+        $characteristics = [];
+
+        foreach ($this->events as $accessoryID => $instances) {
+            foreach ($instances as $instanceID => $ids) {
+                foreach ($ids as $id) {
+                    if ($variableID == $id) {
+                        if (!$changed && !$this->manager->notifiesOnUpdate($accessoryID, $instanceID)) {
+                            continue;
+                        }
+                        $notification = $this->sendNotify($accessoryID, $instanceID, $value);
+
+                        //The controller already knows the value it wrote itself
+                        if ($this->isOwnWrite($accessoryID, $instanceID, $notification['value'])) {
+                            continue;
+                        }
+                        $characteristics[] = $notification;
+                    }
+                }
+            }
+        }
+
+        if (count($characteristics) == 0) {
+            return '';
+        }
+
+        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
+            'characteristics' => $characteristics
+        ])));
+    }
+
+    //A session is secure after pair-verify. Controllers connected this way receive events directly
+    public function isEncrypted(): bool
+    {
+        return $this->encrypted;
+    }
+
+    //Locked sessions are disconnected by the Cleanup timer
+    public function lock(): void
+    {
+        $this->locked = true;
+    }
+
+    public function clearSubscriptions()
+    {
+        $this->events = [];
+    }
+
+    private function processRequest(array $http): string
+    {
         //Process different methods and uris
         switch ($http['method']) {
             case 'GET':
@@ -261,48 +342,6 @@ class HomeKitSession
 
                 return '';
         }
-    }
-
-    //Unchanged updates are only relevant for characteristics which notify on every update (e.g. button presses)
-    public function notifyVariable($variableID, $value, bool $changed = true)
-    {
-        if (!$this->encrypted) {
-            return '';
-        }
-
-        $characteristics = [];
-
-        foreach ($this->events as $accessoryID => $instances) {
-            foreach ($instances as $instanceID => $ids) {
-                foreach ($ids as $id) {
-                    if ($variableID == $id) {
-                        if (!$changed && !$this->manager->notifiesOnUpdate($accessoryID, $instanceID)) {
-                            continue;
-                        }
-                        $characteristics[] = $this->sendNotify($accessoryID, $instanceID, $value);
-                    }
-                }
-            }
-        }
-
-        if (count($characteristics) == 0) {
-            return '';
-        }
-
-        return $this->buildEncryptedResponse($this->buildEventResponse(json_encode([
-            'characteristics' => $characteristics
-        ])));
-    }
-
-    //A session is secure after pair-verify. Controllers connected this way receive events directly
-    public function isEncrypted(): bool
-    {
-        return $this->encrypted;
-    }
-
-    public function clearSubscriptions()
-    {
-        $this->events = [];
     }
 
     private function SendDebug(string $message)
@@ -1128,72 +1167,107 @@ class HomeKitSession
 
         $data = json_decode($http['body'], true);
         if (isset($data['characteristics'])) {
+            //Writes which were delivered to the accessory. They are confirmed once composed writes were sent as well
+            $accepted = [];
+
             //Reuse accessory objects within this batch, so composed writes (e.g. Hue/Saturation/Brightness) can build on each other
             $this->manager->beginAccessoryCache();
             try {
                 foreach ($data['characteristics'] as $characteristic) {
-                    if (isset($characteristic['value'])) {
-                        if (!$this->manager->supportsWriteCharacteristics($characteristic['aid'], $characteristic['iid'])) {
-                            $ok = false; //We need to send Multi-Status response
-                            $characteristics[] = [
-                                'aid'    => $characteristic['aid'],
-                                'iid'    => $characteristic['iid'],
-                                'status' => -70404
-                            ];
-                        } elseif ($this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']) != $characteristic['value']) {
-                            $ok = false; //We need to send Multi-Status response
-                            $characteristics[] = [
-                                'aid'    => $characteristic['aid'],
-                                'iid'    => $characteristic['iid'],
-                                'status' => -70410
-                            ];
-                        } else {
-                            $characteristics[] = [
-                                'aid'    => $characteristic['aid'],
-                                'iid'    => $characteristic['iid'],
-                                'status' => 0
-                            ];
-                            $this->manager->writeCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
-                        }
-                    } elseif (isset($characteristic['ev'])) {
-                        if (!$this->manager->supportsNotifyCharacteristics($characteristic['aid'], $characteristic['iid'])) {
-                            $ok = false; //We need to send Multi-Status response
-                            $characteristics[] = [
-                                'aid'    => $characteristic['aid'],
-                                'iid'    => $characteristic['iid'],
-                                'status' => -70406
-                            ];
-                        } else {
-                            $characteristics[] = [
-                                'aid'    => $characteristic['aid'],
-                                'iid'    => $characteristic['iid'],
-                                'status' => 0
-                            ];
-                            if ($characteristic['ev']) {
-                                $this->sendDebug('Registering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
-                                $ids = $this->manager->notifyCharacteristics($characteristic['aid'], $characteristic['iid']);
-                                if (count($ids) > 0) {
-                                    foreach ($ids as $id) {
-                                        $this->subscribeVariable($id);
-                                    }
-                                    $this->events[$characteristic['aid']][$characteristic['iid']] = $ids;
-                                }
+                    try {
+                        if (isset($characteristic['value'])) {
+                            if (!$this->manager->supportsWriteCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                                $ok = false; //We need to send Multi-Status response
+                                $characteristics[] = [
+                                    'aid'    => $characteristic['aid'],
+                                    'iid'    => $characteristic['iid'],
+                                    'status' => -70404
+                                ];
+                            } elseif ($this->manager->validateCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']) != $characteristic['value']) {
+                                $ok = false; //We need to send Multi-Status response
+                                $characteristics[] = [
+                                    'aid'    => $characteristic['aid'],
+                                    'iid'    => $characteristic['iid'],
+                                    'status' => -70410
+                                ];
                             } else {
-                                if (isset($this->events[$characteristic['aid']]) && isset($this->events[$characteristic['aid']][$characteristic['iid']])) {
-                                    unset($this->events[$characteristic['aid']][$characteristic['iid']]);
-                                    if (count($this->events[$characteristic['aid']]) == 0) {
-                                        unset($this->events[$characteristic['aid']]);
-                                    }
+                                $reason = $this->manager->writeCharacteristics($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
+                                if ($reason !== '') {
+                                    $this->sendDebug('Writing Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid'] . ' failed: ' . $reason);
+                                    $ok = false; //We need to send Multi-Status response
+                                    $characteristics[] = [
+                                        'aid'    => $characteristic['aid'],
+                                        'iid'    => $characteristic['iid'],
+                                        'status' => -70402
+                                    ];
+                                } else {
+                                    $accepted[count($characteristics)] = $characteristic;
+                                    $characteristics[] = [
+                                        'aid'    => $characteristic['aid'],
+                                        'iid'    => $characteristic['iid'],
+                                        'status' => 0
+                                    ];
                                 }
-                                $this->sendDebug('Unregistering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
                             }
+                        } elseif (isset($characteristic['ev'])) {
+                            if (!$this->manager->supportsNotifyCharacteristics($characteristic['aid'], $characteristic['iid'])) {
+                                $ok = false; //We need to send Multi-Status response
+                                $characteristics[] = [
+                                    'aid'    => $characteristic['aid'],
+                                    'iid'    => $characteristic['iid'],
+                                    'status' => -70406
+                                ];
+                            } else {
+                                $characteristics[] = [
+                                    'aid'    => $characteristic['aid'],
+                                    'iid'    => $characteristic['iid'],
+                                    'status' => 0
+                                ];
+                                if ($characteristic['ev']) {
+                                    $this->sendDebug('Registering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
+                                    $ids = $this->manager->notifyCharacteristics($characteristic['aid'], $characteristic['iid']);
+                                    if (count($ids) > 0) {
+                                        foreach ($ids as $id) {
+                                            $this->subscribeVariable($id);
+                                        }
+                                        $this->events[$characteristic['aid']][$characteristic['iid']] = $ids;
+                                    }
+                                } else {
+                                    if (isset($this->events[$characteristic['aid']]) && isset($this->events[$characteristic['aid']][$characteristic['iid']])) {
+                                        unset($this->events[$characteristic['aid']][$characteristic['iid']]);
+                                        if (count($this->events[$characteristic['aid']]) == 0) {
+                                            unset($this->events[$characteristic['aid']]);
+                                        }
+                                    }
+                                    $this->sendDebug('Unregistering Notify for Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid']);
+                                }
+                            }
+                        } else {
+                            $this->sendDebug('Unsupported write characteristic: ' . print_r($characteristic, true));
                         }
-                    } else {
-                        $this->sendDebug('Unsupported write characteristic: ' . print_r($characteristic, true));
+                    } catch (Throwable $e) {
+                        //E.g. an unknown accessory. The other characteristics of the request are still processed
+                        $this->sendDebug('Processing Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid'] . ' failed: ' . $e->getMessage());
+                        $ok = false; //We need to send Multi-Status response
+                        $characteristics[] = [
+                            'aid'    => $characteristic['aid'],
+                            'iid'    => $characteristic['iid'],
+                            'status' => -70402
+                        ];
                     }
                 }
             } finally {
-                $this->manager->endAccessoryCache();
+                $failures = $this->manager->endAccessoryCache();
+            }
+
+            foreach ($accepted as $index => $characteristic) {
+                if (isset($failures[$characteristic['aid']])) {
+                    $this->sendDebug('Writing Accessory ' . $characteristic['aid'] . ' with Instance ' . $characteristic['iid'] . ' failed: ' . $failures[$characteristic['aid']]);
+                    $ok = false; //We need to send Multi-Status response
+                    $characteristics[$index]['status'] = -70402;
+                } else {
+                    $this->rememberWrite($characteristic['aid'], $characteristic['iid'], $characteristic['value']);
+                }
             }
         }
 
@@ -1239,26 +1313,36 @@ class HomeKitSession
             $aid = intval($target[0]);
             $iid = intval($target[1]);
 
-            if (!$this->manager->supportsReadCharacteristics($aid, $iid)) {
+            try {
+                if (!$this->manager->supportsReadCharacteristics($aid, $iid)) {
+                    $ok = false; //We need to send Multi-Status response
+                    $characteristics[] = [
+                        'aid'    => $aid,
+                        'iid'    => $iid,
+                        'status' => -70405
+                    ];
+                } else {
+                    $value = $this->manager->readCharacteristics($aid, $iid);
+                    $validatedValue = $this->manager->validateCharacteristics($aid, $iid, $value);
+
+                    //Lets log this fixup behaviour...
+                    if ($value != $validatedValue) {
+                        $this->SendDebug('Invalid characteristic value ' . $value . ' fixed to ' . $validatedValue);
+                    }
+
+                    $characteristics[] = [
+                        'aid'   => $aid,
+                        'iid'   => $iid,
+                        'value' => $validatedValue
+                    ];
+                }
+            } catch (Throwable $e) {
+                $this->sendDebug('Reading Accessory ' . $aid . ' with Instance ' . $iid . ' failed: ' . $e->getMessage());
                 $ok = false; //We need to send Multi-Status response
                 $characteristics[] = [
                     'aid'    => $aid,
                     'iid'    => $iid,
-                    'status' => -70405
-                ];
-            } else {
-                $value = $this->manager->readCharacteristics($aid, $iid);
-                $validatedValue = $this->manager->validateCharacteristics($aid, $iid, $value);
-
-                //Lets log this fixup behaviour...
-                if ($value != $validatedValue) {
-                    $this->SendDebug('Invalid characteristic value ' . $value . ' fixed to ' . $validatedValue);
-                }
-
-                $characteristics[] = [
-                    'aid'   => $aid,
-                    'iid'   => $iid,
-                    'value' => $validatedValue
+                    'status' => -70402
                 ];
             }
         }
@@ -1317,6 +1401,37 @@ class HomeKitSession
         ];
 
         return $this->buildEncryptedResponse($this->buildAccessoriesResponse(json_encode($response)));
+    }
+
+    private function rememberWrite($aid, $iid, $value): void
+    {
+        $this->written[] = [
+            'aid'   => $aid,
+            'iid'   => $iid,
+            'value' => $value,
+            'time'  => time()
+        ];
+    }
+
+    //Consumes the remembered write for this characteristic. Changes from the device itself are reported
+    //only if they differ from the written value, or once the write is older than the timeout
+    private function isOwnWrite($aid, $iid, $value): bool
+    {
+        $ownWrite = false;
+        $written = [];
+        foreach ($this->written as $entry) {
+            if ($entry['time'] < time() - self::writeEchoTimeout) {
+                continue;
+            }
+            if (($entry['aid'] == $aid) && ($entry['iid'] == $iid)) {
+                $ownWrite = $ownWrite || ($this->manager->validateCharacteristics($aid, $iid, $value) == $this->manager->validateCharacteristics($aid, $iid, $entry['value']));
+                continue;
+            }
+            $written[] = $entry;
+        }
+        $this->written = $written;
+
+        return $ownWrite;
     }
 
     private function sendNotify($aid, $iid, $value)

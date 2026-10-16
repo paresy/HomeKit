@@ -60,7 +60,7 @@ class HAPAccessoryLock extends HAPAccessoryBase
                 break;
         }
 
-        self::switchDevice($this->data['VariableID'], $value);
+        return self::switchDevice($this->data['VariableID'], $value);
     }
 }
 

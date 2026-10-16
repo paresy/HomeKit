@@ -41,14 +41,16 @@ class HAPAccessory
         return $this->getServiceObject($instanceID)->supportsWriteCharacteristic($instanceID % 100, $this);
     }
 
-    public function writeCharacteristic(int $instanceID, $value): void
+    //Returns false if the device action failed
+    public function writeCharacteristic(int $instanceID, $value): bool
     {
-        $this->getServiceObject($instanceID)->writeCharacteristic($instanceID % 100, $value, $this);
+        return $this->getServiceObject($instanceID)->writeCharacteristic($instanceID % 100, $value, $this);
     }
 
     //Called after all writes of a batch were delivered. Accessories that compose multiple writes send the final value here
-    public function flushWriteCharacteristics(): void
+    public function flushWriteCharacteristics(): bool
     {
+        return true;
     }
 
     public function supportsReadCharacteristic(int $instanceID)
@@ -122,9 +124,10 @@ class HAPService
         return $this->getCharacteristicObject($instanceID)->hasPermission(HAPCharacteristicPermission::PairedWrite);
     }
 
-    public function writeCharacteristic(int $instanceID, $value, HAPAccessory $accessory): void
+    public function writeCharacteristic(int $instanceID, $value, HAPAccessory $accessory): bool
     {
-        $accessory->{$this->makeWriteFunctionName($this->getCharacteristicObject($instanceID))}($value);
+        //Write functions return the result of the device action (false like RequestAction on failure) or nothing
+        return $accessory->{$this->makeWriteFunctionName($this->getCharacteristicObject($instanceID))}($value) !== false;
     }
 
     public function supportsReadCharacteristic(int $instanceID, HAPAccessory $accessory): bool

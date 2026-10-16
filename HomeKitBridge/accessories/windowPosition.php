@@ -31,7 +31,7 @@ class HAPAccessoryWindowPosition extends HAPAccessoryBase
 
     public function writeCharacteristicTargetPosition($value)
     {
-        self::dimDevice($this->data['VariableID'], 100 - $value);
+        return self::dimDevice($this->data['VariableID'], 100 - $value);
     }
 
     public function notifyCharacteristicCurrentPosition()

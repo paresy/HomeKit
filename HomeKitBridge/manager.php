@@ -417,12 +417,21 @@ class HomeKitManager
         $this->accessoryCache = [];
     }
 
-    public function endAccessoryCache(): void
+    //Returns the reason for every accessory whose composed write failed, indexed by aid
+    public function endAccessoryCache(): array
     {
-        foreach ($this->accessoryCache as $accessory) {
-            $accessory->flushWriteCharacteristics();
+        $failures = [];
+        foreach ($this->accessoryCache as $aid => $accessory) {
+            $reason = self::runAction(function () use ($accessory)
+            {
+                return $accessory->flushWriteCharacteristics();
+            });
+            if ($reason !== '') {
+                $failures[$aid] = $reason;
+            }
         }
         $this->accessoryCache = null;
+        return $failures;
     }
 
     public function validateCharacteristics(int $aid, int $iid, $value)
@@ -435,15 +444,24 @@ class HomeKitManager
         return $this->getAccessoryObject($aid)->supportsWriteCharacteristic($iid);
     }
 
-    public function writeCharacteristics(int $aid, int $iid, $value): void
+    //Returns the reason if the device action failed, otherwise an empty string
+    public function writeCharacteristics(int $aid, int $iid, $value): string
     {
         $accessory = $this->getAccessoryObject($aid);
-        $accessory->writeCharacteristic($iid, $value);
+        $reason = self::runAction(function () use ($accessory, $iid, $value)
+        {
+            return $accessory->writeCharacteristic($iid, $value);
+        });
 
         //Without an active batch there will be no endAccessoryCache, so flush immediately
-        if ($this->accessoryCache === null) {
-            $accessory->flushWriteCharacteristics();
+        if (($reason === '') && ($this->accessoryCache === null)) {
+            $reason = self::runAction(function () use ($accessory)
+            {
+                return $accessory->flushWriteCharacteristics();
+            });
         }
+
+        return $reason;
     }
 
     public function supportsReadCharacteristics(int $aid, int $iid): bool
@@ -530,6 +548,20 @@ class HomeKitManager
             return [];
         }
         return $datas;
+    }
+
+    //Failed actions are reported like by the kernel's RequestAction, i.e. a warning and false, or as an exception
+    private static function runAction(callable $action): string
+    {
+        error_clear_last();
+        try {
+            if ($action() !== false) {
+                return '';
+            }
+        } catch (Throwable $e) {
+            return $e->getMessage();
+        }
+        return error_get_last()['message'] ?? 'Action failed';
     }
 
     private function getAccessoryObject(int $aid): object

@@ -107,13 +107,13 @@ class HAPAccessoryThermostat extends HAPAccessoryBase
     public function writeCharacteristicTargetHeatingCoolingState($value)
     {
         if (IPS_VariableExists($this->data['TargetHeatingCoolingStateID'])) {
-            self::setDevice($this->data['TargetHeatingCoolingStateID'], $value);
+            return self::setDevice($this->data['TargetHeatingCoolingStateID'], $value);
         }
     }
 
     public function writeCharacteristicTargetTemperature($value)
     {
-        self::setDevice($this->data['TargetTemperatureID'], floatval($value));
+        return self::setDevice($this->data['TargetTemperatureID'], floatval($value));
     }
 
     public function writeCharacteristicTemperatureDisplayUnits($value)

@@ -105,16 +105,20 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
         $this->writeComposedHSB('saturation', $value / 100);
     }
 
-    public function flushWriteCharacteristics(): void
+    public function flushWriteCharacteristics(): bool
     {
+        $success = true;
         if ($this->pendingRGB !== null) {
-            self::colorDevice($this->data['VariableID'], $this->pendingRGB);
+            $rgb = $this->pendingRGB;
             $this->pendingRGB = null;
+            $success = (self::colorDevice($this->data['VariableID'], $rgb) !== false);
         }
         if ($this->pendingBrightness !== null) {
-            self::dimDevice($this->data['BrightnessID'], $this->pendingBrightness);
+            $brightness = $this->pendingBrightness;
             $this->pendingBrightness = null;
+            $success = (self::dimDevice($this->data['BrightnessID'], $brightness) !== false) && $success;
         }
+        return $success;
     }
 
     //The brightness including writes of the current request, which are not sent yet

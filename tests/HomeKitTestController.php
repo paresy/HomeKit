@@ -5,7 +5,13 @@ declare(strict_types=1);
 //Simulates a HomeKit controller (e.g. an iOS device) talking to the bridge via the ServerSocket stub
 class HomeKitTestController
 {
+    //All controllers share the packet queue of the ServerSocket. Packets are routed by client port
+    private static $mailboxes = [];
+
     private $serverInterface;
+
+    //Messages which arrived together with a response and were not consumed yet
+    private $pending = [];
     private $clientIP = '127.0.0.1';
     private $clientPort = 0;
 
@@ -106,30 +112,78 @@ class HomeKitTestController
         $this->recvCounter = 0;
     }
 
-    //Sends a request via the secure session and returns the decoded JSON body
-    public function request(string $method, string $uri, string $body = '')
+    //Sends a request via the secure session and returns the decoded JSON body of the response
+    public function request(string $method, string $uri, string $body = '', string $contentType = 'application/hap+json')
+    {
+        $this->send($method, $uri, $body, $contentType);
+
+        $response = null;
+        foreach ($this->popMessages() as $message) {
+            if (($response === null) && (strpos($message['status'], 'HTTP/') === 0)) {
+                $response = $message;
+                continue;
+            }
+            $this->pending[] = $message;
+        }
+        if ($response === null) {
+            throw new Exception('No response received');
+        }
+        return $response['body'];
+    }
+
+    public function send(string $method, string $uri, string $body = '', string $contentType = 'application/hap+json'): void
     {
         $request = "$method $uri HTTP/1.1\r\nHost: bridge.local\r\n";
         if ($body !== '') {
-            $request .= "Content-Type: application/hap+json\r\nContent-Length: " . strlen($body) . "\r\n";
+            $request .= "Content-Type: $contentType\r\nContent-Length: " . strlen($body) . "\r\n";
         }
         $request .= "\r\n" . $body;
 
         $ad = pack('v', strlen($request));
         $nonce = "\0\0\0\0" . pack('P', $this->sendCounter++);
         $this->serverInterface->PushPacket($ad . sodium_crypto_aead_chacha20poly1305_ietf_encrypt($request, $ad, $nonce, $this->sendKey), $this->clientIP, $this->clientPort);
+    }
 
-        return $this->parseHTTP($this->readEncrypted())['body'];
+    //All messages (responses and events) received since the last call, decrypted in the order they arrived.
+    //A message encrypted with an unexpected counter fails to decrypt, like on a real controller
+    public function popMessages(): array
+    {
+        $messages = $this->pending;
+        $this->pending = [];
+        foreach ($this->popPackets() as $packet) {
+            if ($packet['Type'] == 2 /* Disconnect */) {
+                $messages[] = ['status' => 'DISCONNECT', 'body' => null];
+                continue;
+            }
+            $message = $this->parseHTTP($this->decryptFrames($packet['Buffer']));
+            $messages[] = ['status' => $message['status'], 'body' => $message['body']];
+        }
+        return $messages;
     }
 
     //Returns all event messages which were sent to this controller
     public function popEvents(): array
     {
         $events = [];
-        while ($this->serverInterface->HasPacket()) {
-            $events[] = $this->parseHTTP($this->readEncrypted())['body'];
+        foreach ($this->popMessages() as $message) {
+            if (strpos($message['status'], 'EVENT/') === 0) {
+                $events[] = $message['body'];
+            }
         }
         return $events;
+    }
+
+    //A second connection of the same controller, e.g. another device of the same user
+    public function connectAgain(int $clientPort): HomeKitTestController
+    {
+        $controller = clone $this;
+        $controller->pairVerify($clientPort);
+        return $controller;
+    }
+
+    public function getControllerID(): string
+    {
+        return $this->controllerID;
     }
 
     public function disconnect(): void
@@ -140,6 +194,7 @@ class HomeKitTestController
     private function connect(int $clientPort): void
     {
         $this->clientPort = $clientPort;
+        self::$mailboxes[$clientPort] = [];
         $this->serverInterface->PushConnect($this->clientIP, $this->clientPort);
     }
 
@@ -148,7 +203,11 @@ class HomeKitTestController
         $request = "POST $uri HTTP/1.1\r\nHost: bridge.local\r\nContent-Type: application/pairing+tlv8\r\nContent-Length: " . strlen($body) . "\r\n\r\n" . $body;
         $this->serverInterface->PushPacket($request, $this->clientIP, $this->clientPort);
 
-        $body = $this->parseHTTP($this->serverInterface->PopPacket()['Buffer'])['raw'];
+        $packets = $this->popPackets();
+        if (count($packets) != 1) {
+            throw new Exception(sprintf('Expected one response for %s, got %d', $uri, count($packets)));
+        }
+        $body = $this->parseHTTP($packets[0]['Buffer'])['raw'];
         $tlvs = new TLVParser($body);
 
         $error = $tlvs->getByType(TLVType::Error);
@@ -159,10 +218,20 @@ class HomeKitTestController
         return $tlvs;
     }
 
-    private function readEncrypted(): string
+    private function popPackets(): array
     {
-        $data = $this->serverInterface->PopPacket()['Buffer'];
+        while ($this->serverInterface->HasPacket()) {
+            $packet = $this->serverInterface->PopPacket();
+            self::$mailboxes[$packet['ClientPort']][] = $packet;
+        }
 
+        $packets = self::$mailboxes[$this->clientPort] ?? [];
+        self::$mailboxes[$this->clientPort] = [];
+        return $packets;
+    }
+
+    private function decryptFrames(string $data): string
+    {
         $plain = '';
         while (strlen($data) > 0) {
             $ad = substr($data, 0, 2);
@@ -170,7 +239,7 @@ class HomeKitTestController
             $nonce = "\0\0\0\0" . pack('P', $this->recvCounter++);
             $frame = sodium_crypto_aead_chacha20poly1305_ietf_decrypt(substr($data, 2, $length + 16), $ad, $nonce, $this->recvKey);
             if (!is_string($frame)) {
-                throw new Exception('Cannot decrypt frame');
+                throw new Exception(sprintf('Cannot decrypt frame with counter %d', $this->recvCounter - 1));
             }
             $plain .= $frame;
             $data = substr($data, 2 + $length + 16);

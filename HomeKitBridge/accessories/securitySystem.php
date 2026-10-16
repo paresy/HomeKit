@@ -47,7 +47,7 @@ class HAPAccessorySecuritySystem extends HAPAccessoryBase
 
     public function writeCharacteristicSecuritySystemTargetState($value)
     {
-        self::setDevice($this->data['VariableID'], $value);
+        return self::setDevice($this->data['VariableID'], $value);
     }
 }
 

@@ -58,7 +58,7 @@ class HAPAccessoryGarageDoorOpener extends HAPAccessoryBase
 
     public function writeCharacteristicTargetDoorState($value)
     {
-        self::setShutterOpen($this->data['VariableID'], $value == HAPCharacteristicTargetDoorState::Open);
+        return self::setShutterOpen($this->data['VariableID'], $value == HAPCharacteristicTargetDoorState::Open);
     }
 
     public function notifyCharacteristicObstructionDetected()

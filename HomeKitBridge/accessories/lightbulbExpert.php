@@ -23,7 +23,7 @@ class HAPAccessoryLightbulbExpert extends HAPAccessoryLightbulbSwitch
 
     public function writeCharacteristicOn($value)
     {
-        self::switchDevice($this->data['StateID'], $value);
+        return self::switchDevice($this->data['StateID'], $value);
     }
 
     public function notifyCharacteristicBrightness()
@@ -40,7 +40,7 @@ class HAPAccessoryLightbulbExpert extends HAPAccessoryLightbulbSwitch
 
     public function writeCharacteristicBrightness($value)
     {
-        self::dimDevice($this->data['BrightnessID'], $value);
+        return self::dimDevice($this->data['BrightnessID'], $value);
     }
 }
 

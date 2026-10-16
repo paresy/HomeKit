@@ -29,9 +29,9 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
         }
 
         if ($value) {
-            self::dimDevice($this->data['VariableID'], 100);
+            return self::dimDevice($this->data['VariableID'], 100);
         } else {
-            self::dimDevice($this->data['VariableID'], 0);
+            return self::dimDevice($this->data['VariableID'], 0);
         }
     }
 
@@ -49,7 +49,7 @@ class HAPAccessoryLightbulbDimmer extends HAPAccessoryLightbulbSwitch
 
     public function writeCharacteristicBrightness($value)
     {
-        self::dimDevice($this->data['VariableID'], $value);
+        return self::dimDevice($this->data['VariableID'], $value);
     }
 }
 

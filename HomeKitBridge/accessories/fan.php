@@ -38,9 +38,9 @@ class HAPAccessoryFan extends HAPAccessoryBase
         }
 
         if ($value) {
-            self::dimDevice($this->data['VariableID'], 100);
+            return self::dimDevice($this->data['VariableID'], 100);
         } else {
-            self::dimDevice($this->data['VariableID'], 0);
+            return self::dimDevice($this->data['VariableID'], 0);
         }
     }
 
@@ -58,7 +58,7 @@ class HAPAccessoryFan extends HAPAccessoryBase
 
     public function writeCharacteristicRotationSpeed($value)
     {
-        self::dimDevice($this->data['VariableID'], $value);
+        return self::dimDevice($this->data['VariableID'], $value);
     }
 }
 

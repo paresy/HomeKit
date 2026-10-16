@@ -16,6 +16,12 @@ include_once __DIR__ . '/accessories/autoload.php';
 
 class HomeKitBridge extends DNSSDModule
 {
+    //Milliseconds to wait for a session, which another thread is using
+    private const sessionTimeout = 15000;
+
+    //Milliseconds to wait for the queue of changes. It is only locked for a few operations
+    private const queueTimeout = 1000;
+
     use Simulate;
     private $pairings = null;
     private $codes = null;
@@ -288,31 +294,47 @@ class HomeKitBridge extends DNSSDModule
                 return '';
             case 2: /* Disconnected */
                 $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Disconnected', 0);
-                $this->clearSession($data->ClientIP, $data->ClientPort);
+                $this->removeSession($data->ClientIP, $data->ClientPort);
                 return '';
         }
 
-        //Get Session for ClientIP/ClientPort
-        $session = $this->getSession($data->ClientIP, $data->ClientPort);
-
-        //Add new data and process it inside the session
-        $response = $session->processData($buffer);
-
-        //A controller is connected again, so the next state change while disconnected has to increment the state number
-        if ($session->isEncrypted() && $this->ReadAttributeBoolean('StateNumberPending')) {
-            $this->WriteAttributeBoolean('StateNumberPending', false);
+        //Messages to a session (responses and events) have to be encrypted in order, each with its own counter.
+        //MessageSink runs on another thread, therefore every access to a session is serialized
+        $semaphore = $this->getSessionSemaphore($data->ClientIP, $data->ClientPort);
+        if (!IPS_SemaphoreEnter($semaphore, self::sessionTimeout)) {
+            $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Session is busy. Dropping data!', 0);
+            return '';
         }
 
-        //Only if we have a valid response
-        if ($response !== '') {
-            $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Transmit: ' . $response, 0);
+        try {
+            //Get Session for ClientIP/ClientPort
+            $session = $this->getSession($data->ClientIP, $data->ClientPort);
 
-            //Send response
-            $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => bin2hex($response), 'ClientIP' => $data->ClientIP, 'ClientPort' => $data->ClientPort, 'Type' => 0 /* Data */]));
+            //Add new data and process it inside the session
+            $response = $session->processData($buffer);
+
+            //A controller is connected again, so the next state change while disconnected has to increment the state number
+            if ($session->isEncrypted() && $this->ReadAttributeBoolean('StateNumberPending')) {
+                $this->WriteAttributeBoolean('StateNumberPending', false);
+            }
+
+            //Save session for ClientIP/ClientPort before sending. The counters have to stay in sync, even if sending fails
+            $this->setSession($data->ClientIP, $data->ClientPort, $session);
+
+            //Only if we have a valid response
+            if ($response !== '') {
+                $this->sendToClient($data->ClientIP, $data->ClientPort, $response);
+            }
+        } catch (Throwable $e) {
+            //The session answers failed requests itself. This is the last resort, e.g. if the parent is gone
+            $this->SendDebug('HomeKit ' . $data->ClientIP . ':' . $data->ClientPort, 'Processing failed: ' . $e->getMessage(), 0);
+            $this->LogMessage('Processing data of ' . $data->ClientIP . ':' . $data->ClientPort . ' failed: ' . $e->getMessage(), KL_ERROR);
+        } finally {
+            IPS_SemaphoreLeave($semaphore);
         }
 
-        //Save session for ClientIP/ClientPort
-        $this->setSession($data->ClientIP, $data->ClientPort, $session);
+        //Changes which happened while processing (e.g. caused by a write) were queued. They are sent after the response
+        $this->drainQueue($data->ClientIP, $data->ClientPort);
 
         return '';
     }
@@ -321,17 +343,16 @@ class HomeKitBridge extends DNSSDModule
     {
 
         //This function is used to properly disconnect sessions after any responses were send
-        foreach ($this->GetBufferList() as $name) {
-            $json = json_decode($this->GetBuffer($name));
+        foreach ($this->getSessionClients() as list($clientIP, $clientPort)) {
+            $json = json_decode($this->GetBuffer($clientIP . ':' . $clientPort));
             if (isset($json->locked) && $json->locked) {
-                list($clientIP, $clientPort) = explode(':', $name);
 
                 //Send disconnect request
                 $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Requesting disconnect...', 0);
-                $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => '', 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort), 'Type' => 2 /* Disconnect */]));
+                $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => '', 'ClientIP' => $clientIP, 'ClientPort' => $clientPort, 'Type' => 2 /* Disconnect */]));
 
                 //Remove session
-                $this->clearSession($clientIP, intval($clientPort));
+                $this->removeSession($clientIP, $clientPort);
             }
         }
 
@@ -506,9 +527,20 @@ class HomeKitBridge extends DNSSDModule
         return $txtRecords;
     }
 
-    private function clearSession(string $clientIP, int $clientPort): void
+    private function removeSession(string $clientIP, int $clientPort): void
     {
-        $this->SetBuffer($clientIP . ':' . $clientPort, '');
+        $semaphore = $this->getSessionSemaphore($clientIP, $clientPort);
+        if (!IPS_SemaphoreEnter($semaphore, self::sessionTimeout)) {
+            $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Session is busy. Cannot remove session!', 0);
+            return;
+        }
+
+        try {
+            $this->SetBuffer($clientIP . ':' . $clientPort, '');
+            $this->takeQueue($clientIP, $clientPort);
+        } finally {
+            IPS_SemaphoreLeave($semaphore);
+        }
     }
 
     private function getSession(string $clientIP, int $clientPort): HomeKitSession
@@ -556,12 +588,13 @@ class HomeKitBridge extends DNSSDModule
     {
         $this->SendDebug('HomeKit', 'Terminate Sessions: ' . $Identifier, 0);
 
-        foreach ($this->GetBufferList() as $name) {
-            $json = json_decode($this->GetBuffer($name));
+        foreach ($this->getSessionClients() as list($clientIP, $clientPort)) {
+            $json = json_decode($this->GetBuffer($clientIP . ':' . $clientPort));
             if (isset($json->identifier) && ($json->identifier == $Identifier)) {
-                //this will lock the session for further communication
-                $json->locked = true;
-                $this->SetBuffer($name, json_encode($json));
+                //this will lock the session for further communication. A session processing a request
+                //(e.g. the one removing its own pairing) locks itself after its response
+                $this->enqueue($clientIP, $clientPort, ['type' => 'lock']);
+                $this->drainQueue($clientIP, $clientPort);
             }
         }
 
@@ -572,29 +605,11 @@ class HomeKitBridge extends DNSSDModule
     private function processNotifications(int $VariableID, mixed $Value, bool $Changed): void
     {
         $this->SendDebug('Notify Event', 'VariableID ' . $VariableID . ' = ' . var_export($Value, true), 0);
-        foreach ($this->GetBufferList() as $name) {
-            //check for a colon, which indicates an ip / port combination
-            //filter different buffers we use like e.g. SetupCode
-            if (strpos($name, ':') !== false) {
-                list($clientIP, $clientPort) = explode(':', $name);
-
-                //Get Session for ClientIP/ClientPort
-                $session = $this->getSession($clientIP, intval($clientPort));
-
-                //Check for valid events and build response
-                $response = $session->notifyVariable($VariableID, $Value, $Changed);
-
-                //Only if we have a valid response
-                if ($response !== '') {
-                    $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Transmit: ' . $response, 0);
-
-                    //Send response
-                    $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => bin2hex($response), 'ClientIP' => $clientIP, 'ClientPort' => intval($clientPort), 'Type' => 0 /* Data */]));
-                }
-
-                //Save session for ClientIP/ClientPort
-                $this->setSession($clientIP, intval($clientPort), $session);
-            }
+        foreach ($this->getSessionClients() as list($clientIP, $clientPort)) {
+            //Never wait here: MessageSink runs on the message thread of the kernel. A session which is
+            //processing a request sends the notification after its response
+            $this->enqueue($clientIP, $clientPort, ['type' => 'notify', 'variable' => $VariableID, 'value' => $Value, 'changed' => $Changed]);
+            $this->drainQueue($clientIP, $clientPort);
         }
     }
 
@@ -711,21 +726,125 @@ class HomeKitBridge extends DNSSDModule
 
     private function clearSessionSubscriptions(): void
     {
+        foreach ($this->getSessionClients() as list($clientIP, $clientPort)) {
+            //Just clear it. Client will resubscribe
+            $this->enqueue($clientIP, $clientPort, ['type' => 'clear']);
+            $this->drainQueue($clientIP, $clientPort);
+        }
+    }
+
+    //Sessions are stored in buffers named ClientIP:ClientPort. Other buffers (e.g. SetupCode) have no colon
+    private function getSessionClients(): array
+    {
+        $clients = [];
         foreach ($this->GetBufferList() as $name) {
-            //check for a colon, which indicates an ip / port combination
-            //filter different buffers we use like e.g. SetupCode
-            if (strpos($name, ':') !== false) {
-                list($clientIP, $clientPort) = explode(':', $name);
+            $position = strrpos($name, ':');
+            if (($position === false) || ($this->GetBuffer($name) === '')) {
+                continue;
+            }
+            $clients[] = [substr($name, 0, $position), intval(substr($name, $position + 1))];
+        }
+        return $clients;
+    }
 
-                //Get Session for ClientIP/ClientPort
-                $session = $this->getSession($clientIP, intval($clientPort));
+    private function getSessionSemaphore(string $clientIP, int $clientPort): string
+    {
+        return 'HomeKit.' . $this->InstanceID . '.' . $clientIP . ':' . $clientPort;
+    }
 
-                //Just clear it. Client will resubscribe
-                $session->clearSubscriptions();
+    //The queue of changes, which still have to be applied to a session. Its name must not contain a colon
+    private function getQueueName(string $clientIP, int $clientPort): string
+    {
+        return 'Queue ' . $clientIP . ' ' . $clientPort;
+    }
 
-                //Save session for ClientIP/ClientPort
-                $this->setSession($clientIP, intval($clientPort), $session);
+    private function enqueue(string $clientIP, int $clientPort, array $item): void
+    {
+        $semaphore = 'HomeKit.' . $this->InstanceID . '.Queue';
+        if (!IPS_SemaphoreEnter($semaphore, self::queueTimeout)) {
+            $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Queue is busy. Dropping ' . $item['type'] . '!', 0);
+            return;
+        }
+
+        try {
+            $queue = json_decode($this->GetBuffer($this->getQueueName($clientIP, $clientPort)), true) ?: [];
+            $queue[] = $item;
+            $this->SetBuffer($this->getQueueName($clientIP, $clientPort), json_encode($queue));
+        } finally {
+            IPS_SemaphoreLeave($semaphore);
+        }
+    }
+
+    private function takeQueue(string $clientIP, int $clientPort): array
+    {
+        $semaphore = 'HomeKit.' . $this->InstanceID . '.Queue';
+        if (!IPS_SemaphoreEnter($semaphore, self::queueTimeout)) {
+            $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Queue is busy. Cannot take queue!', 0);
+            return [];
+        }
+
+        try {
+            $queue = json_decode($this->GetBuffer($this->getQueueName($clientIP, $clientPort)), true) ?: [];
+            $this->SetBuffer($this->getQueueName($clientIP, $clientPort), '');
+            return $queue;
+        } finally {
+            IPS_SemaphoreLeave($semaphore);
+        }
+    }
+
+    //Requires the session semaphore
+    private function applyQueue(string $clientIP, int $clientPort, HomeKitSession $session, array $queue): void
+    {
+        foreach ($queue as $item) {
+            //A failing item must not prevent saving the session. Events which were sent already advanced its counter
+            try {
+                switch ($item['type']) {
+                    case 'notify':
+                        $response = $session->notifyVariable($item['variable'], $item['value'], $item['changed']);
+                        if ($response !== '') {
+                            $this->sendToClient($clientIP, $clientPort, $response);
+                        }
+                        break;
+                    case 'clear':
+                        $session->clearSubscriptions();
+                        break;
+                    case 'lock':
+                        $session->lock();
+                        break;
+                }
+            } catch (Throwable $e) {
+                $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Processing ' . $item['type'] . ' failed: ' . $e->getMessage(), 0);
             }
         }
+    }
+
+    //Applies queued changes, unless the session is busy. Whoever holds the session applies them instead
+    private function drainQueue(string $clientIP, int $clientPort): void
+    {
+        $semaphore = $this->getSessionSemaphore($clientIP, $clientPort);
+        while ($this->GetBuffer($this->getQueueName($clientIP, $clientPort)) !== '') {
+            if (!IPS_SemaphoreEnter($semaphore, 0)) {
+                return;
+            }
+
+            try {
+                $queue = $this->takeQueue($clientIP, $clientPort);
+
+                //The session might have been removed in the meantime
+                if (($this->GetBuffer($clientIP . ':' . $clientPort) !== '') && (count($queue) > 0)) {
+                    $session = $this->getSession($clientIP, $clientPort);
+                    $this->applyQueue($clientIP, $clientPort, $session, $queue);
+                    $this->setSession($clientIP, $clientPort, $session);
+                }
+            } finally {
+                IPS_SemaphoreLeave($semaphore);
+            }
+        }
+    }
+
+    private function sendToClient(string $clientIP, int $clientPort, string $data): void
+    {
+        $this->SendDebug('HomeKit ' . $clientIP . ':' . $clientPort, 'Transmit: ' . $data, 0);
+        $this->SendDataToParent(json_encode(['DataID' => '{C8792760-65CF-4C53-B5C7-A30FCC84FEFE}', 'Buffer' => bin2hex($data), 'ClientIP' => $clientIP, 'ClientPort' => $clientPort, 'Type' => 0 /* Data */]));
     }
 }
