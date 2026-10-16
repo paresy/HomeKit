@@ -71,14 +71,20 @@ class HAPAccessory
         return $this->getServiceObject($instanceID)->notifyCharacteristic($instanceID % 100, $this);
     }
 
-    //All variables whose changes are relevant for any characteristic supporting notifications
-    public function getNotifyVariableIDs(): array
+    //All variables whose changes are relevant for any characteristic supporting notifications.
+    //With $updatesOnly only those variables, whose characteristics notify on every update
+    public function getNotifyVariableIDs(bool $updatesOnly = false): array
     {
         $ids = [];
         foreach ($this->services as $service) {
-            $ids = array_merge($ids, $service->getNotifyVariableIDs($this));
+            $ids = array_merge($ids, $service->getNotifyVariableIDs($this, $updatesOnly));
         }
         return array_values(array_unique($ids));
+    }
+
+    public function notifiesOnUpdate(int $instanceID): bool
+    {
+        return $this->getServiceObject($instanceID)->notifiesOnUpdate($instanceID % 100);
     }
 
     private function getServiceObject(int $instanceID): object
@@ -259,11 +265,15 @@ class HAPService
         ];
     }
 
-    public function getNotifyVariableIDs(HAPAccessory $accessory): array
+    public function getNotifyVariableIDs(HAPAccessory $accessory, bool $updatesOnly = false): array
     {
         $ids = [];
         foreach (array_merge($this->requiredCharacteristics, $this->optionalCharacteristics) as $characteristic) {
             if (!$characteristic->hasPermission(HAPCharacteristicPermission::Notify)) {
+                continue;
+            }
+
+            if ($updatesOnly && !$characteristic->notifiesOnUpdate()) {
                 continue;
             }
 
@@ -275,6 +285,11 @@ class HAPService
             $ids = array_merge($ids, $accessory->{$this->makeNotifyFunctionName($characteristic)}());
         }
         return $ids;
+    }
+
+    public function notifiesOnUpdate(int $instanceID): bool
+    {
+        return $this->getCharacteristicObject($instanceID)->notifiesOnUpdate();
     }
 
     private function getCharacteristicObject(int $instanceID): object
@@ -363,6 +378,13 @@ class HAPCharacteristic
         $this->minStep = $minStep;
         $this->unit = $unit;
         $this->maxLen = $maxLen;
+    }
+
+    //Most characteristics describe a state, which only needs to be notified when it changes.
+    //Characteristics describing events have to be notified on every update, even with the same value
+    public function notifiesOnUpdate(): bool
+    {
+        return false;
     }
 
     public function validate($value)

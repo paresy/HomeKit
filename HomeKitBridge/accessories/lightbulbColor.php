@@ -13,6 +13,9 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
     //compose against the pending value instead of GetValue, which is not updated yet after the detached send
     private $pendingRGB = null;
 
+    //The same applies to the separate brightness variable: On and Brightness arrive in one request
+    private $pendingBrightness = null;
+
     public function notifyCharacteristicOn()
     {
         return [
@@ -28,6 +31,11 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
     public function writeCharacteristicOn($value)
     {
         if ($value) {
+            //Only switch on, if the lamp is off. HomeKit sends On before a new brightness,
+            //which would otherwise jump to 100 % first
+            if ($this->getComposedBrightness() > 0) {
+                return;
+            }
             $this->writeCharacteristicBrightness(100);
         } else {
             $this->writeCharacteristicBrightness(0);
@@ -54,7 +62,7 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
     public function writeCharacteristicBrightness($value)
     {
         if ($this->hasSeparateBrightness()) {
-            self::dimDevice($this->data['BrightnessID'], $value);
+            $this->pendingBrightness = $value;
             return;
         }
 
@@ -103,6 +111,20 @@ class HAPAccessoryLightbulbColor extends HAPAccessoryLightbulbSwitch
             self::colorDevice($this->data['VariableID'], $this->pendingRGB);
             $this->pendingRGB = null;
         }
+        if ($this->pendingBrightness !== null) {
+            self::dimDevice($this->data['BrightnessID'], $this->pendingBrightness);
+            $this->pendingBrightness = null;
+        }
+    }
+
+    //The brightness including writes of the current request, which are not sent yet
+    private function getComposedBrightness()
+    {
+        if ($this->hasSeparateBrightness()) {
+            return $this->pendingBrightness ?? self::getDimValue($this->data['BrightnessID']);
+        }
+
+        return self::rgbToHSB($this->pendingRGB ?? self::getColorValue($this->data['VariableID']))['brightness'] * 100;
     }
 
     private function hasSeparateBrightness()

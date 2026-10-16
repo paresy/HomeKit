@@ -352,10 +352,11 @@ class HomeKitBridge extends DNSSDModule
             $this->UpdateDNSSD();
         }
 
-        if (($Message == VM_UPDATE) && $Data[1] /* Changed */) {
+        //Most characteristics only need changes. Some (e.g. button presses) are relevant on every update
+        if (($Message == VM_UPDATE) && ($Data[1] /* Changed */ || $this->notifiesOnUpdate($SenderID))) {
             if ($this->isControllerConnected()) {
                 //Connected controllers receive events
-                $this->processNotifications($SenderID, $Data[0] /* Value */);
+                $this->processNotifications($SenderID, $Data[0] /* Value */, $Data[1] /* Changed */);
             } else {
                 //Disconnected controllers detect changes via the state number
                 $this->processDisconnectedStateChange();
@@ -568,7 +569,7 @@ class HomeKitBridge extends DNSSDModule
         $this->SetTimerInterval('Cleanup', 3 * 1000);
     }
 
-    private function processNotifications(int $VariableID, mixed $Value): void
+    private function processNotifications(int $VariableID, mixed $Value, bool $Changed): void
     {
         $this->SendDebug('Notify Event', 'VariableID ' . $VariableID . ' = ' . var_export($Value, true), 0);
         foreach ($this->GetBufferList() as $name) {
@@ -581,7 +582,7 @@ class HomeKitBridge extends DNSSDModule
                 $session = $this->getSession($clientIP, intval($clientPort));
 
                 //Check for valid events and build response
-                $response = $session->notifyVariable($VariableID, $Value);
+                $response = $session->notifyVariable($VariableID, $Value, $Changed);
 
                 //Only if we have a valid response
                 if ($response !== '') {
@@ -648,6 +649,9 @@ class HomeKitBridge extends DNSSDModule
     {
         $variableIDs = $this->manager->getNotifyVariableIDs();
 
+        //Kept for MessageSink, which must not build all accessories on every update
+        $this->SetBuffer('UpdateNotifyVariables', json_encode($this->manager->getNotifyVariableIDs(true)));
+
         foreach ($this->GetMessageList() as $senderID => $messages) {
             if (in_array(VM_UPDATE, $messages) && !in_array($senderID, $variableIDs)) {
                 $this->UnregisterMessage($senderID, VM_UPDATE);
@@ -657,6 +661,11 @@ class HomeKitBridge extends DNSSDModule
         foreach ($variableIDs as $variableID) {
             $this->RegisterMessage($variableID, VM_UPDATE);
         }
+    }
+
+    private function notifiesOnUpdate(int $VariableID): bool
+    {
+        return in_array($VariableID, json_decode($this->GetBuffer('UpdateNotifyVariables'), true) ?: []);
     }
 
     //A controller is connected, as soon as at least one secure session exists

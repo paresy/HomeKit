@@ -263,7 +263,8 @@ class HomeKitSession
         }
     }
 
-    public function notifyVariable($variableID, $value)
+    //Unchanged updates are only relevant for characteristics which notify on every update (e.g. button presses)
+    public function notifyVariable($variableID, $value, bool $changed = true)
     {
         if (!$this->encrypted) {
             return '';
@@ -275,6 +276,9 @@ class HomeKitSession
             foreach ($instances as $instanceID => $ids) {
                 foreach ($ids as $id) {
                     if ($variableID == $id) {
+                        if (!$changed && !$this->manager->notifiesOnUpdate($accessoryID, $instanceID)) {
+                            continue;
+                        }
                         $characteristics[] = $this->sendNotify($accessoryID, $instanceID, $value);
                     }
                 }

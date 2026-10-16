@@ -181,11 +181,12 @@ class HomeKitManager
         return $accessories;
     }
 
-    public function getNotifyVariableIDs(): array
+    //With $updatesOnly only those variables, whose characteristics notify on every update instead of only on changes
+    public function getNotifyVariableIDs(bool $updatesOnly = false): array
     {
         $ids = [];
         foreach ($this->getExportedAccessoryObjects() as $object) {
-            $ids = array_merge($ids, $object->getNotifyVariableIDs());
+            $ids = array_merge($ids, $object->getNotifyVariableIDs($updatesOnly));
         }
 
         return array_values(array_unique(array_filter($ids, function ($id)
@@ -458,6 +459,11 @@ class HomeKitManager
     public function supportsNotifyCharacteristics(int $aid, int $iid): bool
     {
         return $this->getAccessoryObject($aid)->supportsNotifyCharacteristic($iid);
+    }
+
+    public function notifiesOnUpdate(int $aid, int $iid): bool
+    {
+        return $this->getAccessoryObject($aid)->notifiesOnUpdate($iid);
     }
 
     public function notifyCharacteristics(int $aid, int $iid)

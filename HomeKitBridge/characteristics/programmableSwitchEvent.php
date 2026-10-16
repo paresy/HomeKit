@@ -22,4 +22,10 @@ class HAPCharacteristicProgrammableSwitchEvent extends HAPCharacteristic
             1
         );
     }
+
+    //Every press is an event, also when it is the same kind of press as before
+    public function notifiesOnUpdate(): bool
+    {
+        return true;
+    }
 }

@@ -12,7 +12,7 @@ class HAPAccessoryBase extends HAPAccessory
 
     public function readCharacteristicManufacturer()
     {
-        return 'IP-Symcon Community';
+        return 'Symcon Community';
     }
 
     public function readCharacteristicModel()

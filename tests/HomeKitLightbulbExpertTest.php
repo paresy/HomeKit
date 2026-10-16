@@ -65,4 +65,30 @@ class HomeKitLightbulbExpertTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
+
+    //The brightness variable has to be dimmable as well
+    public function testBrokenBrightnessVariable(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        $sid = IPS_CreateVariable(0 /* Boolean */);
+        IPS_SetVariableCustomAction($sid, 10001); //Any valid ID will do
+
+        $hid = IPS_CreateVariable(1 /* Integer */); //Neither profile nor action
+
+        $data = [
+            'ID'           => 1,
+            'Type'         => 'LightbulbExpert',
+            'Name'         => 'Test',
+            'StateID'      => $sid,
+            'BrightnessID' => $hid,
+        ];
+        $this->assertNotEquals('OK', HAPAccessoryConfigurationLightbulbExpert::getStatus($data));
+
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([$data]));
+        IPS_ApplyChanges($bridgeID);
+
+        $bridgeInterface = IPS\InstanceManager::getInstanceInterface($bridgeID);
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
+    }
 }
