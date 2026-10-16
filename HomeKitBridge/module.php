@@ -97,6 +97,9 @@ class HomeKitBridge extends DNSSDModule
         //Links the setup QR code to this bridge via the sh TXT record
         $this->RegisterAttributeString('SetupID', '');
 
+        //Highest accessory ID ever used. IDs of deleted accessories must not be assigned again (HAP 2.6.1)
+        $this->RegisterAttributeInteger('HighestID', 0);
+
         $this->RegisterTimer('Cleanup', 0, 'HK_Cleanup($_IPS["TARGET"]);');
 
         //Each accessory is allowed to register properties for persistent data
@@ -269,7 +272,7 @@ class HomeKitBridge extends DNSSDModule
             'elements' => $dnssd
         ];
 
-        return json_encode(array_merge_recursive($formFront, $this->manager->getConfigurationForm(), $formBack));
+        return json_encode(array_merge_recursive($formFront, $this->manager->getConfigurationForm($this->ReadAttributeInteger('HighestID') + 1), $formBack));
     }
 
     public function ForwardData(string $JSONString): string
@@ -403,6 +406,12 @@ class HomeKitBridge extends DNSSDModule
 
         // Validate accessories and register object references
         $this->manager->updateAccessories();
+
+        // Never decreases, so the list continues above the IDs of deleted accessories
+        $highestID = max($this->ReadAttributeInteger('HighestID'), $this->manager->getHighestAccessoryID());
+        if ($highestID != $this->ReadAttributeInteger('HighestID')) {
+            $this->WriteAttributeInteger('HighestID', $highestID);
+        }
 
         // Structure changes of the attribute database require a new configuration number
         if ($this->updateConfigurationNumber($this->manager->getAccessories())) {

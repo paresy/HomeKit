@@ -219,7 +219,17 @@ class HomeKitManager
         }
     }
 
-    public function getConfigurationForm(): array
+    public function getHighestAccessoryID(): int
+    {
+        $highestID = 0;
+        foreach ($this->getAccessoriesData() as $data) {
+            $highestID = max($highestID, intval($data['ID']));
+        }
+        return $highestID;
+    }
+
+    //New accessories get an ID of at least nextID, so the aid of a deleted accessory is never reused
+    public function getConfigurationForm(int $nextID = 1): array
     {
         $translations = [
             'de' => [
@@ -303,7 +313,8 @@ class HomeKitManager
                 'width'   => '35px',
                 'add'     => [
                     'strategy' => 'increment',
-                    'step'     => 1
+                    'step'     => 1,
+                    'start'    => $nextID
                 ],
                 'save' => true
             ],

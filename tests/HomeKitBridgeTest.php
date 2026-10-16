@@ -50,6 +50,27 @@ class HomeKitBridgeTest extends HomeKitBaseTest
         $this->assertNotEquals(null, json_decode(IPS_GetConfigurationForm($bridgeID), true));
     }
 
+    //HAP 2.6.1: the aid of a deleted accessory must not be assigned to another accessory
+    public function testIDsOfDeletedAccessoriesAreNotReused(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+        $this->assertEquals(['strategy' => 'increment', 'step' => 1, 'start' => 1], $this->getIDColumnAdd($bridgeID));
+
+        $accessories = [];
+        foreach ([1, 2, 3] as $id) {
+            $accessories[] = ['ID' => $id, 'Type' => 'LightbulbSwitch', 'Name' => 'Lamp ' . $id, 'VariableID' => IPS_CreateVariable(0 /* Boolean */)];
+        }
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode($accessories));
+        IPS_ApplyChanges($bridgeID);
+        $this->assertEquals(4, $this->getIDColumnAdd($bridgeID)['start']);
+
+        //Deleting the accessory with the highest ID keeps the start above it
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode(array_slice($accessories, 0, 2)));
+        IPS_ApplyChanges($bridgeID);
+        $this->assertEquals(3, $this->getBridgeAttribute($bridgeID, 'HighestID'));
+        $this->assertEquals(4, $this->getIDColumnAdd($bridgeID)['start']);
+    }
+
     public function testAccessories(): void
     {
         $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
@@ -98,5 +119,16 @@ class HomeKitBridgeTest extends HomeKitBaseTest
             'ClientIP'   => $clientIP,
             'ClientPort' => $clientPort,
         ], $serverInterface->PeekPacket());
+    }
+
+    private function getIDColumnAdd(int $bridgeID): array
+    {
+        $form = json_decode(IPS_GetConfigurationForm($bridgeID), true);
+        foreach ($form['elements'] as $element) {
+            if (($element['name'] ?? '') == 'Accessories') {
+                return $element['columns'][0]['add'];
+            }
+        }
+        $this->fail('Accessories list is missing');
     }
 }
