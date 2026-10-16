@@ -125,7 +125,7 @@ class HAPAccessoryConfigurationSecuritySystem
             $presentation = IPS_GetVariablePresentation($data['VariableID']);
             switch ($presentation['PRESENTATION'] ?? 'Invalid Presentation') {
                 case VARIABLE_PRESENTATION_LEGACY:
-                    if ($presentation['PROFILE'] != 'SecuritySystem.HomeKit') {
+                    if (($presentation['PROFILE'] ?? '') != 'SecuritySystem.HomeKit') {
                         return 'Unsupported Profile';
                     }
                     // No break. Add additional comment above this line if intentional

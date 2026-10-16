@@ -61,4 +61,40 @@ class HomeKitLightbulbDimmerTest extends HomeKitBaseTest
         //Check if the generated content matches our test file
         $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), $bridgeInterface->DebugAccessories());
     }
+
+    //Presentations may omit parameters, e.g. a value presentation without MIN/MAX. This must not cause warnings
+    public function testPresentationWithoutBounds(): void
+    {
+        $bridgeID = IPS_CreateInstance($this->bridgeModuleID);
+
+        $vid = IPS_CreateVariable(1 /* Integer */);
+        IPS_SetVariableCustomPresentation($vid, ['PRESENTATION' => VARIABLE_PRESENTATION_VALUE_PRESENTATION]);
+        IPS_SetVariableCustomAction($vid, 10001); //Any valid ID will do
+
+        IPS_SetProperty($bridgeID, 'Accessories', json_encode([
+            ['ID' => 1, 'Type' => 'LightbulbDimmer', 'Name' => 'Test', 'VariableID' => $vid]
+        ]));
+
+        set_error_handler(function ($errno, $errstr)
+        {
+            throw new ErrorException($errstr, 0, $errno);
+        }, E_WARNING);
+        try {
+            IPS_ApplyChanges($bridgeID);
+            $form = json_decode(IPS_GetConfigurationForm($bridgeID), true);
+        } finally {
+            restore_error_handler();
+        }
+
+        $values = [];
+        foreach ($form['elements'] as $element) {
+            if (($element['name'] ?? '') == 'Accessories') {
+                $values = $element['values'];
+            }
+        }
+        $this->assertEquals('Presentation not dimmable', $values[0]['Status']);
+
+        //Not dimmable accessories are not exported
+        $this->assertEquals(json_decode(file_get_contents(__DIR__ . '/exports/None.json'), true), IPS\InstanceManager::getInstanceInterface($bridgeID)->DebugAccessories());
+    }
 }
