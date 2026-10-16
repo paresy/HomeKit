@@ -334,7 +334,7 @@ class HomeKitManager
             [
                 'caption' => 'Status',
                 'name'    => 'Status',
-                'width'   => '150px',
+                'width'   => '300px',
                 'add'     => '-'
             ]
         ];
